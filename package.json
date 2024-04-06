@@ -1,0 +1,14 @@
+{
+  "name": "edge-sub",
+  "type": "module",
+  "version": "1.0.0",
+  "license": "AGPL-3",
+  "author": "kobe-koto",
+  "homepage": "https://github.com/kobe-koto/Edge-Sub",
+  "scripts": {
+    "dev": "wrangler pages dev ./"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}
