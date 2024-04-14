@@ -65,6 +65,19 @@ export default class Dumper {
             // max-open-streams: 20,
         }
     }
+
+
+    http (HTTP) {
+        return {
+            name: HTTP.__Remark,
+            type: HTTP.__Type,
+            server: HTTP.Hostname,
+            port: HTTP.Port,
+            username: HTTP.Auth.username,
+            password: HTTP.Auth.password,
+            "skip-cert-verify": this.config.SkipCertVerify
+        }
+    }
     socks5 (SOCKS5) {
         return {
             name: SOCKS5.__Remark,
