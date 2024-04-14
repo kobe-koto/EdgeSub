@@ -33,6 +33,22 @@ export default class NodeParser {
     }
     hy2 = this.hysteria2;
 
+    tuic (TUICURI) {
+        let URIObject = new URL(TUICURI);
+
+        const TUIC = {
+            __Type: "tuic",
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            Auth: { uuid: URIObject.username, password: URIObject.password},
+            Hostname: URIObject.hostname,
+            Port: URIObject.port,
+            Query: {}
+        }
+        for (const [key, value] of URIObject.searchParams) {
+            TUIC.Query[key] = value
+        }
+        return TUIC;
+    }
     socks5 (URI) {
         let URIObject = new URL (URI);
         //console.log(socks5URI)
