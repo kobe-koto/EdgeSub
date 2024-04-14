@@ -65,4 +65,16 @@ export default class Dumper {
             // max-open-streams: 20,
         }
     }
+    socks5 (SOCKS5) {
+        return {
+            name: SOCKS5.__Remark,
+            type: SOCKS5.__Type,
+            server: SOCKS5.Hostname,
+            port: SOCKS5.Port,
+            username: SOCKS5.Auth.username,
+            password: SOCKS5.Auth.password,
+            "skip-cert-verify": this.config.SkipCertVerify,
+            udp: this.config.UDP
+        }
+    }
 }
