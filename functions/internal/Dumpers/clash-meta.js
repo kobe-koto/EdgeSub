@@ -43,4 +43,26 @@ export default class Dumper {
         }
     }
     hy2 = this.hysteria2;
+
+    tuic (TUIC) {
+        return {
+            name: TUIC.__Remark,
+            type: TUIC.__Type,
+            server: TUIC.Hostname,
+            port: TUIC.Port,
+            uuid: TUIC.Auth.uuid,
+            password: TUIC.Auth.password,
+            alpn: [TUIC.Query.alpn],
+            "disable-sni": !!parseInt(TUIC.Query.disable_sni),
+            "reduce-rtt": true,        // default
+            "request-timeout": 8000,   // default
+            "udp-relay-mode": TUIC.Query.udp_relay_mode,
+            "congestion-controller": TUIC.Query.congestion_control,
+            "skip-cert-verify": this.config.SkipCertVerify,
+            sni: TUIC.Query.sni,
+            // max-udp-relay-packet-size: 1500,
+            // fast-open: true,
+            // max-open-streams: 20,
+        }
+    }
 }
