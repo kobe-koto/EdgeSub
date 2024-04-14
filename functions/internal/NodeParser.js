@@ -4,7 +4,7 @@ export default class NodeParser {
         const URLObject = new URL (HYURL);
 
         const HY = {
-            __Type: "hysteria1",
+            __Type: "hysteria",
             __Remark: decodeURIComponent(URLObject.hash.replace(/^#/, "")),
             Hostname: URLObject.hostname,
             Port: URLObject.port,
