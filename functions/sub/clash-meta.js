@@ -28,7 +28,7 @@ export async function onRequest (context) {
     const { request } = context;
     const ParsedSubData = await getParsedSubData(new URL(request.url).searchParams.get("url"), request.headers);
     let RemoteConfig = await ReadRemoteConfig("https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/special/basic.ini");
-    
+
     let Config = Yaml.load(BasicConfig)
 
     // Append proxies.
@@ -62,7 +62,6 @@ export async function onRequest (context) {
             Config.rules.push(`${t},${i.Outbound}`)
         }
     }
-    console.log(RemoteConfig.RuleSet)
     
 
     return new Response(Yaml.dump(Config), {
