@@ -51,14 +51,12 @@ export default class NodeParser {
     }
     socks5 (URI) {
         let URIObject = new URL (URI);
-        //console.log(socks5URI)
         return {
-
             __Type: "socks5",
             __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
             Hostname: URIObject.hostname,
             Port: URIObject.port,
-            Query: {
+            Auth: {
                 username: URIObject.username,
                 password: URIObject.password
             }
