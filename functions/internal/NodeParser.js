@@ -49,6 +49,20 @@ export default class NodeParser {
         }
         return TUIC;
     }
+
+    http (URI) {
+        let URIObject = new URL (URI);
+        return {
+            __Type: "http",
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            Hostname: URIObject.hostname,
+            Port: URIObject.port,
+            Auth: {
+                username: URIObject.username,
+                password: URIObject.password
+            }
+        }
+    }
     socks5 (URI) {
         let URIObject = new URL (URI);
         return {
