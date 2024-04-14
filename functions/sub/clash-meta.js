@@ -67,7 +67,8 @@ export async function onRequest (context) {
     return new Response(Yaml.dump(Config), {
         status: 200,
         headers: {
-            "Content-Type": "text/plain"
+            "Content-Type": "text/plain",
+            "Charset": "UTF-8"
         }
     })
 }

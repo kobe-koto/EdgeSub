@@ -7,7 +7,8 @@ export async function onRequest (context) {
     return new Response(JSON.stringify(ParsedSubData), {
         status: 200,
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Charset": "UTF-8"
         }
     })
 }
