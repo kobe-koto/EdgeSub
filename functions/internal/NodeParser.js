@@ -1,5 +1,33 @@
 export default class NodeParser {
     constructor () {}
+
+    http (URI) {
+        let URIObject = new URL (URI);
+        return {
+            __Type: "http",
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            Hostname: URIObject.hostname,
+            Port: URIObject.port,
+            Auth: {
+                username: URIObject.username,
+                password: URIObject.password
+            }
+        }
+    }
+    socks5 (URI) {
+        let URIObject = new URL (URI);
+        return {
+            __Type: "socks5",
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            Hostname: URIObject.hostname,
+            Port: URIObject.port,
+            Auth: {
+                username: URIObject.username,
+                password: URIObject.password
+            }
+        }
+    }
+    
     hysteria (HYURL) {
         const URLObject = new URL (HYURL);
 
@@ -50,30 +78,52 @@ export default class NodeParser {
         return TUIC;
     }
 
-    http (URI) {
+
+    vless (URI) {
         let URIObject = new URL (URI);
-        return {
-            __Type: "http",
+        //console.log(URIObject)
+        let VLESS = {
+            __Type: "vless",
             __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
             Hostname: URIObject.hostname,
             Port: URIObject.port,
-            Auth: {
-                username: URIObject.username,
-                password: URIObject.password
-            }
+            Auth: URIObject.username,
+            Query: {},
         }
+
+        for (const [key, value] of URIObject.searchParams) {
+            VLESS.Query[key] = value
+        }
+        return VLESS;
     }
-    socks5 (URI) {
-        let URIObject = new URL (URI);
-        return {
-            __Type: "socks5",
-            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
-            Hostname: URIObject.hostname,
-            Port: URIObject.port,
-            Auth: {
-                username: URIObject.username,
-                password: URIObject.password
+    vmess (URI) {
+        let VMessRawObject = JSON.parse(atob(URI.replace(/^vmess:\/\//i, "")));
+        //console.log(URIObject)
+
+        let VMess =  {
+            __Type: "vmess",
+            __Remark: VMessRawObject.ps,
+            Hostname: VMessRawObject.add,
+            Port: VMessRawObject.port,
+            Auth: VMessRawObject.id,
+        }
+        delete VMessRawObject.ps
+        delete VMessRawObject.add
+        delete VMessRawObject.port
+        delete VMessRawObject.id
+
+        // am i doing right...
+        delete VMessRawObject.v // assume its version 2
+
+        // delete all the empty fields
+        for (let i in VMessRawObject) {
+            if (!VMessRawObject[i]) {
+                delete VMessRawObject[i]
             }
         }
+
+        VMess.Query = VMessRawObject;
+
+        return VMess;
     }
 }
