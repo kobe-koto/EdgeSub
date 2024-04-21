@@ -6,6 +6,7 @@ let Config = {
 export default async function ReadRemoteConfig (
     RemoteConfigURL = "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/special/basic.ini"
 ) {
+    console.log(`[Info] [RemoteConf] Fetching Remote Config at ${RemoteConfigURL}`)
     let RawConfig = await fetchRemoteConfig(RemoteConfigURL);
     for (let i of RawConfig) {
         let ConfigType = i.split("=")[0];

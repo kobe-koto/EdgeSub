@@ -8,6 +8,7 @@ let Parser = new NodeParser()
  * @returns {Array}
  */
 export default async function getParsedSubData (SubURL, headers = []) {
+    console.log("[Info] Fetching Sub Data...")
     let SubData = await fetch(SubURL, headers)
         .then(res => res.text())
         .then(res => {
@@ -40,5 +41,6 @@ export default async function getParsedSubData (SubURL, headers = []) {
             console.log(`${protocol} is not supported.`)
         }
     }
+    console.log("[Info] Fetching Sub Data done")
     return ParsedSubData;
 }
