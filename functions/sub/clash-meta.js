@@ -26,8 +26,9 @@ import ReadRemoteConfig from "../internal/ReadRemoteConfig.js";
 
 export async function onRequest (context) {
     const { request } = context;
-    const ParsedSubData = await getParsedSubData(new URL(request.url).searchParams.get("url"), request.headers);
-    let RemoteConfig = await ReadRemoteConfig("https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/special/basic.ini");
+    const URLObject = new URL(request.url);
+    const ParsedSubData = await getParsedSubData(URLObject.searchParams.get("url"), request.headers);
+    let RemoteConfig = await ReadRemoteConfig(URLObject.searchParams.get("remote_config"));
 
     let Config = Yaml.load(BasicConfig)
 
@@ -44,21 +45,30 @@ export async function onRequest (context) {
     // Append proxy groups.
     Config["proxy-groups"] = []
     for (let i of RemoteConfig.ProxyGroup) {
-        let MatchedProxies = ParsedSubData.filter(i => i.__Remark.match(new RegExp(i.RegExp)))
-        let MatchedProxiesName = [];
-        for (let i of MatchedProxies) {
-            MatchedProxiesName.push(i.__Remark)
+
+        let MatchedProxies = ParsedSubData;
+        for (let t of i.RegExpArr) {
+            MatchedProxies = MatchedProxies.filter( loc => loc.__Remark.match(new RegExp(t)) )
         }
+
+        let Proxies = [];
+        for (let t of i.GroupSelectors) {
+            Proxies.push(t.replace(/^\[\]/, ""))
+        }
+        for (let t of MatchedProxies) {
+            Proxies.push(t.__Remark)
+        }
+
         Config["proxy-groups"].push({
             name: i.name,
             type: i.type,
-            proxies: MatchedProxiesName
+            proxies: Proxies
         })
     }
     // Append rule sets;
     Config.rules = []
     for (let i of RemoteConfig.RuleSet) {
-        for (let t of i.List) {
+        for (let t of i.RemoteList) {
             Config.rules.push(`${t},${i.Outbound}`)
         }
     }
@@ -67,8 +77,7 @@ export async function onRequest (context) {
     return new Response(Yaml.dump(Config), {
         status: 200,
         headers: {
-            "Content-Type": "text/plain",
-            "Charset": "UTF-8"
+            "Content-Type": "text/plain; charset=utf-8"
         }
     })
 }
