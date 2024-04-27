@@ -52,6 +52,8 @@ export async function onRequest (context) {
         }
 
         let Proxies = [];
+        Proxies.push("DIRECT")
+        Proxies.push("REJECT")
         for (let t of i.GroupSelectors) {
             Proxies.push(t.replace(/^\[\]/, ""))
         }
