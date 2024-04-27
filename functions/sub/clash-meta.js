@@ -25,10 +25,14 @@ import ReadRemoteConfig from "../internal/ReadRemoteConfig.js";
 
 
 export async function onRequest (context) {
-    const { request } = context;
+    const { request, env } = context;
     const URLObject = new URL(request.url);
     const ParsedSubData = await getParsedSubData(URLObject.searchParams.get("url"), request.headers);
-    let RemoteConfig = await ReadRemoteConfig(URLObject.searchParams.get("remote_config"));
+    let RemoteConfig = await ReadRemoteConfig(
+        URLObject.searchParams.get("remote_config") || "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/assets/minimal_remote_conf/basic.ini", 
+        env.EdgeSubDB,
+        URLObject.searchParams.get("forced_refresh") === "true"
+    );
 
     let Config = Yaml.load(BasicConfig)
 
@@ -70,8 +74,19 @@ export async function onRequest (context) {
     // Append rule sets;
     Config.rules = []
     for (let i of RemoteConfig.RuleSet) {
+        i.RemoteList = i.RemoteList
+            .filter(l => 
+                 ! (
+                    l.startsWith("USER-AGENT,") ||
+                    l.startsWith("URL-REGEX,")
+                )
+            )
         for (let t of i.RemoteList) {
-            Config.rules.push(`${t},${i.Outbound}`)
+            let RuleEntry = t.split(",")
+            if (RuleEntry[0] === "FINAL") {
+                RuleEntry[0] = "MATCH"
+            }
+            Config.rules.push([...RuleEntry.slice(0, 2), i.Outbound, ...RuleEntry.slice(2)].join(","))
         }
     }
     
