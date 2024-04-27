@@ -25,6 +25,7 @@ import ReadRemoteConfig from "../internal/ReadRemoteConfig.js";
 
 
 export async function onRequest (context) {
+    const __startTime = (new Date()).getTime();
     const { request, env } = context;
     const URLObject = new URL(request.url);
     const ParsedSubData = await getParsedSubData(URLObject.searchParams.get("url"), request.headers);
@@ -90,6 +91,7 @@ export async function onRequest (context) {
         }
     }
     
+    console.log(`✅ [Info] [Main] [clash-meta] we've done this glory, totally wasting ${(new Date()).getTime() - __startTime}ms.`)
 
     return new Response(Yaml.dump(Config), {
         status: 200,

@@ -7,8 +7,9 @@ let Parser = new NodeParser()
  * @param {Array} headers 
  * @returns {Array}
  */
+let timer = (new Date()).getTime();
 export default async function getParsedSubData (SubURL, headers = []) {
-    console.log("[Info] Fetching Sub Data...")
+    console.log("▶️ [Info] Fetching Sub Data...")
     let SubData = await fetch(SubURL, headers)
         .then(res => res.text())
         .then(res => {
@@ -41,6 +42,6 @@ export default async function getParsedSubData (SubURL, headers = []) {
             console.log(`${protocol} is not supported.`)
         }
     }
-    console.log("[Info] Fetching Sub Data done")
+    console.log(`▶️ [Info] Fetching Sub Data done, wasting ${(new Date()).getTime() - timer}ms.`)
     return ParsedSubData;
 }
