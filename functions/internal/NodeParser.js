@@ -102,7 +102,7 @@ export default class NodeParser {
 
         let VMess =  {
             __Type: "vmess",
-            __Remark: VMessRawObject.ps,
+            __Remark: decodeURIComponent(escape(VMessRawObject.ps)),
             Hostname: VMessRawObject.add,
             Port: VMessRawObject.port,
             Auth: VMessRawObject.id,
