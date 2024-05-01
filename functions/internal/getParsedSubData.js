@@ -7,8 +7,8 @@ let Parser = new NodeParser()
  * @param {Array} headers 
  * @returns {Array}
  */
-let timer = (new Date()).getTime();
 export default async function getParsedSubData (SubURL, headers = []) {
+    let timer = (new Date()).getTime();
     console.log("▶️ [Info] Fetching Sub Data...")
     let SubData = await fetch(SubURL, headers)
         .then(res => res.text())
