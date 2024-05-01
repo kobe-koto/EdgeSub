@@ -12,15 +12,18 @@ export default async function getParsedSubData (SubURL, headers = []) {
     console.log("▶️ [Info] Fetching Sub Data...")
     let SubData = await fetch(SubURL, headers)
         .then(res => res.text())
+        .then(res => res.trim())
         .then(res => {
-            if (!res.match(/(\/|\:|\?\#)/gi)) { // seems like base64 encoded data, gonna to decode it here.
-                try {
-                    return atob(res)
-                } catch (err) {
-                    // decode error, no handles here
+            let decodedData;
+            try {
+                decodedData = atob(res);
+                if (!decodedData.match(/\:\/\//gi)) {
+                    throw "seems like malformed base64 decoded data, return raw data."
                 }
+                return decodedData;
+            } catch (err) {
+                return res;
             }
-            return res;
         })
         .then(res => res.split("\n"))
         .then(res => {
