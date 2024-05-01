@@ -36,10 +36,7 @@ export default class NodeParser {
             __Remark: decodeURIComponent(URLObject.hash.replace(/^#/, "")),
             Hostname: URLObject.hostname,
             Port: URLObject.port,
-            Query: {}
-        }
-        for (const [key, value] of URLObject.searchParams) {
-            HY.Query[key] = value
+            Query: __searchParamsMapper(URLObject.searchParams)
         }
         return HY;
     }
@@ -52,10 +49,7 @@ export default class NodeParser {
             Auth: URLObject.username,
             Hostname: URLObject.hostname,
             Port: URLObject.port,
-            Query: {}
-        }
-        for (const [key, value] of URLObject.searchParams) {
-            HY2.Query[key] = value
+            Query: __searchParamsMapper(URLObject.searchParams)
         }
         return HY2;
     }
@@ -70,10 +64,7 @@ export default class NodeParser {
             Auth: { uuid: URIObject.username, password: URIObject.password},
             Hostname: URIObject.hostname,
             Port: URIObject.port,
-            Query: {}
-        }
-        for (const [key, value] of URIObject.searchParams) {
-            TUIC.Query[key] = value
+            Query: __searchParamsMapper(URIObject.searchParams)
         }
         return TUIC;
     }
@@ -81,18 +72,13 @@ export default class NodeParser {
 
     vless (URI) {
         let URIObject = new URL (URI);
-        //console.log(URIObject)
         let VLESS = {
             __Type: "vless",
             __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
             Hostname: URIObject.hostname,
             Port: URIObject.port,
             Auth: URIObject.username,
-            Query: {},
-        }
-
-        for (const [key, value] of URIObject.searchParams) {
-            VLESS.Query[key] = value
+            Query: __searchParamsMapper(URIObject.searchParams)
         }
         return VLESS;
     }
@@ -126,4 +112,12 @@ export default class NodeParser {
 
         return VMess;
     }
+}
+
+function __searchParamsMapper (searchParams) {
+    let Query = {}
+    for (const [key, value] of searchParams) {
+        Query[key] = value
+    }
+    return Query;
 }
