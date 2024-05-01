@@ -118,7 +118,9 @@ export default class Dumper {
                 "path": VLESS.Query.path,
                 "max-early-data": VLESS.Query.ed,
                 "early-data-header-name": VLESS.Query.eh,
-                //headers
+                headers: VLESS.Query.host ? {
+                    "Host": VLESS.Query.host
+                } : undefined,
                 //v2ray-http-upgrade
                 //v2ray-http-upgrade-fast-open
             } : undefined,
@@ -167,9 +169,9 @@ export default class Dumper {
             // transport layer config
             "ws-opts": VMESS.Query.net === "ws" ? {
                 path: VMESS.Query.path,
-                headers: {
-                    Host: VMESS.Query.host
-                }
+                headers: VMESS.Query.host ? {
+                    "Host": VMESS.Query.host
+                } : undefined,
                 //max-early-data
                 //early-data-header-name
                 //v2ray-http-upgrade
