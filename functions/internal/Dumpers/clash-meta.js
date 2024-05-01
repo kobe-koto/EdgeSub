@@ -199,4 +199,18 @@ export default class Dumper {
         }
     }
 
+    ss (SS) {
+        return {
+            name: SS.__Remark,
+            type: "ss",
+            server: SS.Hostname,
+            port: SS.Port,
+            cipher: SS.Auth.cipher,
+            password: SS.Auth.password,
+  
+            "udp-over-tcp": this.config.UDP,
+            "udp-over-tcp-version": this.config.UDP ? 2 : undefined,
+            // udp: true,
+        }
+    }
 }

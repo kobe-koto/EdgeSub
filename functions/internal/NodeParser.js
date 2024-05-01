@@ -112,6 +112,22 @@ export default class NodeParser {
 
         return VMess;
     }
+
+    ss (URI) {
+        let URIObject = new URL(URI);
+
+        let Auth = atob(decodeURIComponent(URIObject.username)).split(":");
+
+        const SS = {
+            __Type: "ss",
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            Auth: { cipher: Auth[0], password: Auth[1] },
+            Hostname: URIObject.hostname,
+            Port: URIObject.port
+        }
+        return SS;
+    }
+
 }
 
 function __searchParamsMapper (searchParams) {
