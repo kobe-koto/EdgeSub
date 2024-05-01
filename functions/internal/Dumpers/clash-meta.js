@@ -215,4 +215,47 @@ export default class Dumper {
             // udp: true,
         }
     }
+    trojan (TROJAN) {
+        return {
+            name: TROJAN.__Remark,
+            type: "trojan",
+            server: TROJAN.Hostname,
+            port: TROJAN.Port,
+            password: TROJAN.Auth,
+
+            network: TROJAN.Query.type ? TROJAN.Query.type : "tcp",
+            sni: TROJAN.Query.sni,
+            alpn: ["h2", "http/1.1"],
+
+            "reality-opts": TROJAN.Query.security === "reality" ? {
+                "public-key": TROJAN.Query.pbk,
+                "short-id": TROJAN.Query.sid
+            } : undefined,
+            
+            // transport layer config
+            "ws-opts": TROJAN.Query.type === "ws" ? {
+                "path": TROJAN.Query.path,
+                "max-early-data": TROJAN.Query.ed,
+                "early-data-header-name": TROJAN.Query.eh,
+                headers: TROJAN.Query.host ? {
+                    "Host": TROJAN.Query.host
+                } : undefined,
+            } : undefined,
+            "grpc-opts": TROJAN.Query.type === "grpc" ? {
+                "grpc-service-name": TROJAN.Query.serviceName
+            } : undefined,
+            "http-opts": TROJAN.Query.type === "http" ? {
+                method: TROJAN.Query.method,
+                path: TROJAN.Query.path ? [ TROJAN.Query.path ] : undefined,        
+                headers: TROJAN.Query.host ? {
+                    "Host": TROJAN.Query.host
+                } : undefined,
+            } : undefined,
+
+            "client-fingerprint": TROJAN.Query.fp,
+
+            udp: this.config.UDP,
+            "skip-cert-verify": this.config.SkipCertVerify,
+        }
+    }
 }

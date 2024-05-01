@@ -128,6 +128,19 @@ export default class NodeParser {
         return SS;
     }
 
+    trojan (URI) {
+        let URIObject = new URL(URI);
+
+        const TROJAN = {
+            __Type: "trojan",
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            Auth: URIObject.username,
+            Hostname: URIObject.hostname,
+            Port: URIObject.port,
+            Query: __searchParamsMapper(URIObject.searchParams)
+        }
+        return TROJAN;
+    }
 }
 
 function __searchParamsMapper (searchParams) {
