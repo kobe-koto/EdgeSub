@@ -51,19 +51,32 @@ export async function onRequest (context) {
     Config["proxy-groups"] = []
     for (let i of RemoteConfig.ProxyGroup) {
 
-        let MatchedProxies = ParsedSubData;
-        for (let t of i.RegExpArr) {
-            MatchedProxies = MatchedProxies.filter( loc => loc.__Remark.match(new RegExp(t)) )
+        // get Matched Proxies
+        let MatchedProxies = [];
+        if (i.RegExpArr.length === 0) {
+            MatchedProxies = [];
+        } else {
+            MatchedProxies = ParsedSubData;
+            for (let t of i.RegExpArr) {
+                MatchedProxies = MatchedProxies.filter( loc => loc.__Remark.match(new RegExp(t)) )
+            }
         }
 
+        
+
+
+
         let Proxies = [];
-        Proxies.push("DIRECT")
-        Proxies.push("REJECT")
         for (let t of i.GroupSelectors) {
             Proxies.push(t.replace(/^\[\]/, ""))
         }
         for (let t of MatchedProxies) {
             Proxies.push(t.__Remark)
+        }
+        if (MatchedProxies.length + i.GroupSelectors.length === 0) {
+            // add fallback selector if no selector can be added
+            Proxies.push("DIRECT")
+            Proxies.push("REJECT")
         }
 
         Config["proxy-groups"].push({
