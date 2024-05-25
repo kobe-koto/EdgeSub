@@ -4,9 +4,28 @@
 
 ## 使用方式
 
-> todo: how to use
+- ### Clash Meta
 
-去看原始碼會比較好
+  Endpoint: `/sub/clash-meta`
+
+  需要以下參數:
+
+  - `url`: 輸入的訂閱的遠程位址
+  - `remote_config` (可選): 遠端設定位址, 默認為 https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/assets/minimal_remote_conf/basic.ini
+  - `forced_refresh` (可選): 是否強制刷新已緩存的遠端設定, 默認為 false
+
+- ### Debug
+
+  > **⚠️ Warning**
+  > 
+  > 該格式隨時可能發生變更, 僅供測試用途
+
+  Endpoint: `/sub/debug`
+
+  需要以下參數:
+
+  - `url`: 輸入的訂閱的遠程位址
+
 
 ## 相容性表格
 
@@ -21,7 +40,7 @@
   | TUIC v5      | ✅    | ✅        |                                       |
   | Vmess        | ✅    | ☑️        | 未經完全測試                          |
   | Vless        | ✅    | ☑️        | 未經完全測試                          |
-  | Shadowsocks  | ✅    | ✅        | 全局配置開啓 UDP 时會開啓 UDP over TCP |
+  | Shadowsocks  | ✅    | ✅        | 全局設定為開啓 UDP 时會開啓 UDP over TCP |
   | Trojan       | ✅    | ✅        |                                    |
   | WireGuard    | 🚫    | -        | 似乎沒有通用的 ShareLink 格式         |
   | ShadowsocksR | 🚫    | -        | 暫無計劃實現                          |
