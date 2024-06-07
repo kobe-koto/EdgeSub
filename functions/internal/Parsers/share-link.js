@@ -1,4 +1,4 @@
-export default class NodeParser {
+export class ShareLinkParser {
     constructor () {}
 
     http (URI) {
