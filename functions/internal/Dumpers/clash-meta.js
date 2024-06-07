@@ -134,7 +134,9 @@ export default class Dumper {
             "http-opts": VLESS.Query.type === "http" ? {
                 method: VLESS.Query.method,
                 path: VLESS.Query.path ? [ VLESS.Query.path ] : undefined,
-                //headers
+                headers: VLESS.Query.host ? {
+                    "Host": VLESS.Query.host
+                } : undefined,
             } : undefined,
 
             udp: this.config.UDP,
