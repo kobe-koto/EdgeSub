@@ -1,21 +1,16 @@
-let BasicConfig = `
-port: 7890
-socks-port: 7891
-allow-lan: true
-mode: Rule
-log-level: info
-external-controller: :9090
-dns:
-  enabled: true
-  nameserver:
-    - 119.29.29.29
-    - 223.5.5.5
-  fallback:
-    - 8.8.8.8
-    - 8.8.4.4
-    - tls://1.0.0.1:853
-    - tls://dns.google:853
-`.trim();
+const BasicClashConfig = {
+    port: 7890,
+    "socks-port": 7891,
+    "allow-lan": true,
+    mode: "Rule",
+    "log-level": "info",
+    "external-controller": ":9090",
+    dns: {
+        enabled: true,
+        nameserver: ["119.29.29.29", "223.5.5.5"],
+        fallback: ["8.8.8.8",  "8.8.4.4",  "tls://1.0.0.1:853",  "tls://dns.google:853"]
+    }
+}
 
 import Yaml from "js-yaml";
 import getParsedSubData from "../internal/getParsedSubData.js";
@@ -35,7 +30,7 @@ export async function onRequest (context) {
         URLObject.searchParams.get("forced_refresh") === "true"
     );
 
-    let Config = Yaml.load(BasicConfig)
+    let Config = JSON.parse(JSON.stringify(BasicClashConfig))
 
     // Append proxies.
     Config.proxies = [];
