@@ -1,4 +1,8 @@
 import { ShareLinkParser } from "./Parsers/share-link";
+import { ClashMetaParser } from "./Parsers/clash-meta";
+
+import Yaml from "js-yaml";
+
 
 /**
  * 
@@ -14,6 +18,15 @@ export default async function getParsedSubData (SubURL, headers = []) {
         .then(res => res.trim())
         .then(res => {
             try {
+                let YamlData = Yaml.load(res);
+                if (YamlData.proxies) {
+                    return {
+                        type: "clash-meta",
+                        data: YamlData
+                    }
+                }
+            } catch (e) {}
+
             try {
                 let decodedData = atob(res);
                 if (!decodedData.match(/\:\/\//gi)) {
@@ -43,7 +56,15 @@ export default async function getParsedSubData (SubURL, headers = []) {
                 console.log(`${protocol} is not supported in share-link parser.`)
             }
         }
-    }
+    } else if (SubData.type === "clash-meta") {
+        let { proxies } = SubData.data;
+        let Parser = new ClashMetaParser();
+        for (let i of proxies) {
+            if (Parser[i.type]) {
+                ParsedSubData.push(Parser[i.type](i))
+            } else {
+                console.log(`${i.type} is not supported in clash-meta parser.`)
+            }
         }
     }
     
