@@ -2,6 +2,5 @@ name = "edge-sub"
 compatibility_date = "2023-10-10"
 
 main = "workers-site/index.js"
+site.bucket = "./"
 
-[site]
-bucket = "./"
