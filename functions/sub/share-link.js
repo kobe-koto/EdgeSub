@@ -1,9 +1,7 @@
 import getParsedSubData from "../internal/getParsedSubData.js";
 import { ShareLinkDumper } from "../internal/Dumpers/share-link.js";
 
-
-
-export async function onRequest (context) {
+export async function onRequest (context, isBase64 = false) {
     const { request } = context;
 
     // do convert
@@ -18,6 +16,9 @@ export async function onRequest (context) {
     
     // generate final response
     let ShareLinkResponse = ShareLinkArray.join("\n");
+    if (isBase64 === true) {
+        ShareLinkResponse = btoa(ShareLinkResponse);
+    }
 
     return new Response(ShareLinkResponse, {
         status: 200,
