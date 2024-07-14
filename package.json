@@ -6,9 +6,18 @@
   "author": "kobe-koto",
   "homepage": "https://github.com/kobe-koto/Edge-Sub",
   "scripts": {
-    "dev": "wrangler pages dev ./"
+    "dev": "wrangler pages dev ./",
+    "dev:frontend": "astro dev",
+    "build:frontend": "astro build"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "@astrojs/sitemap": "^3.1.6",
+    "@iconify-json/iconoir": "^1.1.44",
+    "astro": "^4.11.5",
+    "astro-compress": "^2.2.28",
+    "astro-icon": "^1.1.0",
+    "astro-seo": "^0.8.4",
+    "js-yaml": "^4.1.0",
+    "sass": "^1.77.8"
   }
 }

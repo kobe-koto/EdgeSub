@@ -1,0 +1,33 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<div class="title">
+    <h2>Edge Sub Web</h2>
+    <a href="https://github.com/kobe-koto/Edge-Sub"><Icon name="iconoir:github" /></a>
+</div>
+
+<style lang="scss">
+    .title {
+        background-color: #1f2229;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+        h2 {
+            margin: 0;
+        }
+        [data-icon] {
+            height: 1.5rem;
+            width: 1.5rem;
+            vertical-align: -0.5rem;
+        }
+    }
+    @media screen and (max-width: 512px) {
+        .title {
+            border-radius: 0;
+        }
+    }
+</style>

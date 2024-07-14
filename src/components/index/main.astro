@@ -1,0 +1,219 @@
+---
+import Dropdown from "@components/dropdown.astro"
+const RemoteConfigArray = [
+    {
+        key: "ACL_默认版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online.ini"
+    },
+    {
+        key: "ACL_无测速版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoAuto.ini"
+    },
+    {
+        key: "ACL_去广告版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_AdblockPlus.ini"
+    },
+    {
+        key: "ACL_多国家版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_MultiCountry.ini"
+    },
+    {
+        key: "ACL_无Reject版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoReject.ini"
+    },
+    {
+        key: "ACL_无测速精简版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_NoAuto.ini"
+    },
+    {
+        key: "ACL_全分组版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini"
+    },
+    {
+        key: "ACL_全分组谷歌版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Google.ini"
+    },
+    {
+        key: "ACL_全分组多模式版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_MultiMode.ini"
+    },
+    {
+        key: "ACL_全分组奈飞版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Netflix.ini"
+    },
+    {
+        key: "ACL_精简版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini"
+    },
+    {
+        key: "ACL_去广告精简版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_AdblockPlus.ini"
+    },
+    {
+        key: "ACL_Fallback精简版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Fallback.ini"
+    },
+    {
+        key: "ACL_多国家精简版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiCountry.ini"
+    },
+    {
+        key: "ACL_多模式精简版",
+        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini"
+    }
+];
+const AvalibleOptoutFormat = [
+    {
+        key: "Clash Meta",
+        value: "/sub/clash-meta"
+    },
+    {
+        key: "Clash",
+        value: "/sub/clash"
+    },
+    {
+        key: "Base 64",
+        value: "/sub/base64"
+    },
+    {
+        key: "Share Link 集合",
+        value: "/sub/share-link"
+    }
+]
+---
+
+<div class="contents">
+    <div class="form-con" id="sub-url">
+        <label>订阅链接</label>
+        <input placeholder="仅支持 http(s):// 开头的订阅链接" />
+    </div>
+    <div class="form-con" id="backend">
+        <label>后端地址</label>
+        <input placeholder="默认为当前站点" />
+    </div>
+    <div class="form-con" id="endpoint">
+        <label>输出格式</label>
+        <Dropdown Items={AvalibleOptoutFormat} />
+    </div>
+    <div class="form-con" id="remote-config">
+        <label>远程配置</label>
+        <Dropdown Items={RemoteConfigArray} />
+    </div>
+    <hr>
+    <code>https://OpenWrt.lan/luci/123" OR ""==" </code>
+    <button id="generate">Generate</button>
+</div>
+<script>
+
+    addEventListener("DOMContentLoaded", () => {
+
+        let URLObj = new URL(location.href);
+        URLObj.pathname = "/";
+        URLObj.search = "";
+        URLObj.hash = "";
+
+        document.querySelector(".contents > #backend > input").placeholder += ` (${URLObj.toString()})`;
+
+    })
+
+    document.querySelector(".contents > button#generate").addEventListener("click", CheckAndSubmit);
+
+    function CheckAndSubmit () {
+        let MotherCon = document.querySelector(".contents");
+
+        let Config = {
+            SubURL: MotherCon.querySelector("#sub-url > input").value,
+            Backend: MotherCon.querySelector("#backend > input").value || location.hostname,
+            Endpoint: MotherCon.querySelector("#endpoint > k-dropdown").dataset.selectedValue,
+            RemoteConfig: MotherCon.querySelector("#remote-config > k-dropdown").dataset.selectedValue
+        }
+
+        let ErrorState = false;
+        for (let i in Config) {
+            if (!Config[i] || Config[i] === "__NULL__") {
+                alert(`${i} can't be empty`);
+                ErrorState = true;
+                continue;
+            }
+            if (i === "SubURL") {
+                try {
+                    new URL (Config[i])
+                } catch (err) {
+                    alert(`${Config[i]} isn't a vaild URL.`);
+                    ErrorState = true;
+                }
+            }
+        }
+        if (ErrorState === true) {
+            return;
+        }
+
+        MotherCon.querySelector("code").innerText = GenerateSubURL(Config);
+
+    }
+    function GenerateSubURL (Config) {
+        let URLObj = new URL(location.href);
+        URLObj.pathname = Config.Endpoint;
+        URLObj.search = "";
+        URLObj.hash = "";
+
+        URLObj.searchParams.append("url", Config.SubURL)
+        URLObj.searchParams.append("remote_config", Config.RemoteConfig)
+        return URLObj.toString();
+    }
+</script>
+
+
+
+<style lang="scss">
+    .contents {
+        padding: 24px 30px;
+        display: flex;
+        flex-wrap: wrap;
+        flex-flow: column;
+        gap: 12px
+    }
+    .form-con {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        label {
+            margin-bottom: 0.125rem;
+            white-space: nowrap;
+            &::before {
+                content: "";
+                display: inline-block;
+                height: 14px;
+                width: 4px;
+                background-color: #7fffd4;
+                margin: auto 0;
+                border-radius: 10px;
+                margin-right: 8px;
+                margin-bottom: -0.075rem;
+            }
+        }
+        input {
+            width: 100%;
+            border: none;
+            background-color: #bbc5e8;
+            color: #25304c;
+            padding: 12px 18px;
+            border-radius: 25px;
+        }
+    }
+    button {
+        width: 100%;
+        border: none;
+        background-color: #bbc5e8;
+        color: #25304c;
+        padding: 12px 18px;
+        border-radius: 25px;
+    }
+    code {
+        background-color: #1f2229;
+        padding: 12px 18px;
+        border-radius: 8px;
+        word-break: break-all;
+    }
+
+</style>

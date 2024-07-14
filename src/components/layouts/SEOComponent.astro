@@ -1,0 +1,51 @@
+---
+import { SEO } from "astro-seo";
+
+interface Props {
+    Title?: string;
+    Desc?: string;
+    noindex?: boolean;
+}
+const { 
+    Title = "Edge Sub Web",
+    Desc = "A sub converter frontend, using EdgeSub as background.",
+    noindex = false 
+} = Astro.props;
+---
+
+<SEO
+    title={Title}
+    noindex={noindex}
+    nofollow={noindex}
+    description={Desc}
+    charset="UTF-8"
+    extend={{
+        link: [
+            { rel: "sitemap", href: "/sitemap-index.xml" },
+            { rel: "icon", type: "image/png", href: "/favicon.ico" }, // todo : change icon
+        ],
+        meta: [
+            { name: "viewport", content: "width=device-width" },
+            { name: "author", content: "kobe koto" },
+        ]
+    }}
+    openGraph={{
+        basic: {
+            type: "website",
+            title: Title,
+            image: "/favicon.ico"
+        },
+        optional: {
+            description: Desc,
+            siteName: Title,
+        }
+
+    }}
+    twitter={{
+        title: Title,
+        description: Desc,
+        card: "summary",
+        creator: "@kobe_koto"
+    }}
+/>
+

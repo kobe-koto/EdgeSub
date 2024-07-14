@@ -1,0 +1,27 @@
+.main-card-con {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px 0;
+    background-color: #121317;
+    color: #e3dfe6;
+    .main-card {
+        background-color: #292a2e;
+        margin: 0 auto;
+        width: 80%;
+        max-width: 1000px;
+        border-radius: 14px;
+    }
+}
+
+@media screen and (max-width: 512px) {
+    .main-card-con {
+        padding: 0;
+        background-color: #292a2e;
+        .main-card {
+            margin: 0;
+            width: 100%;
+            border-radius: 0;
+        }
+    }
+}
