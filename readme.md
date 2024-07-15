@@ -4,6 +4,10 @@
 
 ## 使用方式
 
+- ### UI
+  
+  在 Cloudflare Pages 部署後打開，並按提示操作。
+
 - ### Clash Meta
 
   Endpoint: `/sub/clash-meta`
