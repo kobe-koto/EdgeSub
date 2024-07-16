@@ -1,0 +1,15 @@
+---
+import "@styles/components/k-switch.scss";
+
+interface Props {
+    checked?: boolean;
+}
+const { checked = false } = Astro.props;
+---
+
+<k-switch data-checked={`${checked}`}></span>
+
+<script>
+    import { Switch } from "@scripts/components/k-switch.js";
+    customElements.define("k-switch", Switch);
+</script>

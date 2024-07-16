@@ -1,85 +1,9 @@
 ---
-import Dropdown from "@components/dropdown.astro"
-const RemoteConfigArray = [
-    {
-        key: "ACL_默认版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online.ini"
-    },
-    {
-        key: "ACL_无测速版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoAuto.ini"
-    },
-    {
-        key: "ACL_去广告版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_AdblockPlus.ini"
-    },
-    {
-        key: "ACL_多国家版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_MultiCountry.ini"
-    },
-    {
-        key: "ACL_无Reject版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoReject.ini"
-    },
-    {
-        key: "ACL_无测速精简版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_NoAuto.ini"
-    },
-    {
-        key: "ACL_全分组版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini"
-    },
-    {
-        key: "ACL_全分组谷歌版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Google.ini"
-    },
-    {
-        key: "ACL_全分组多模式版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_MultiMode.ini"
-    },
-    {
-        key: "ACL_全分组奈飞版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Netflix.ini"
-    },
-    {
-        key: "ACL_精简版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini"
-    },
-    {
-        key: "ACL_去广告精简版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_AdblockPlus.ini"
-    },
-    {
-        key: "ACL_Fallback精简版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Fallback.ini"
-    },
-    {
-        key: "ACL_多国家精简版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiCountry.ini"
-    },
-    {
-        key: "ACL_多模式精简版",
-        value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini"
-    }
-];
-const AvalibleOptoutFormat = [
-    {
-        key: "Clash Meta",
-        value: "/sub/clash-meta"
-    },
-    {
-        key: "Clash",
-        value: "/sub/clash"
-    },
-    {
-        key: "Base 64",
-        value: "/sub/base64"
-    },
-    {
-        key: "Share Link 集合",
-        value: "/sub/share-link"
-    }
-]
+import Dropdown from "@components/dropdown.astro";
+import Toggle from "@components/toggle.astro";
+import Spliter from "@components/spliter.astro";
+import { RemoteConfigs } from "@config/RemoteConfigs.js";
+import { Endpoints } from "@config/AvalibleOptoutFormat.js"
 ---
 
 <div class="contents">
@@ -93,26 +17,34 @@ const AvalibleOptoutFormat = [
     </div>
     <div class="form-con" id="endpoint">
         <label>输出格式</label>
-        <Dropdown Items={AvalibleOptoutFormat} />
+        <Dropdown Items={Endpoints} />
     </div>
     <div class="form-con" id="remote-config">
         <label>远程配置</label>
-        <Dropdown Items={RemoteConfigArray} />
+        <Dropdown Items={RemoteConfigs} />
     </div>
-    <hr>
+    <div class="form-con" id="is-udp">
+        <label>开启 UDP (SS 使用 UoT)</label>
+        <Toggle checked={true} />
+    </div>
+    
+    <Spliter />
+
     <code>https://OpenWrt.lan/luci/123" OR ""==" </code>
     <button id="generate">Generate</button>
 </div>
 <script>
 
     addEventListener("DOMContentLoaded", () => {
-
         let URLObj = new URL(location.href);
         URLObj.pathname = "/";
         URLObj.search = "";
         URLObj.hash = "";
 
-        document.querySelector(".contents > #backend > input").placeholder += ` (${URLObj.toString()})`;
+        let defaultBackend = URLObj.toString() === "http://localhost:4321/" ? "http://localhost:8788/" : URLObj.toString();
+
+        document.querySelector(".contents > #backend > input").placeholder += ` (${defaultBackend})`;
+        document.querySelector(".contents > #backend > input").dataset.defaultBackend = defaultBackend;
 
     })
 
@@ -123,9 +55,10 @@ const AvalibleOptoutFormat = [
 
         let Config = {
             SubURL: MotherCon.querySelector("#sub-url > input").value,
-            Backend: MotherCon.querySelector("#backend > input").value || location.hostname,
+            Backend: MotherCon.querySelector("#backend > input").value || document.querySelector(".contents > #backend > input").dataset.defaultBackend,
             Endpoint: MotherCon.querySelector("#endpoint > k-dropdown").dataset.selectedValue,
-            RemoteConfig: MotherCon.querySelector("#remote-config > k-dropdown").dataset.selectedValue
+            RemoteConfig: MotherCon.querySelector("#remote-config > k-dropdown").dataset.selectedValue,
+            isUDP: MotherCon.querySelector("#is-udp > k-switch").dataset.checked,
         }
 
         let ErrorState = false;
@@ -152,13 +85,14 @@ const AvalibleOptoutFormat = [
 
     }
     function GenerateSubURL (Config) {
-        let URLObj = new URL(location.href);
+        let URLObj = new URL(Config.Backend);
         URLObj.pathname = Config.Endpoint;
         URLObj.search = "";
         URLObj.hash = "";
 
         URLObj.searchParams.append("url", Config.SubURL)
         URLObj.searchParams.append("remote_config", Config.RemoteConfig)
+        URLObj.searchParams.append("udp", Config.isUDP)
         return URLObj.toString();
     }
 </script>
