@@ -84,7 +84,6 @@ export class ShareLinkParser {
     }
     vmess (URI) {
         let VMessRawObject = JSON.parse(atob(URI.replace(/^vmess:\/\//i, "")));
-        //console.log(URIObject)
 
         let VMess =  {
             __Type: "vmess",

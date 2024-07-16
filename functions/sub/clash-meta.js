@@ -25,10 +25,10 @@ export async function onRequest (context, isClashOriginal = false) {
         Proxies,
         context.env.EdgeSubDB,
         {
-            isUDP: true,
+            isUDP: URLObject.searchParams.get("udp") === "false" ? false : true,
             isInsecure: true,
             RemoteConfig: URLObject.searchParams.get("remote_config"),
-            isForcedRefresh: URLObject.searchParams.get("forced_refresh")
+            isForcedRefresh: URLObject.searchParams.get("forced_refresh") === "true" ? true : false
         }
     )
 

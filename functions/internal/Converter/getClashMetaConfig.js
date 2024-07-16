@@ -1,6 +1,5 @@
 import { TrulyAssign } from "../utils/TrulyAssign";
 import ClashMetaDumper from "../Dumpers/clash-meta.js";
-import ReadRemoteConfig from "../ReadRemoteConfig.js";
 
 const BasicClashConfig = {
     "port": 7890,
@@ -20,8 +19,11 @@ const BasicConfig = {
     isUDP: true,
     isInsecure: true,
     RemoteConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/assets/minimal_remote_conf/basic.ini",
-    isForcedRefresh:false
+    isForcedRefresh: false
 }
+
+
+import { RemoteConfigReader } from "../RemoteConfigReader/main.js";
 
 export async function getClashMetaConfig (
     Proxies, 
@@ -30,7 +32,8 @@ export async function getClashMetaConfig (
 ) {
     const Config = TrulyAssign(BasicConfig, PassedConfig);
 
-    let RemoteConfig = await ReadRemoteConfig(Config.RemoteConfig, EdgeSubDB, Config.isForcedRefresh);
+    let RemoteConfig = await (new RemoteConfigReader(Config.RemoteConfig)).Process(EdgeSubDB, Config.isForcedRefresh)
+
     let ClashConfig = JSON.parse(JSON.stringify(BasicClashConfig))
 
     // Append proxies.
@@ -50,16 +53,15 @@ export async function getClashMetaConfig (
 
         // get Matched Proxies
         let MatchedProxies = [];
-        if (i.RegExpArr.length === 0) {
-            MatchedProxies = [];
-        } else {
-            MatchedProxies = Proxies;
-            for (let t of i.RegExpArr) {
-                MatchedProxies = MatchedProxies.filter( loc => loc.__Remark.match(new RegExp(t)) )
-            }
-        }    
+        for (let t of i.RegExps) {
+            MatchedProxies = [ ...MatchedProxies, ...Proxies.filter( loc => loc.__Remark.match(new RegExp(t)) ) ]
+        }
+        // unique proxy
+        MatchedProxies = Array.from(new Set(MatchedProxies));
 
-        // generate proxy group 
+
+
+        // generate proxies list 
         let GroupProxies = [];
         for (let t of i.GroupSelectors) {
             GroupProxies.push(t.replace(/^\[\]/, ""))
@@ -73,25 +75,34 @@ export async function getClashMetaConfig (
             GroupProxies.push("REJECT")
         }
 
-        // append proxy groupto config
-        ClashConfig["proxy-groups"].push({
-            name: i.name,
-            type: i.type,
-            proxies: GroupProxies
-        })
+        //generate proxy group
+        let ProxyGroup = {}
+        ProxyGroup.name = i.name;
+        ProxyGroup.type = i.type;
+        if (i.type === "url-test" || i.type === "load-balance" || i.type === "fallback") {
+            ProxyGroup.url = i.TestConfig.TestURL;
+            ProxyGroup.interval = i.TestConfig.Interval;
+        }
+        if (i.type === "url-test") {
+            ProxyGroup.tolerance = i.TestConfig.Tolerance;
+        }
+        ProxyGroup.proxies = GroupProxies;
+
+        // append proxy group to config
+        ClashConfig["proxy-groups"].push(ProxyGroup)
     }
 
     // Append rule sets;
     ClashConfig.rules = []
     for (let i of RemoteConfig.RuleSet) {
-        i.RemoteList = i.RemoteList
+        i.Rules = i.Rules
             .filter(l => 
                  ! (
                     l.startsWith("USER-AGENT,") ||
                     l.startsWith("URL-REGEX,")
                 )
             )
-        for (let t of i.RemoteList) {
+        for (let t of i.Rules) {
             let RuleEntry = t.split(",")
             if (RuleEntry[0] === "FINAL") {
                 RuleEntry[0] = "MATCH"

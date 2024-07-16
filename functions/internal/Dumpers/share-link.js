@@ -48,7 +48,6 @@ export class ShareLinkDumper {
 }
 
 function URLQueryWrapper (Obj) {
-    console.log(Obj)
     let Childs = [];
     for (let i in Obj) {
         let value = Obj[i];

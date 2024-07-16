@@ -28,7 +28,7 @@ export default async function getParsedSubData (SubURL, headers = []) {
             } catch (e) {}
 
             try {
-                let decodedData = atob(res);
+                let decodedData = Buffer.from(res, "base64");
                 if (!decodedData.match(/\:\/\//gi)) {
                     throw "seems like malformed base64 decoded data, return raw data."
                 }
@@ -46,7 +46,7 @@ export default async function getParsedSubData (SubURL, headers = []) {
 
     let ParsedSubData = [];
     if (SubData.type === "share-link") {
-        let links = SubData.data.split("\n").filter(loc => !!loc);
+        let links = SubData.data.replaceAll("\r", "\n").split("\n").filter(loc => !!loc);
         for (let i of links) {
             let protocol = i.split(":")[0];
             let Parser = new ShareLinkParser()
