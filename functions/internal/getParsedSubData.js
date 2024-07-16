@@ -28,7 +28,7 @@ export default async function getParsedSubData (SubURL, headers = []) {
             } catch (e) {}
 
             try {
-                let decodedData = Buffer.from(res, "base64");
+                let decodedData = atob(res.trim());
                 if (!decodedData.match(/\:\/\//gi)) {
                     throw "seems like malformed base64 decoded data, return raw data."
                 }
