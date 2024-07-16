@@ -15,7 +15,8 @@
   需要以下參數:
 
   - `url`: 輸入的訂閱的遠程位址
-  - `remote_config` (可選): 遠端設定位址, 默認為 https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/assets/minimal_remote_conf/basic.ini
+  - `remote_config` (可選): 遠端設定位址 (INI 格式), 默認為 https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/assets/minimal_remote_conf/basic.ini
+  - `udp` (可選): 遠端設定位址, 默認為 true
   - `forced_refresh` (可選): 是否強制刷新已緩存的遠端設定, 默認為 false
 
 - ### Debug
