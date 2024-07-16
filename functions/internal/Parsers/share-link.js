@@ -84,10 +84,15 @@ export class ShareLinkParser {
     }
     vmess (URI) {
         let VMessRawObject = JSON.parse(atob(URI.replace(/^vmess:\/\//i, "")));
-
+        let Remark;
+        try {
+            Remark = decodeURIComponent(escape(VMessRawObject.ps))
+        } catch (e) {
+            Remark = VMessRawObject.ps
+        }
         let VMess =  {
             __Type: "vmess",
-            __Remark: decodeURIComponent(escape(VMessRawObject.ps)),
+            __Remark: Remark,
             Hostname: VMessRawObject.add,
             Port: VMessRawObject.port,
             Auth: VMessRawObject.id,

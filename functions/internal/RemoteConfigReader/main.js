@@ -12,9 +12,11 @@ export class RemoteConfigReader {
         console.log(`Inputed remote config type: ${this.RemoteConfig.Type}`);
 
         if (this.RemoteConfig.Type in this.Reader) {
-            console.log(`Inputed remote config type supported, ready to process`)
+            console.log("Inputed remote config type supported, ready to process")
+            return true;
         } else {
-            throw "Inputed remote config type not supported.";
+            console.warn("Inputed remote config type not supported, skipping.");
+            return false;
         }
     }
 
@@ -22,7 +24,5 @@ export class RemoteConfigReader {
         return this.Reader[this.RemoteConfig.Type](this.RemoteConfig.URL, EdgeSubDB, isForcedRefresh);
         //let RawConfig = await fetchRemoteConfig(RemoteConfigURL, isForcedRefresh);
     }
-
-
 
 }

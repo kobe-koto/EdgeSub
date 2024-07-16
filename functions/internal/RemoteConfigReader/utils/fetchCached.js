@@ -7,6 +7,7 @@ export async function fetchCached (URL, Prefix = "Cached", CacheDB, isForcedRefr
     let CachedData;
     if (!CacheDB) {
         CachedData = null;
+        console.info(`▶️ [Info] [fetchCached] - CacheDB is not configured, fetching.`)
     } else {
         if (isForcedRefresh) {
             CachedData = null;
@@ -20,8 +21,8 @@ export async function fetchCached (URL, Prefix = "Cached", CacheDB, isForcedRefr
         return CachedData;
     }
 
+    console.info(`▶️ [Info] [fetchCached] - "${CacheKey}" is not cached, fetching.`)
     // only when CachedData == falsy
-    console.info(`▶️ [Info] [fetchCached - ${Prefix}] - This one is not cached in kv, fetching.`)
     let data = await fetch (URL)
         .then(res => {
             if (res.status === 200 || res.status === 304) {
@@ -34,7 +35,7 @@ export async function fetchCached (URL, Prefix = "Cached", CacheDB, isForcedRefr
         .catch(() => false);
     // save it into CacheDB when success, and, whatever, when CacheDB exist.
     if (data !== false && CacheDB) {
-        await CacheDB.put(CacheKey, data, { expirationTtl: CacheTTL})
+        await CacheDB.put(CacheKey, data, { expirationTtl: CacheTTL })
     }
     // just return
     return data;

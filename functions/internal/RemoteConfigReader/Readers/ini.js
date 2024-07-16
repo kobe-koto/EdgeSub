@@ -1,4 +1,4 @@
-import { stringify as INIStringify , parse as INIParse } from "ini";
+import { parse as INIParse } from "ini";
 
 import { fetchCached } from "../utils/fetchCached.js";
 import { RuleSetReader } from "../RuleSetReader/main.js";
@@ -13,12 +13,11 @@ export async function ini (RemoteConfigURL, CacheDB, isForcedRefresh) {
     // get raw remote config.
     let RemoteConfig = 
         await fetchCached(RemoteConfigURL, "RemoteConfig", CacheDB, isForcedRefresh)
-        .then(res => {
-            let PreProcessed = res;
-            PreProcessed = PreProcessed.replaceAll("ruleset=", "ruleset[]=")
-            PreProcessed = PreProcessed.replaceAll("custom_proxy_group=", "custom_proxy_group[]=")
-            return PreProcessed;
-        })
+        .then(
+            res => 
+                res.replaceAll("ruleset=", "ruleset[]=")
+                   .replaceAll("custom_proxy_group=", "custom_proxy_group[]=")
+        )
         .then(res => INIParse(res));
 
 
@@ -30,7 +29,7 @@ export async function ini (RemoteConfigURL, CacheDB, isForcedRefresh) {
 
     // process proxy groups
     for (let i of RemoteConfig.custom.custom_proxy_group) {
-        // we dont support these "特殊筛选条件", sorry. #todo
+        // we dont support these "特殊筛选条件" that starts with "!!", sorry. #todo
         const ConfigArr = i.split("`").filter(t => !t.startsWith("!!"));
         const Args = ConfigArr.slice(2).filter(t => !t.startsWith("[]"));
         const type = ConfigArr[1];
