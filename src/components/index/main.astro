@@ -9,7 +9,7 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
 <div class="contents">
     <div class="form-con" id="sub-url">
         <label>订阅链接</label>
-        <input placeholder="仅支持 http(s):// 开头的订阅链接" />
+        <textarea placeholder="仅支持 http(s):// 开头的订阅链接, 类似于 vless:// 开头的分享链接。以换行分割。" />
     </div>
     <div class="form-con" id="backend">
         <label>后端地址</label>
@@ -34,6 +34,8 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
     <button id="generate">Generate</button>
 </div>
 <script>
+import type { string } from "astro/zod";
+
 
     addEventListener("DOMContentLoaded", () => {
         let URLObj = new URL(location.href);
@@ -54,7 +56,7 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
         let MotherCon = document.querySelector(".contents");
 
         let Config = {
-            SubURL: MotherCon.querySelector("#sub-url > input").value,
+            SubURL: MotherCon.querySelector("#sub-url > textarea").value.replaceAll("\r", "\n").split("\n").filter((i: string) => !!i).map(i => encodeURIComponent(i.trim())).join("||"),
             Backend: MotherCon.querySelector("#backend > input").value || document.querySelector(".contents > #backend > input").dataset.defaultBackend,
             Endpoint: MotherCon.querySelector("#endpoint > k-dropdown").dataset.selectedValue,
             RemoteConfig: MotherCon.querySelector("#remote-config > k-dropdown").dataset.selectedValue,
@@ -63,18 +65,10 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
 
         let ErrorState = false;
         for (let i in Config) {
-            if (!Config[i] || Config[i] === "__NULL__") {
+            if (!Config[i] || Config[i] === "__NULL__" || Config[i].length === 0) {
                 alert(`${i} can't be empty`);
                 ErrorState = true;
                 continue;
-            }
-            if (i === "SubURL") {
-                try {
-                    new URL (Config[i])
-                } catch (err) {
-                    alert(`${Config[i]} isn't a vaild URL.`);
-                    ErrorState = true;
-                }
             }
         }
         if (ErrorState === true) {
@@ -84,7 +78,7 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
         MotherCon.querySelector("code").innerText = GenerateSubURL(Config);
 
     }
-    function GenerateSubURL (Config) {
+    function GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig: any; isUDP: any; }) {
         let URLObj = new URL(Config.Backend);
         URLObj.pathname = Config.Endpoint;
         URLObj.search = "";
@@ -125,6 +119,11 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
                 margin-right: 8px;
                 margin-bottom: -0.075rem;
             }
+        }
+        textarea {
+            @extend input;
+            resize: none;
+            height: 75px;
         }
         input {
             width: 100%;

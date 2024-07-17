@@ -10,39 +10,61 @@ import Yaml from "js-yaml";
  * @param {Array} headers 
  * @returns {Array}
  */
-export default async function getParsedSubData (SubURL, headers = []) {
+export default async function getParsedSubData (SubURLs, headers = []) {
     let timer = (new Date()).getTime();
     console.log("▶️ [Info] Fetching Sub Data...")
-    let SubData = await fetch(SubURL, headers)
-        .then(res => res.text())
-        .then(res => res.trim())
-        .then(res => {
-            try {
-                let YamlData = Yaml.load(res);
-                if (YamlData.proxies) {
-                    return {
-                        type: "clash-meta",
-                        data: YamlData
-                    }
-                }
-            } catch (e) {}
 
-            try {
-                let decodedData = atob(res.trim());
-                if (!decodedData.match(/\:\/\//gi)) {
-                    throw "seems like malformed base64 decoded data, return raw data."
-                }
+    let SubURLArr = SubURLs.split("||").map(i => decodeURIComponent(i));
+    let ParsedData = [];
+    for (let i in SubURLArr) {
+        console.log(`▶️ [Info] Fetching Sub Data ${parseInt(i) + 1} of ${SubURLArr.length}`)
+        ParsedData = [...ParsedData, ...await ParseSubData(SubURLArr[i], headers)]
+    }
+
+    console.log(`▶️ [Info] Fetching Sub Data done, wasting ${(new Date()).getTime() - timer}ms.`)
+    return ParsedData;
+}
+async function ParseSubData (SubURL, headers = []) {
+    let SubData;
+
+    // handle raw share link (assume every string that dont starts with http(s|):// )
+    if (!SubURL.match(/^http(s|):\/\//i)) {
+        SubData = {
+            type: "share-link",
+            data: SubURL
+        }
+    } else {
+        SubData = await fetch(SubURL, headers)
+            .then(res => res.text())
+            .then(res => res.trim())
+            .then(res => {
+                try {
+                    let YamlData = Yaml.load(res);
+                    if (YamlData.proxies) {
+                        return {
+                            type: "clash-meta",
+                            data: YamlData
+                        }
+                    }
+                } catch (e) {}
+
+                try {
+                    let decodedData = atob(res.trim());
+                    if (!decodedData.match(/\:\/\//gi)) {
+                        throw "seems like malformed base64 decoded data, return raw data."
+                    }
+                    return {
+                        type: "share-link",
+                        data: decodedData
+                    }
+                } catch (e) {}
+
                 return {
                     type: "share-link",
-                    data: decodedData
+                    data: res
                 }
-            } catch (e) {}
-
-            return {
-                type: "share-link",
-                data: res
-            }
-        });
+            });
+    }
 
     let ParsedSubData = [];
     if (SubData.type === "share-link") {
@@ -68,6 +90,5 @@ export default async function getParsedSubData (SubURL, headers = []) {
         }
     }
     
-    console.log(`▶️ [Info] Fetching Sub Data done, wasting ${(new Date()).getTime() - timer}ms.`)
     return ParsedSubData;
 }
