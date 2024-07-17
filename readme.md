@@ -31,6 +31,39 @@
 
   - `url`: 輸入的訂閱的遠程位址
 
+## 部署
+
+- ### 在 Cloudflare Pages 上部署
+
+  0. Fork 本項目
+  1. 打開 dash.cloudflare.com
+  2. 轉到側邊欄上的 **Workers & Pages** (Overview) 部分
+  3. 按下 **Create** 按鈕
+  4. 切換到 **Pages** 欄
+  5. 按 **Connect to Git**
+  6. 選擇你剛 Fork 下來的 EdgeSub 項目
+  7. 在 **Build settings > Framework preset** 中選擇 Astro
+  8. 編輯 **Build settings > Build command** 為 `pnpm build:frontend`
+  9. 按下 **Save and Deploy**
+  10. 部署完成後，你可能需要添加自訂網域，請前往 **項目 > Custom domains** 添加
+  
+  #### ✡️ 可選 - 為遠端規則添加緩存以加快處理速度:
+  
+  **需要注意的是，開發時會以假設緩存 KV 存在來開發，無緩存 KV 環境將作為低優先級來開發。**
+  
+  **因此，不添加緩存 KV 是不被推薦的行為。**
+  
+  1. 轉到 **Workers & Pages > KV**
+  2. 按 **Create a namespacce**，**輸入任意名字**，然後按 **Add**
+  3. 回到項目
+  4. 轉到 **Settings > Functions >  KV namespace bindings**
+  5. 按 **Add binding**
+  6. 在 **Variable name** 填寫 `EdgeSubDB`，**KV namespace** 選擇你剛建立的 KV 空間
+  7. 點按 **Save**
+  8. 轉到**項目 > Deployments**
+  9. 在 **All deployments** 中找到最近的一個 Deployment，然後點**右側三個點 > Retry Deployment**
+  10. 完成
+
 
 ## 相容性表格
 
