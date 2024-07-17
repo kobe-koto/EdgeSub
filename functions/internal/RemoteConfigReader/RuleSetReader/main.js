@@ -6,12 +6,13 @@ export class RuleSetReader {
     static ExpectedTypes = ["surge", "quanx", "clash-domain", "clash-ipcidr", "clash-classic"];
     constructor (RuleSet) {
         const [Outbound, ...Args] = RuleSet.split(",");
-        this.RuleSet = { Outbound, Args, Rules: [] };
+        this.RuleSet = { Outbound, Args };
     }
     async Process (CacheDB, isForcedRefresh) {
-        const { Outbound, Args, Rules } = this.RuleSet;
+        const { Outbound, Args } = this.RuleSet;
+        let Rules = [];
         if (Args[0].startsWith("[]")) { // quote a proxy group when starts with `[]`
-            Rules.push(Args.join(",").replace(/^\[\]/, ""))
+            Rules = [Args.join(",").replace(/^\[\]/, "")];
         } else {
             // this.RuleSet.Interval = Args[1]; // we are not using this for now, but it's a reminder #todo
 
@@ -24,7 +25,7 @@ export class RuleSetReader {
             let RawRule = await fetchCached(RawRuleURL, "RuleSet", CacheDB, isForcedRefresh);
 
             // process rule list 
-            Rules.concat(await this.Parser[RuleType](RawRule))
+            Rules = await this.Parser[RuleType](RawRule)
         }
         return { Outbound, Rules }
     }
