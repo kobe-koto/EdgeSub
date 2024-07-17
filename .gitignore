@@ -27,3 +27,4 @@ pnpm-debug.log*
 # others
 *.bak
 *.kate-swap
+wrangler.toml
