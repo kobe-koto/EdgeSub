@@ -36,7 +36,7 @@ export class ShareLinkDumper {
             ...Obj.Query,
         }
 
-        return `vmess://${btoa(VMESSObj)}`
+        return `vmess://${btoa(JSON.stringify(VMESSObj))}`
     }
 
     ss (Obj) {
