@@ -136,7 +136,11 @@ export class ClashMetaParser {
                 // - http & ws & h2 
                 host: (Obj.headers || {}).Host,
                 // - http & ws & h2 & grpc
-                path: Obj.path || Obj["grpc-service-name"],
+                path: 
+                    ( Obj["ws-opts"] || Obj["h2-opts"] || {} ).path || 
+                    ( (Obj["http-opts"] || {}).path || [] )[0] || 
+                    Obj["grpc-service-name"] ||
+                    undefined,
 
             }
         }
