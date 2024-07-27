@@ -17,11 +17,17 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
     </div>
     <div class="form-con" id="endpoint">
         <label>输出格式</label>
-        <Dropdown Items={Endpoints} />
+        <Dropdown 
+            Default={{ key: "Clash Meta (默认)",value: "/sub/clash-meta" }} 
+            Items={Endpoints}
+        />
     </div>
     <div class="form-con" id="remote-config">
         <label>远程配置</label>
-        <Dropdown Items={RemoteConfigs} />
+        <Dropdown 
+            Default={{ key: "最小配置 (默认)", value: "__DEFAULT__" }} 
+            Items={RemoteConfigs} 
+        />
     </div>
     <div class="form-con" id="is-udp">
         <label>开启 UDP (SS 使用 UoT)</label>
