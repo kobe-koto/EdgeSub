@@ -28,7 +28,7 @@ export async function fetchCached (URL, Prefix = "Cached", CacheDB, isForcedRefr
             if (res.status === 200 || res.status === 304) {
                 return res
             } else {
-                throw "Failed to get remote config."
+                throw "Failed to fetch."
             }
         })
         .then(res => res.text())

@@ -38,6 +38,7 @@ export class ClashMetaParser {
                 upmbps: Obj.up,
                 downmbps: Obj.down,
                 peer: Obj.sni,
+                mport: Obj.ports,
             }
         }
     }
@@ -52,6 +53,7 @@ export class ClashMetaParser {
                 objs: Obj.obfs,
                 "obfs-password": Obj["obfs-password"],
                 insecure: Obj["skip-cert-verify"] ? 1 : 0,
+                mport: Obj.ports,
             }
         }
     }
