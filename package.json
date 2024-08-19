@@ -12,23 +12,13 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.1.6",
-    "@iconify-json/iconoir": "^1.1.44",
-    "astro": "^4.11.5",
-    "astro-compress": "^2.2.28",
-    "astro-icon": "^1.1.0",
+    "@iconify-json/iconoir": "^1.1.46",
+    "astro": "^4.14.2",
+    "astro-compress": "^2.3.1",
+    "astro-icon": "^1.1.1",
     "astro-seo": "^0.8.4",
     "ini": "^4.1.3",
     "js-yaml": "^4.1.0",
     "sass": "^1.77.8"
-  },
-  "overrides": {
-    "astro-icon": {
-      "@iconify/tools": "^4.0.5"
-    }
-  },
-  "pnpm": {
-    "overrides": {
-      "@iconify/tools": "^4.0.5"
-    }
   }
 }
