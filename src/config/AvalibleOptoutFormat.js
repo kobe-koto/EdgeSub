@@ -2,6 +2,10 @@ import { readdirSync } from "node:fs";
 
 const AvalibleEndpoints = [
     {
+        key: "Sing Box",
+        value: "/sub/sing-box"
+    },
+    {
         key: "Clash Meta",
         value: "/sub/clash-meta"
     },
