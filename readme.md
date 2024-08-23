@@ -93,7 +93,7 @@
   | ShareLink 集合 (Base64) | ✅    | ✅    | `/sub/base64`     |
   | Clash Meta 配置         | ✅    | ✅    | `/sub/clash-meta` |
   | Clash 配置              | ✅    | ✅    | `/sub/clash`      |
-  | Sing-Box 配置           | 🚫    | 🚫    | -                 |
+  | Sing-Box 配置           | 🚫    | ✅    | `/sub/sing-box`   |
 
   Notes:
   
@@ -105,10 +105,4 @@
   - **內部除錯用格式**: 
   
     僅供除錯, 將會在未來的任意某個時間點做出破壞性改動或刪除.
-  
-  - **Sing-Box 配置**: 
-  
-    ~~世界很可愛, 請給世界錢~~. 
-  
-    目前暫無實現計劃, ~~因為我不會~~.
 
