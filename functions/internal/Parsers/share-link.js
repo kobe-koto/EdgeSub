@@ -7,7 +7,7 @@ export class ShareLinkParser {
             __Type: "http",
             __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
             Hostname: URIObject.hostname,
-            Port: URIObject.port,
+            Port: parseInt(URIObject.port),
             Auth: {
                 username: URIObject.username,
                 password: URIObject.password
@@ -20,7 +20,7 @@ export class ShareLinkParser {
             __Type: "socks5",
             __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
             Hostname: URIObject.hostname,
-            Port: URIObject.port,
+            Port: parseInt(URIObject.port),
             Auth: {
                 username: URIObject.username,
                 password: URIObject.password
@@ -35,7 +35,7 @@ export class ShareLinkParser {
             __Type: "hysteria",
             __Remark: decodeURIComponent(URLObject.hash.replace(/^#/, "")),
             Hostname: URLObject.hostname,
-            Port: URLObject.port,
+            Port: parseInt(URLObject.port),
             Query: __searchParamsMapper(URLObject.searchParams)
         }
         return HY;
@@ -48,7 +48,7 @@ export class ShareLinkParser {
             __Remark: decodeURIComponent(URLObject.hash.replace(/^#/, "")),
             Auth: URLObject.username,
             Hostname: URLObject.hostname,
-            Port: URLObject.port,
+            Port: parseInt(URLObject.port),
             Query: __searchParamsMapper(URLObject.searchParams)
         }
         return HY2;
@@ -63,7 +63,7 @@ export class ShareLinkParser {
             __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
             Auth: { uuid: URIObject.username, password: URIObject.password},
             Hostname: URIObject.hostname,
-            Port: URIObject.port,
+            Port: parseInt(URIObject.port),
             Query: __searchParamsMapper(URIObject.searchParams)
         }
         return TUIC;
@@ -76,7 +76,7 @@ export class ShareLinkParser {
             __Type: "vless",
             __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
             Hostname: URIObject.hostname,
-            Port: URIObject.port,
+            Port: parseInt(URIObject.port),
             Auth: URIObject.username,
             Query: __searchParamsMapper(URIObject.searchParams)
         }
@@ -94,7 +94,7 @@ export class ShareLinkParser {
             __Type: "vmess",
             __Remark: Remark,
             Hostname: VMessRawObject.add,
-            Port: VMessRawObject.port,
+            Port: parseInt(VMessRawObject.port),
             Auth: VMessRawObject.id,
         }
         delete VMessRawObject.ps
@@ -112,6 +112,8 @@ export class ShareLinkParser {
             }
         }
 
+        VMessRawObject.aid = parseInt(VMessRawObject.aid)
+
         VMess.Query = VMessRawObject;
 
         return VMess;
@@ -127,7 +129,7 @@ export class ShareLinkParser {
             __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
             Auth: { cipher: Auth[0], password: Auth[1] },
             Hostname: URIObject.hostname,
-            Port: URIObject.port
+            Port: parseInt(URIObject.port)
         }
         return SS;
     }
@@ -140,7 +142,7 @@ export class ShareLinkParser {
             __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
             Auth: URIObject.username,
             Hostname: URIObject.hostname,
-            Port: URIObject.port,
+            Port: parseInt(URIObject.port),
             Query: __searchParamsMapper(URIObject.searchParams)
         }
         return TROJAN;
