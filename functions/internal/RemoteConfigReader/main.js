@@ -9,20 +9,23 @@ export class RemoteConfigReader {
         this.RemoteConfig.URL = RemoteConfigURL;
         this.RemoteConfig.Type = RemoteConfigURL.split(".").slice(-1)[0].toLowerCase();
 
-        console.log(`Inputed remote config type: ${this.RemoteConfig.Type}`);
+        console.info(`[Remote Config Reader] Inputed remote config type: ${this.RemoteConfig.Type}`);
 
         if (this.RemoteConfig.Type in this.Reader) {
-            console.log("Inputed remote config type supported, ready to process")
             return true;
         } else {
-            console.warn("Inputed remote config type not supported, skipping.");
+            console.warn("[Remote Config Reader] [WARN] Inputed remote config type not supported, skipping.");
             return false;
         }
     }
 
     Process = async function (EdgeSubDB, isForcedRefresh) {
-        return this.Reader[this.RemoteConfig.Type](this.RemoteConfig.URL, EdgeSubDB, isForcedRefresh);
+        let __startTime = performance.now();
+        console.info(`[Remote Config Reader] Job started`);
+        const response = this.Reader[this.RemoteConfig.Type](this.RemoteConfig.URL, EdgeSubDB, isForcedRefresh);
         //let RawConfig = await fetchRemoteConfig(RemoteConfigURL, isForcedRefresh);
+        console.info(`[Remote Config Reader] Job done, wasting ${performance.now() - __startTime}ms`);
+        return response
     }
 
 }

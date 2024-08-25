@@ -11,17 +11,17 @@ import Yaml from "js-yaml";
  * @returns {Array}
  */
 export default async function getParsedSubData (SubURLs, headers = []) {
-    let timer = (new Date()).getTime();
-    console.log("▶️ [Info] Fetching Sub Data...")
+    let __startTime = performance.now();
+    console.info("[Fetch Sub Data] Job started")
 
     let SubURLArr = SubURLs.split("||").map(i => decodeURIComponent(i));
     let ParsedData = [];
     for (let i in SubURLArr) {
-        console.log(`▶️ [Info] Fetching Sub Data ${parseInt(i) + 1} of ${SubURLArr.length}`)
+        console.info(`[Fetch Sub Data] Fetching ${parseInt(i) + 1}/${SubURLArr.length}`)
         ParsedData = [...ParsedData, ...await ParseSubData(SubURLArr[i], headers)]
     }
 
-    console.log(`▶️ [Info] Fetching Sub Data done, wasting ${(new Date()).getTime() - timer}ms.`)
+    console.info(`[Fetch Sub Data] Job done, wasting ${performance.now() - __startTime}ms.`)
     return ParsedData;
 }
 async function ParseSubData (SubURL, headers = []) {

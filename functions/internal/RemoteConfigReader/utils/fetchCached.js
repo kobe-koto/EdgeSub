@@ -7,7 +7,7 @@ export async function fetchCached (URL, Prefix = "Cached", CacheDB, isForcedRefr
     let CachedData;
     if (!CacheDB) {
         CachedData = null;
-        console.info(`▶️ [Info] [fetchCached] - CacheDB is not configured, fetching.`)
+        console.info(`[fetchCached] - CacheDB is not configured, fetching.`)
     } else {
         if (isForcedRefresh) {
             CachedData = null;
@@ -21,7 +21,7 @@ export async function fetchCached (URL, Prefix = "Cached", CacheDB, isForcedRefr
         return CachedData;
     }
 
-    console.info(`▶️ [Info] [fetchCached] - "${CacheKey}" is not cached, fetching.`)
+    console.info(`[fetchCached] - "${CacheKey}" is not cached, fetching.`)
     // only when CachedData == falsy
     let data = await fetch (URL)
         .then(res => {

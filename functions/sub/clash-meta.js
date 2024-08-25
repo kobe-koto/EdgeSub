@@ -4,7 +4,6 @@ import Yaml from "js-yaml";
 
 
 export async function onRequest (context, isClashOriginal = false) {
-    const __startTime = (new Date()).getTime();
     const { request } = context;
     const URLObject = new URL(request.url);
     let Proxies = await getParsedSubData(URLObject.searchParams.get("url"), request.headers);
@@ -13,8 +12,7 @@ export async function onRequest (context, isClashOriginal = false) {
     if (isClashOriginal === true) {
         const ClashSupportedProxyType = ["trojan", "vmess", "ss", "ssr", "http", "socks5" /* "snell" */];
 
-        console.log("✅ It's a Clash Original Config request!, filtering out these: ")
-        console.log(ClashSupportedProxyType);
+        console.info(`[Main] It's a Clash Original Config request!, \nfiltering out these: ${ClashSupportedProxyType.join(", ")}`)
 
         // filter the proxies
         Proxies = Proxies.filter( i => ClashSupportedProxyType.includes(i.__Type) )
@@ -31,8 +29,6 @@ export async function onRequest (context, isClashOriginal = false) {
             isForcedRefresh: URLObject.searchParams.get("forced_refresh") === "true" ? true : false
         }
     )
-
-    console.log(`✅ [Info] [Main] [clash-meta] we've done this glory, totally wasting ${(new Date()).getTime() - __startTime}ms.`)
 
     return new Response(Yaml.dump(ClashMetaConfigObject), {
         status: 200,
