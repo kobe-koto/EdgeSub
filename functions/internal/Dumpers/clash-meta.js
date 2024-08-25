@@ -14,6 +14,14 @@ export default class Dumper {
 
     // __appendCommonField () {}
 
+    __validate (ProxyObject) {
+        if (!(ProxyObject.__Type in this)) {
+            console.warn(`[Dumper: Clash Meta] [WARN] ${ProxyObject.__Type} is not supported to dump, ignoring...`)
+            return false;
+        }
+        return true;
+    }
+
     http (HTTP) {
         return {
             name: HTTP.__Remark,

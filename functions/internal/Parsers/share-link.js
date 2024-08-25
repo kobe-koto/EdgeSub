@@ -1,6 +1,14 @@
 export class ShareLinkParser {
     constructor () {}
 
+    __validate (URI) {
+        if (!(URI.split(":")[0] in this)) {
+            console.warn(`[Parser: Share Link] [WARN] ${i.__Type} is not supported to parse, ignoring...`)
+            return false;
+        }
+        return true;
+    }
+
     http (URI) {
         let URIObject = new URL (URI);
         return {

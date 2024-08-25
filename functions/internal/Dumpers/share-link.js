@@ -3,7 +3,13 @@ export class ShareLinkDumper {
         return true;
     }
 
-
+    __validate (ProxyObject) {
+        if (!(ProxyObject.__Type in this)) {
+            console.warn(`[Dumper: Share Link] [WARN] ${ProxyObject.__Type} is not supported to dump, ignoring...`)
+            return false
+        }
+        return true;
+    }
 
     http (HTTP) {
         return `http://${HTTP.Auth.username}:${HTTP.Auth.password}@${HTTP.Hostname}:${HTTP.Port}/#${encodeURIComponent(HTTP.__Remark)}`;

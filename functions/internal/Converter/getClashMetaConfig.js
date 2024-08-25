@@ -36,16 +36,18 @@ export async function getClashMetaConfig (
 
     let ClashConfig = JSON.parse(JSON.stringify(BasicClashConfig))
 
-    // Append proxies.
-    ClashConfig.proxies = [];
-    for (let i of Proxies) {
-        let Dumper = new ClashMetaDumper()
-        if (Dumper[i.__Type]) {
-            ClashConfig.proxies.push(Dumper[i.__Type](i))
-        } else {
-            console.log(`${i.__Type} is not supported to dump.`)
+    let Dumper = new ClashMetaDumper()
+    
+    // validate proxies
+    Proxies = Proxies.map(i => {
+        if (Dumper.__validate(i)) {
+            return i;
         }
-    }
+    }).filter(i => !!i);
+    // append proxies
+    ClashConfig.proxies = Proxies.map(i => Dumper[i.__Type](i));
+
+    
 
     // Append proxy groups.
     ClashConfig["proxy-groups"] = []

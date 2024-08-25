@@ -69,23 +69,19 @@ async function ParseSubData (SubURL, headers = []) {
     let ParsedSubData = [];
     if (SubData.type === "share-link") {
         let links = SubData.data.replaceAll("\r", "\n").split("\n").filter(loc => !!loc);
+        let Parser = new ShareLinkParser();
         for (let i of links) {
             let protocol = i.split(":")[0];
-            let Parser = new ShareLinkParser()
-            if (Parser[protocol]) {
+            if (Parser.__validate(i)) {
                 ParsedSubData.push(Parser[protocol](i))
-            } else {
-                console.log(`${protocol} is not supported in share-link parser.`)
             }
         }
     } else if (SubData.type === "clash-meta") {
         let { proxies } = SubData.data;
         let Parser = new ClashMetaParser();
         for (let i of proxies) {
-            if (Parser[i.type]) {
+            if (Parser.__validate(i)) {
                 ParsedSubData.push(Parser[i.type](i))
-            } else {
-                console.log(`${i.type} is not supported in clash-meta parser.`)
             }
         }
     }

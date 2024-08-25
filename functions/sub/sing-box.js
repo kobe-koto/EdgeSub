@@ -1,7 +1,5 @@
 import { getSingBoxConfig } from "../internal/Converter/getSingBoxConfig.js";
 import getParsedSubData from "../internal/getParsedSubData.js";
-import Yaml from "js-yaml";
-
 
 export async function onRequest (context) {
     const __startTime = (new Date()).getTime();

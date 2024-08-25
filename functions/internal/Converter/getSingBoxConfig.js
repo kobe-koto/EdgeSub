@@ -1,19 +1,6 @@
 import { TrulyAssign } from "../utils/TrulyAssign";
 import SingBoxDumper from "../Dumpers/sing-box.js";
 
-// const BasicSingBoxConfig = {
-//     "port": 7890,
-//     "socks-port": 7891,
-//     "allow-lan": true,
-//     "mode": "Rule",
-//     "log-level": "info",
-//     "external-controller": ":9090",
-//     "dns": {
-//         "enabled": true,
-//         "nameserver": ["119.29.29.29", "223.5.5.5"],
-//         "fallback": ["8.8.8.8",  "8.8.4.4",  "tls://1.0.0.1:853",  "tls://dns.google:853"]
-//     }
-// };
 const BasicSingBoxConfig = {
     log: {
         disabled: false,
@@ -196,16 +183,20 @@ export async function getSingBoxConfig (
 
     }
 
-    // Append proxies.
-    // SingBoxConfig.outbounds = [];
-    for (let i of Proxies) {
-        let Dumper = new SingBoxDumper()
-        if (Dumper[i.__Type]) {
-            SingBoxConfig.outbounds.push(Dumper[i.__Type](i))
-        } else {
-            console.log(`${i.__Type} is not supported to dump.`)
+    let Dumper = new SingBoxDumper();
+    // validate proxies
+    Proxies = Proxies.map(i => {
+        if (Dumper.__validate(i)) {
+            return i;
         }
-    }
+    }).filter(i => !!i);
+    // append proxies
+    SingBoxConfig.outbounds = [
+        ...SingBoxConfig.outbounds, 
+        ...Proxies.map(i => Dumper[i.__Type](i))
+    ]
+
+    //todo tags
 
     // Append proxy groups.
     // SingBoxConfig.outbounds = []

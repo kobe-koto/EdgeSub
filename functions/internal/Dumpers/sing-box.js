@@ -2,17 +2,35 @@ export default class Dumper {
     config = {}
     constructor (
         UDP = true,
-        SkipCertVerify = true,
-        ClientFingerprint = "chrome"
+        SkipCertVerify = true
     ) {
         this.config.UDP = UDP;
         this.config.SkipCertVerify = SkipCertVerify;
-        this.config.ClientFingerprint = ClientFingerprint;
 
         return true;
     }
 
     // __appendCommonField () {}
+
+    __validate (ProxyObject) {
+        if (!(ProxyObject.__Type in this)) {
+            console.warn(`[Dumper: Sing Box] [WARN] ${ProxyObject.__Type} is not supported to dump, ignoring...`)
+            return false;
+        }
+        if (
+            ProxyObject.__Type in this && 
+            (
+                ProxyObject.__Type === "hysteria" ||
+                ProxyObject.__Type === "hysteria2" ||
+                ProxyObject.__Type === "hy2"
+            ) &&
+            ProxyObject.Query.mport
+        ) {
+            console.warn(`[Dumper: Sing Box] [WARN] ${ProxyObject.__Type} Port Hopping is not supported by sing-box, ignoring...`)
+            return false;
+        }
+        return true;
+    }
 
     http (HTTP) {
         return {
@@ -121,7 +139,6 @@ export default class Dumper {
     }
 
     vless (VLESS) {
-        console.log(VLESS)
         return {
             type: "vless",
             tag: VLESS.__Remark,
@@ -225,7 +242,6 @@ function __genRealityConfig (URIObject) {
     } : undefined;
 }
 function __genTransportConfig (URIObject) {
-    console.log(URIObject)
     const URITransportType = URIObject.Query.net || URIObject.Query.type;
 
     const PathObject = new URL(`path:${URIObject.Query.path}`);
