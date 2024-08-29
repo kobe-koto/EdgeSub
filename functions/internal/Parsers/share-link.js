@@ -130,16 +130,34 @@ export class ShareLinkParser {
     ss (URI) {
         let URIObject = new URL(URI);
 
-        let Auth = atob(decodeURIComponent(URIObject.username)).split(":");
+        // let's if we can decode host as base64 data
+        try {
+            let newURI = `ss://${atob(URIObject.host)}${URIObject.hash}`;
+            let newURIObject = new URL(newURI);
 
-        const SS = {
-            __Type: "ss",
-            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
-            Auth: { cipher: Auth[0], password: Auth[1] },
-            Hostname: URIObject.hostname,
-            Port: parseInt(URIObject.port)
+            const SS = {
+                __Type: "ss",
+                __Remark: decodeURIComponent(newURIObject.hash.replace(/^#/, "")),
+                Auth: { cipher: newURIObject.username, password: newURIObject.password },
+                Hostname: newURIObject.hostname,
+                Port: parseInt(newURIObject.port)
+            }
+            return SS;
+
+        } catch { // no its not
+            let Auth = atob(decodeURIComponent(URIObject.username)).split(":");
+
+            const SS = {
+                __Type: "ss",
+                __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+                Auth: { cipher: Auth[0], password: Auth[1] },
+                Hostname: URIObject.hostname,
+                Port: parseInt(URIObject.port)
+            }
+            return SS;
         }
-        return SS;
+
+
     }
 
     trojan (URI) {
