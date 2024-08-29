@@ -3,7 +3,7 @@ export class ShareLinkParser {
 
     __validate (URI) {
         if (!(URI.split(":")[0] in this)) {
-            console.warn(`[Parser: Share Link] [WARN] ${i.__Type} is not supported to parse, ignoring...`)
+            console.warn(`[Parser: Share Link] [WARN] ${URI.__Type} is not supported to parse, ignoring...`)
             return false;
         }
         return true;

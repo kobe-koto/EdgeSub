@@ -3,7 +3,7 @@ export class ClashMetaParser {
 
     __validate (ProxyObject) {
         if (!(ProxyObject.type in this)) {
-            console.warn(`[Parser: Clash Meta] [WARN] ${i.__Type} is not supported to parse, ignoring...`)
+            console.warn(`[Parser: Clash Meta] [WARN] ${ProxyObject.__Type} is not supported to parse, ignoring...`)
             return false;
         }
         return true;
