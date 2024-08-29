@@ -38,9 +38,50 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
 
     <code>https://OpenWrt.lan/luci/123" OR ""==" </code>
     <button id="generate">Generate</button>
+
+    <div id="shorted-data">
+
+        <h3>Short 设定</h3>
+
+        <div class="form-con" id="short-slug">
+            <label>Short ID</label>
+            <input placeholder="默认随机" />
+        </div>
+
+        <div class="form-con" id="short-password">
+            <label>Short 密码</label>
+            <input placeholder="默认随机" />
+        </div>
+
+        <code>请先提交</code>
+
+        <p>可将以上内容作为本程式内专用的 订阅链接</p>
+
+        <button id="shorter">Make it shorter.</button>
+    </div>
+
 </div>
 <script>
-import type { string } from "astro/zod";
+
+    document.querySelector("#shorter").addEventListener("click", async () => {
+        const subdata = document.querySelector(".contents #sub-url > textarea").value;
+        const backend = document.querySelector(".contents #backend > input").value || document.querySelector(".contents > #backend > input").dataset.defaultBackend;
+        let requestBody = {
+            subdata
+        }
+        let requestURL = new URL(backend);
+        requestURL.pathname = "/short/put";
+        let response = await fetch(requestURL, {
+            body: JSON.stringify(requestBody),
+            method: "POST"
+        }).then(res => {
+            if (res.status !== 200) throw "err";
+            return res.json()
+        }).catch( (err) => {
+            document.querySelector("#shorted-data code").innerText = "提交失败: " + err;
+        })
+        document.querySelector("#shorted-data code").innerText = `short:${response.slug}`;
+    })
 
 
     addEventListener("DOMContentLoaded", () => {
@@ -100,7 +141,7 @@ import type { string } from "astro/zod";
 
 
 <style lang="scss">
-    .contents {
+    .contents, .contents #shorted-data {
         padding: 24px 30px;
         display: flex;
         flex-wrap: wrap;

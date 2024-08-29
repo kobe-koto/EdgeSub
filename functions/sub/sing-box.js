@@ -4,7 +4,7 @@ import getParsedSubData from "../internal/getParsedSubData.js";
 export async function onRequest (context) {
     const { request } = context;
     const URLObject = new URL(request.url);
-    let Proxies = await getParsedSubData(URLObject.searchParams.get("url"), request.headers);
+    let Proxies = await getParsedSubData(URLObject.searchParams.get("url"), request.headers, context.env.EdgeSubDB);
 
     // a javascript object !!! not YAML !!!
     let ClashMetaConfigObject = await getSingBoxConfig (

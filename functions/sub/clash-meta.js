@@ -6,7 +6,7 @@ import Yaml from "js-yaml";
 export async function onRequest (context, isClashOriginal = false) {
     const { request } = context;
     const URLObject = new URL(request.url);
-    let Proxies = await getParsedSubData(URLObject.searchParams.get("url"), request.headers);
+    let Proxies = await getParsedSubData(URLObject.searchParams.get("url"), request.headers, context.env.EdgeSubDB);
     
     // process proxies if its a clash original request.
     if (isClashOriginal === true) {

@@ -10,7 +10,7 @@ import Yaml from "js-yaml";
  * @param {Array} headers 
  * @returns {Array}
  */
-export default async function getParsedSubData (SubURLs, headers = []) {
+export default async function getParsedSubData (SubURLs, headers = [], EdgeSubDB) {
     let __startTime = performance.now();
     console.info("[Fetch Sub Data] Job started")
 
@@ -18,26 +18,31 @@ export default async function getParsedSubData (SubURLs, headers = []) {
     let ParsedData = [];
     for (let i in SubURLArr) {
         console.info(`[Fetch Sub Data] Fetching ${parseInt(i) + 1}/${SubURLArr.length}`)
-        ParsedData = [...ParsedData, ...await ParseSubData(SubURLArr[i], headers)]
+        ParsedData = [...ParsedData, ...await ParseSubData(SubURLArr[i], headers, EdgeSubDB)]
     }
 
     console.info(`[Fetch Sub Data] Job done, wasting ${performance.now() - __startTime}ms.`)
     return ParsedData;
 }
-async function ParseSubData (SubURL, headers = []) {
+async function ParseSubData (SubURL, headers = [], EdgeSubDB) {
     let SubData;
 
     // handle raw share link (assume every string that dont starts with http(s|):// )
-    if (!SubURL.match(/^http(s|):\/\//i)) {
+    if (!SubURL.match(/^(short:|http(s|):\/\/)/i)) {
         SubData = {
             type: "share-link",
             data: SubURL
         }
     } else {
-        SubData = await fetch(SubURL, headers)
-            .then(res => res.text())
-            .then(res => res.trim())
-            .then(res => {
+        let FetchedSubData = 
+            (
+                SubURL.match(/^short:/i)
+                 ? await EdgeSubDB.get(SubURL).then(res => JSON.parse(res).subdata)
+                 : await fetch(SubURL, headers).then(res => res.text())
+            )
+            .trim();
+        SubData = 
+            (res => {
                 try {
                     let YamlData = Yaml.load(res);
                     if (YamlData.proxies) {
@@ -63,7 +68,7 @@ async function ParseSubData (SubURL, headers = []) {
                     type: "share-link",
                     data: res
                 }
-            });
+            })(FetchedSubData);
     }
 
     let ParsedSubData = [];
