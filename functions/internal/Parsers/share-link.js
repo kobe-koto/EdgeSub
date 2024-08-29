@@ -91,40 +91,60 @@ export class ShareLinkParser {
         return VLESS;
     }
     vmess (URI) {
-        let VMessRawObject = JSON.parse(atob(URI.replace(/^vmess:\/\//i, "")));
-        let Remark;
+        let URIObject = new URL(URI);
+        let VMessRawData = atob(URIObject.host);
         try {
-            Remark = decodeURIComponent(escape(VMessRawObject.ps))
-        } catch (e) {
-            Remark = VMessRawObject.ps
-        }
-        let VMess =  {
-            __Type: "vmess",
-            __Remark: Remark,
-            Hostname: VMessRawObject.add,
-            Port: parseInt(VMessRawObject.port),
-            Auth: VMessRawObject.id,
-        }
-        delete VMessRawObject.ps
-        delete VMessRawObject.add
-        delete VMessRawObject.port
-        delete VMessRawObject.id
+            let VMessRawObject = JSON.parse(VMessRawData);
 
-        // am i doing right...
-        delete VMessRawObject.v // assume its version 2
-
-        // delete all the empty fields
-        for (let i in VMessRawObject) {
-            if (!VMessRawObject[i]) {
-                delete VMessRawObject[i]
+            let Remark;
+            try {
+                Remark = decodeURIComponent(escape(VMessRawObject.ps))
+            } catch (e) {
+                Remark = VMessRawObject.ps
             }
+            let VMess =  {
+                __Type: "vmess",
+                __Remark: Remark,
+                Hostname: VMessRawObject.add,
+                Port: parseInt(VMessRawObject.port),
+                Auth: VMessRawObject.id,
+            }
+            delete VMessRawObject.ps
+            delete VMessRawObject.add
+            delete VMessRawObject.port
+            delete VMessRawObject.id
+
+            // am i doing right...
+            delete VMessRawObject.v // assume its version 2
+
+            // delete all the empty fields
+            for (let i in VMessRawObject) {
+                if (!VMessRawObject[i]) {
+                    delete VMessRawObject[i]
+                }
+            }
+
+            VMessRawObject.aid = parseInt(VMessRawObject.aid)
+
+            VMess.Query = VMessRawObject;
+
+            return VMess;
+        } catch (err) {
+            let StandardURIObj = new URL(`vmess://${VMessRawData}${URIObject.pathname}${URIObject.search}`)
+            let VMess =  {
+                //__Type: "vmess",
+                __Type: "vmess_shadowsocks-type",
+                __Remark: StandardURIObj.searchParams.get("remarks"),
+                Hostname: StandardURIObj.hostname,
+                Port: parseInt(StandardURIObj.port),
+                Auth: StandardURIObj.password,
+                Query: {
+                    aid: StandardURIObj.searchParams.get("alterId"),
+                    scy: StandardURIObj.username
+                }
+            }
+            return VMess
         }
-
-        VMessRawObject.aid = parseInt(VMessRawObject.aid)
-
-        VMess.Query = VMessRawObject;
-
-        return VMess;
     }
 
     ss (URI) {
