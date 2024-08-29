@@ -67,7 +67,9 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
         const subdata = document.querySelector(".contents #sub-url > textarea").value;
         const backend = document.querySelector(".contents #backend > input").value || document.querySelector(".contents > #backend > input").dataset.defaultBackend;
         let requestBody = {
-            subdata
+            subdata,
+            slug: document.querySelector(".contents #shorted-data #short-slug > input").value,
+            password: document.querySelector(".contents #shorted-data #short-password > input").value,
         }
         let requestURL = new URL(backend);
         requestURL.pathname = "/short/put";
@@ -81,6 +83,8 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
             document.querySelector("#shorted-data code").innerText = "提交失败: " + err;
         })
         document.querySelector("#shorted-data code").innerText = `short:${response.slug}`;
+        document.querySelector(".contents #shorted-data #short-slug > input").value = response.slug;
+        document.querySelector(".contents #shorted-data #short-password > input").value = response.password;
     })
 
 

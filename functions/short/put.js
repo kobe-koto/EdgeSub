@@ -6,11 +6,12 @@ export async function onRequestPost (context) {
     const defaultHeader = getDefaultHeader(url);
 
     const EdgeSubDB = context.env.EdgeSubDB;
-    const { 
-        slug = await generatePassword(8, EdgeSubDB),
-        password = await generatePassword(16),
-        subdata
-    } = await request.json();
+    let { slug, password, subdata } = await request.json();
+
+    if (!slug && !password) {
+        slug = await generatePassword(8, EdgeSubDB);
+        password = await generatePassword(16);
+    }
 
 
     let storedData = await EdgeSubDB.get(`short:${slug}`);
@@ -41,6 +42,7 @@ export async function onRequestPost (context) {
             status: 200,
             msg: "OK",
             slug,
+            password
         }), {
             status: 200,
             headers: defaultHeader
