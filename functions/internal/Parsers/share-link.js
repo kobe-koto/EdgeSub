@@ -119,7 +119,11 @@ export class ShareLinkParser {
 
             // delete all the empty fields
             for (let i in VMessRawObject) {
-                if (!VMessRawObject[i]) {
+                if (
+                    VMessRawObject[i] === "" || 
+                    VMessRawObject[i] === null || 
+                    VMessRawObject[i] === undefined
+                ) {
                     delete VMessRawObject[i]
                 }
             }
