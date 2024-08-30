@@ -143,7 +143,7 @@ export class ShareLinkParser {
                 Port: parseInt(StandardURIObj.port),
                 Auth: StandardURIObj.password,
                 Query: {
-                    aid: StandardURIObj.searchParams.get("alterId"),
+                    aid: parseInt(StandardURIObj.searchParams.get("alterId")),
                     scy: StandardURIObj.username
                 }
             }
