@@ -13,7 +13,7 @@ export class ShareLinkParser {
         let URIObject = new URL (URI);
         return {
             __Type: "http",
-            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
             Hostname: URIObject.hostname,
             Port: parseInt(URIObject.port),
             Auth: {
@@ -26,7 +26,7 @@ export class ShareLinkParser {
         let URIObject = new URL (URI);
         return {
             __Type: "socks5",
-            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
             Hostname: URIObject.hostname,
             Port: parseInt(URIObject.port),
             Auth: {
@@ -37,27 +37,27 @@ export class ShareLinkParser {
     }
     
     hysteria (HYURL) {
-        const URLObject = new URL (HYURL);
+        const URIObject = new URL (HYURL);
 
         const HY = {
             __Type: "hysteria",
-            __Remark: decodeURIComponent(URLObject.hash.replace(/^#/, "")),
-            Hostname: URLObject.hostname,
-            Port: parseInt(URLObject.port),
-            Query: __searchParamsMapper(URLObject.searchParams)
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
+            Hostname: URIObject.hostname,
+            Port: parseInt(URIObject.port),
+            Query: __searchParamsMapper(URIObject.searchParams)
         }
         return HY;
     }
     hysteria2 (HY2URL) {
-        const URLObject = new URL (HY2URL);
+        const URIObject = new URL (HY2URL);
 
         const HY2 = {
             __Type: "hysteria2",
-            __Remark: decodeURIComponent(URLObject.hash.replace(/^#/, "")),
-            Auth: URLObject.username,
-            Hostname: URLObject.hostname,
-            Port: parseInt(URLObject.port),
-            Query: __searchParamsMapper(URLObject.searchParams)
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
+            Auth: URIObject.username,
+            Hostname: URIObject.hostname,
+            Port: parseInt(URIObject.port),
+            Query: __searchParamsMapper(URIObject.searchParams)
         }
         return HY2;
     }
@@ -68,7 +68,7 @@ export class ShareLinkParser {
 
         const TUIC = {
             __Type: "tuic",
-            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
             Auth: { uuid: URIObject.username, password: URIObject.password},
             Hostname: URIObject.hostname,
             Port: parseInt(URIObject.port),
@@ -82,7 +82,7 @@ export class ShareLinkParser {
         let URIObject = new URL (URI);
         let VLESS = {
             __Type: "vless",
-            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
             Hostname: URIObject.hostname,
             Port: parseInt(URIObject.port),
             Auth: URIObject.username,
@@ -104,7 +104,7 @@ export class ShareLinkParser {
             }
             let VMess =  {
                 __Type: "vmess",
-                __Remark: Remark,
+                __Remark: Remark || `${VMessRawObject.add}:${VMessRawObject.port}`,
                 Hostname: VMessRawObject.add,
                 Port: parseInt(VMessRawObject.port),
                 Auth: VMessRawObject.id,
@@ -138,7 +138,7 @@ export class ShareLinkParser {
             let VMess =  {
                 //__Type: "vmess",
                 __Type: "vmess_shadowsocks-type",
-                __Remark: StandardURIObj.searchParams.get("remarks"),
+                __Remark: StandardURIObj.searchParams.get("remarks") || StandardURIObj.host,
                 Hostname: StandardURIObj.hostname,
                 Port: parseInt(StandardURIObj.port),
                 Auth: StandardURIObj.password,
@@ -161,7 +161,7 @@ export class ShareLinkParser {
 
             const SS = {
                 __Type: "ss",
-                __Remark: decodeURIComponent(newURIObject.hash.replace(/^#/, "")),
+                __Remark: decodeURIComponent(newURIObject.hash.replace(/^#/, "")) || newURIObject.host,
                 Auth: { cipher: newURIObject.username, password: newURIObject.password },
                 Hostname: newURIObject.hostname,
                 Port: parseInt(newURIObject.port)
@@ -173,7 +173,7 @@ export class ShareLinkParser {
 
             const SS = {
                 __Type: "ss",
-                __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+                __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
                 Auth: { cipher: Auth[0], password: Auth[1] },
                 Hostname: URIObject.hostname,
                 Port: parseInt(URIObject.port)
@@ -189,7 +189,7 @@ export class ShareLinkParser {
 
         const TROJAN = {
             __Type: "trojan",
-            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")),
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
             Auth: URIObject.username,
             Hostname: URIObject.hostname,
             Port: parseInt(URIObject.port),
