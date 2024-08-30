@@ -152,35 +152,30 @@ export class ShareLinkParser {
     }
 
     ss (URI) {
-        let URIObject = new URL(URI);
+        let StandardURI = (URI => {
+            let URIObject = new URL(URI);
+            try {
+                // base64-encoded cipher:uuid@host:port
+                return `ss://${encodeURIComponent(atob(decodeURIComponent(URIObject.host))).replace(/\%3A/gi,":").replace(/\%40/gi,"@")}${URIObject.search}${URIObject.hash}`;
+            } catch (e) {}
+            try {
+                // base64-encoded cipher:uuid
+                return `ss://${encodeURIComponent(atob(decodeURIComponent(URIObject.username))).replace(/\%3A/i,":")}@${URIObject.host}${URIObject.search}${URIObject.hash}`;
+            } catch (e) {}
+            // plain
+            return URI;
+        })(URI)
+        
+        let URIObject = new URL(StandardURI);
+        
 
-        // let's if we can decode host as base64 data
-        try {
-            let newURI = `ss://${atob(URIObject.host)}${URIObject.hash}`;
-            let newURIObject = new URL(newURI);
-
-            const SS = {
-                __Type: "ss",
-                __Remark: decodeURIComponent(newURIObject.hash.replace(/^#/, "")) || newURIObject.host,
-                Auth: { cipher: newURIObject.username, password: newURIObject.password },
-                Hostname: newURIObject.hostname,
-                Port: parseInt(newURIObject.port)
-            }
-            return SS;
-
-        } catch { // no its not
-            let Auth = atob(decodeURIComponent(URIObject.username)).split(":");
-
-            const SS = {
-                __Type: "ss",
-                __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
-                Auth: { cipher: Auth[0], password: Auth[1] },
-                Hostname: URIObject.hostname,
-                Port: parseInt(URIObject.port)
-            }
-            return SS;
+        return {
+            __Type: "ss",
+            __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
+            Auth: { cipher: decodeURIComponent(URIObject.username), password: decodeURIComponent(URIObject.password) },
+            Hostname: URIObject.hostname,
+            Port: parseInt(URIObject.port)
         }
-
 
     }
 
