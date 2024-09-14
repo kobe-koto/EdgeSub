@@ -137,16 +137,15 @@ export class ShareLinkParser {
             let StandardURIObj = new URL(`vmess://${VMessRawData}${URIObject.pathname}${URIObject.search}`)
             let VMess =  {
                 //__Type: "vmess",
-                __Type: "vmess_shadowsocks-type",
+                __Type: "vmess__shadowsocks_type",
                 __Remark: StandardURIObj.searchParams.get("remarks") || StandardURIObj.host,
                 Hostname: StandardURIObj.hostname,
                 Port: parseInt(StandardURIObj.port),
                 Auth: StandardURIObj.password,
-                Query: {
-                    aid: parseInt(StandardURIObj.searchParams.get("alterId")),
-                    scy: StandardURIObj.username
-                }
+                Query: __searchParamsMapper(URIObject.searchParams)
             }
+            delete VMess.Query.remarks
+            if (VMess.Query.obfs === "websocket") { VMess.Query.obfs = "ws" }
             return VMess
         }
     }

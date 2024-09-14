@@ -29,6 +29,10 @@ export default class Dumper {
             console.warn(`[Dumper: Sing Box] [WARN] ${ProxyObject.__Type} Port Hopping is not supported by sing-box, ignoring...`)
             return false;
         }
+        if (ProxyObject.__Type === "vmess__shadowsocks_type" && ProxyObject.Query.obfs === "none") {
+            console.warn(`[Dumper: Sing Box] [WARN] ${ProxyObject.__Type} TCP-Transport is not supported by sing-box, ignoring...`)
+            return false;
+        }
         return true;
     }
 
@@ -163,6 +167,47 @@ export default class Dumper {
             //"multiplex: {},
             transport: __genTransportConfig(VLESS)
 
+        }
+    }
+    vmess__shadowsocks_type (VMess) {
+
+        let URITransportType = URIObject.Query.obfs;
+        const PathObject = new URL(`path:${URIObject.Query.path}`);
+
+        return {
+            type: "vmess",
+            tag: VMess.__Remark,
+            server: VMess.Hostname,
+            server_port: VMess.Port,
+            uuid: VMess.Auth,
+            security: "auto",
+            alter_id: parseInt(VMess.Query.alterId),
+
+            tls: VMess.Query.sni === "1" ? {
+                enabled: true,
+                server_name: VMess.Query.peer,
+                insecure: this.config.SkipCertVerify,
+            } : undefined,
+            //"multiplex: {},
+            transport: {
+                type: URITransportType,
+
+                // http
+                headers: { 
+                    Host: 
+                        (URITransportType !== "quic" && URITransportType !== "grpc")
+                        ? URIObject.Query.obfsParam
+                        : undefined,
+                },
+                path: URITransportType !== "grpc" ? PathObject.path : undefined,
+
+                // max early data
+                early_data_header_name: PathObject.searchParams.has("ed") ? "Sec-WebSocket-Protocol" : undefined,
+                max_early_data: PathObject.searchParams.has("ed") ? parseInt(PathObject.searchParams.get("ed")) : undefined,
+
+                // grpc
+                service_name: URITransportType === "grpc" ? ( URIObject.Query.path ) : undefined,
+            }
         }
     }
     vmess (VMESS) {

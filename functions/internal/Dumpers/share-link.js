@@ -44,6 +44,23 @@ export class ShareLinkDumper {
 
         return `vmess://${btoa(JSON.stringify(VMESSObj))}`
     }
+    vmess__shadowsocks_type (Obj) {
+        let VMESSObj = {
+            ps: unescape(encodeURIComponent(Obj.__Remark)) ,
+            add: Obj.Hostname,
+            port: Obj.Port,
+            id: Obj.Auth,
+            //...Obj.Query,
+            aid: Obj.Query.alterId,
+            scy: "auto",
+            net: Obj.Query.obfs,
+            tls: Obj.Query.tls === "1" ? "tls" : undefined,
+            sni: Obj.Query.peer,
+            host: Obj.Query.obfsParam,
+            path: Obj.Query.path
+        }
+        return `vmess://${btoa(JSON.stringify(VMESSObj))}`
+    }
 
     ss (Obj) {
         return `ss://${encodeURIComponent(btoa(`${Obj.Auth.cipher}:${Obj.Auth.password}`))}@${Obj.Hostname}:${Obj.Port}/#${encodeURIComponent(Obj.__Remark)}`

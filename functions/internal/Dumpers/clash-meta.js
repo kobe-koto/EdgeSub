@@ -212,6 +212,52 @@ export default class Dumper {
             // authenticated-length
         }
     }
+    vmess__shadowsocks_type (VMESS) {
+        return {
+            name: VMESS.__Remark,
+            type: "vmess",
+            server: VMESS.Hostname,
+            port: VMESS.Port,    
+            uuid: VMESS.Auth,
+            alterId: parseInt(VMESS.Query.alterId),
+            cipher: "auto",
+            network: VMESS.Query.obfs,
+            
+
+            // tls
+            tls: VMESS.Query.tls === "1",
+            servername: VMESS.Query.peer,
+
+            // transport layer config
+            "ws-opts": VMESS.Query.obfs === "ws" ? {
+                path: VMESS.Query.path,
+                headers: VMESS.Query.obfsParam ? {
+                    "Host": VMESS.Query.obfsParam
+                } : undefined,
+                //max-early-data
+                //early-data-header-name
+                //v2ray-http-upgrade
+                //v2ray-http-upgrade-fast-open
+            } : undefined,
+            "grpc-opts": VMESS.Query.obfs === "grpc" ? {
+                "grpc-service-name": VMESS.Query.path
+            } : undefined,
+            "http-opts": VMESS.Query.obfs === "http" ? {
+                //method: VMESS.Query.method,
+                path: VMESS.Query.path,
+                headers: {
+                    Host: VMESS.Query.obfsParam
+                }
+            } : undefined,
+
+            "skip-cert-verify": this.config.SkipCertVerify,
+            udp: this.config.UDP,
+
+            // packet-encoding
+            // global-padding
+            // authenticated-length
+        }
+    }
 
     ss (SS) {
         return {
