@@ -103,8 +103,8 @@ export class ClashMetaParser {
 
                 // reality
                 security: !!Obj["reality-opts"] ? "reality": undefined,
-                pbk: Obj["public-key"],
-                sid: Obj["short-id"],
+                pbk: (Obj["reality-opts"] || {})["public-key"],
+                sid: (Obj["reality-opts"] || {})["short-id"],
 
                 
                 // transport layer config
