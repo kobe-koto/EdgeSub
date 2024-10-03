@@ -1,4 +1,9 @@
-export const RemoteConfigs = [
+type RemoteConfig = {
+    key: string;
+    value: string | URL;
+}
+
+export const RemoteConfigs: RemoteConfig[] = [
     {
         key: "ACL_默认版",
         value: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online.ini"

@@ -1,17 +1,9 @@
 ---
-import "@styles/index.scss"
 import Base from "@layouts/base.astro";
-import Title from "@components/index/Title.astro";
-import Main from "@components/index/main.astro"
+import SubURLGenerator from "@components/index/SubURLGenerator.astro";
+import KShorter from "@components/index/k-shorter.astro";
 ---
-
 <Base>
-    <div class="main-card-con">
-        <div class="main-card">
-            <Title />
-            <Main />
-        </div>
-    </div>
+    <SubURLGenerator />
+    <KShorter />
 </Base>
-
-

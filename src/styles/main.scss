@@ -4,3 +4,17 @@ body {
     margin: 0;
     font-family: "Roboto", sans-serif, system-ui;
 }
+button {
+    width: 100%;
+    border: none;
+    background-color: #bbc5e8;
+    color: #25304c;
+    padding: 12px 18px;
+    border-radius: 25px;
+}
+code {
+    background-color: #1f2229;
+    padding: 12px 18px;
+    border-radius: 8px;
+    word-break: break-all;
+}

@@ -2,9 +2,11 @@
 import "@styles/components/k-dropdown.scss";
 import { Icon } from "astro-icon/components";
 
+export type DropdownItemPrototype = { key: string, value: string };
+
 interface Props {
-    Items: any[];
-    Default?: any;
+    Items: DropdownItemPrototype[];
+    Default?: DropdownItemPrototype;
 }
 const {
     Items,
@@ -28,7 +30,4 @@ const {
     </div>
 </k-dropdown>
 
-<script>
-    import { Dropdown } from "@scripts/components/k-dropdown";
-    customElements.define("k-dropdown", Dropdown);
-</script>
+<script src="@scripts/components/k-dropdown"></script>

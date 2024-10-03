@@ -1,0 +1,30 @@
+---
+import KForm from "@components/k-form.astro";
+---
+
+<k-shorter class="flex-contents">
+
+    <h3>Shorter 设定</h3>
+
+    <KForm
+        slug="short-slug"
+        desc="Short ID"
+        detail="默认随机"
+        type="input"
+    />
+    <KForm
+        slug="short-password"
+        desc="Short 密码"
+        detail="默认随机"
+        type="input"
+    />
+
+    <code>请先提交</code>
+
+    <p>可将以上内容作为本程式内专用的 订阅链接</p>
+
+    <button id="shorter">Make it shorter.</button>
+</k-shorter>
+
+
+<script src="@scripts/components/k-shorter"></script>

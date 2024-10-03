@@ -27,9 +27,9 @@ export default defineConfig({
         }),
         icon()
     ],
-    vite: {
-        esbuild: {
-            drop: ["console", "debugger"],
-        },
-    },
+    // vite: {
+    //     esbuild: {
+    //         drop: ["console", "debugger"],
+    //     },
+    // },
 });

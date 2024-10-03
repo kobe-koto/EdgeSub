@@ -14,6 +14,16 @@
     }
 }
 
+.contents {
+    padding: 24px 30px;
+}
+.flex-contents {
+    display: flex;
+    flex-wrap: wrap;
+    flex-flow: column;
+    gap: 12px
+}
+
 @media screen and (max-width: 512px) {
     .main-card-con {
         padding: 0;

@@ -1,0 +1,33 @@
+k-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    label {
+        margin-bottom: 0.125rem;
+        white-space: nowrap;
+        &::before {
+            content: "";
+            display: inline-block;
+            height: 14px;
+            width: 4px;
+            background-color: #7fffd4;
+            margin: auto 0;
+            border-radius: 10px;
+            margin-right: 8px;
+            margin-bottom: -0.075rem;
+        }
+    }
+    textarea {
+        @extend input;
+        resize: none;
+        height: 75px;
+    }
+    input {
+        width: 100%;
+        border: none;
+        background-color: #bbc5e8;
+        color: #25304c;
+        padding: 12px 18px;
+        border-radius: 25px;
+    }
+}

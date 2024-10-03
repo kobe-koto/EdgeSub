@@ -1,0 +1,59 @@
+---
+import Spliter from "@components/spliter.astro";
+import KForm from "@components/k-form.astro";
+import type { DropdownItemPrototype } from "@components/k-dropdown.astro";
+import { RemoteConfigs } from "@config/RemoteConfigs.js";
+import { Endpoints } from "@config/AvalibleOptoutFormat.js"
+---
+
+<k-suburl-generator data-endpoints={JSON.stringify(Endpoints)} class="flex-contents">
+    <KForm
+        slug="SubURL"
+        desc="订阅链接"
+        detail="仅支持 http(s):// 和 short: 开头的订阅链接, 类似于 vless:// 开头的分享链接。以换行分割。"
+        type="textarea"
+    />
+    <KForm
+        slug="Backend"
+        desc="后端地址"
+        detail="默认为当前站点"
+        type="input"
+    />
+    <KForm
+        slug="Endpoint"
+        desc="输出格式"
+        type="k-dropdown"
+        DropdownDefault={{ key: "Clash Meta (默认)", value: "/sub/clash-meta" }}
+        DropdownItems={Endpoints/* .map(i=> {delete i.ExtendConfig; return i}) */ as DropdownItemPrototype[]}
+    />
+
+
+    <KForm
+        slug="RemoteConfig"
+        desc="远程配置"
+        type="k-dropdown"
+        DropdownDefault={{ key: "最小配置 (默认)", value: "__DEFAULT__" }}
+        DropdownItems={RemoteConfigs as DropdownItemPrototype[]}
+    />
+    <KForm
+        slug="RemoteConfigUserspec"
+        desc="自订远程配置(可选)"
+        detail="目前只支持 ini 格式远程配置的解析, 且可能并不完善."
+        type="input"
+    />
+    <KForm
+        slug="isUDP"
+        desc="开启 UDP (SS 使用 UoT)"
+        type="k-switch"
+        SwitchDefault={true}
+    />
+        
+    <Spliter />
+
+    <code>https://OpenWrt.lan/luci/123" OR ""==" </code>
+
+    <button id="generate">Generate</button>
+
+</k-suburl-generator>
+
+<script src="@scripts/components/k-suburl-generator.ts"></script>
