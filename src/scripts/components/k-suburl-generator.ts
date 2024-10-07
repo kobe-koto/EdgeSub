@@ -7,6 +7,7 @@ class SubURLGenerator extends HTMLElement {
     constructor () {
         super()
         this.GenerateButton.addEventListener("click", () => {this.CheckAndGenerate()});
+        this.CopyButton.addEventListener("click", () => {this.CopyURL()});
         this.BasicConfigElement.Endpoint.querySelector("k-dropdown").addEventListener("DropdownSelect", (event: CustomEvent) => {this.ChangeEndpoint(event)});
         document.body.dataset.defaultBackend = this.defaultBackend;
         customElements.whenDefined("k-form").then(() => {
@@ -15,6 +16,7 @@ class SubURLGenerator extends HTMLElement {
         })
     }
     GenerateButton = this.querySelector("button#generate") as HTMLButtonElement;
+    CopyButton = this.querySelector("button#copy") as HTMLButtonElement;
     MsgBlock = this.querySelector("code") as HTMLElement;
     BasicConfigElement = {
         SubURL: this.querySelector("k-form#SubURL") as Form,
@@ -100,6 +102,18 @@ class SubURLGenerator extends HTMLElement {
         Config.RemoteConfig && URLObj.searchParams.append("remote_config", Config.RemoteConfig)
         Config.isUDP && URLObj.searchParams.append("udp", Config.isUDP)
         return URLObj.toString();
+    }
+    CopyURL () {
+        if (!navigator.clipboard) {
+            alert("navigator.clipboard API not found on your drowser")
+            return;
+        }
+        let URLtoCopy = this.MsgBlock.innerText;
+        navigator.clipboard.writeText(URLtoCopy).then( () => {
+            alert("已将连接复制到剪贴板");
+        }).catch(function(err) {
+            alert(`err: ${err}`);
+        });
     }
 }
 

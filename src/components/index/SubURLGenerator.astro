@@ -1,6 +1,7 @@
 ---
 import Spliter from "@components/spliter.astro";
 import KForm from "@components/k-form.astro";
+import { Icon } from "astro-icon/components";
 import type { DropdownItemPrototype } from "@components/k-dropdown.astro";
 import { RemoteConfigs } from "@config/RemoteConfigs.js";
 import { Endpoints } from "@config/AvalibleOptoutFormat.js"
@@ -52,8 +53,18 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
 
     <code>https://OpenWrt.lan/luci/123" OR ""==" </code>
 
-    <button id="generate">Generate</button>
+    <div class="botton-con">
+        <button id="generate"><Icon name="iconoir:refresh-circle" />  Generate</button>
+        <button id="copy"><Icon name="iconoir:copy" />  Copy</button>
+    </div>
 
 </k-suburl-generator>
 
 <script src="@scripts/components/k-suburl-generator.ts"></script>
+
+<style lang="scss">
+    .botton-con {
+        display: flex;
+        gap: 8px;
+    }
+</style>
