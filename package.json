@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "license": "AGPL-3",
   "author": "kobe-koto",
-  "homepage": "https://github.com/kobe-koto/Edge-Sub",
+  "homepage": "https://github.com/kobe-koto/EdgeSub",
   "scripts": {
     "dev": "wrangler pages dev ./",
     "dev:frontend": "astro dev",
