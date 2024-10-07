@@ -11,15 +11,15 @@
     "build:frontend": "astro build"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.1.6",
-    "@iconify-json/iconoir": "^1.1.46",
-    "astro": "^4.14.2",
+    "@astrojs/sitemap": "^3.2.0",
+    "@iconify-json/iconoir": "^1.2.1",
+    "astro": "^4.15.11",
     "astro-compress": "^2.3.1",
     "astro-icon": "^1.1.1",
     "astro-seo": "^0.8.4",
     "generate-password": "^1.7.1",
-    "ini": "^4.1.3",
+    "ini": "^5.0.0",
     "js-yaml": "^4.1.0",
-    "sass": "^1.77.8"
+    "sass": "^1.79.4"
   }
 }
