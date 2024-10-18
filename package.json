@@ -21,5 +21,8 @@
     "ini": "^5.0.0",
     "js-yaml": "^4.1.0",
     "sass": "^1.79.4"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9"
   }
 }

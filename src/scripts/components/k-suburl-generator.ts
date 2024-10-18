@@ -54,7 +54,7 @@ class SubURLGenerator extends HTMLElement {
     }
     CheckAndGenerate () {
         const BasicConfig = {
-            SubURL: this.BasicConfigElement.SubURL.get().replaceAll("\r", "\n").split("\n").filter((i: string) => !!i).map(i => encodeURIComponent(i.trim())).join("||"),
+            SubURL: this.BasicConfigElement.SubURL.get(),
             Backend: this.BasicConfigElement.Backend.get() || this.defaultBackend,
             Endpoint: this.BasicConfigElement.Endpoint.get(),
         }
