@@ -13,15 +13,28 @@ type SubURLArr = SubURL[]; // usually it is some SubURLs squeeze into a Array.
  * 
  * @returns {Array}
  */
-export default async function getParsedSubData (SubURLs: SubURLs, headers = [] as unknown as Headers, EdgeSubDB) {
+export default async function getParsedSubData (
+    SubURLs: SubURLs, 
+    headers = [] as unknown as Headers, 
+    EdgeSubDB, 
+    isShowHost = false as boolean
+) {
     let __startTime = performance.now();
     console.info("[Fetch Sub Data] Job started")
+    console.info(`[Fetch Sub Data] isShowHost: ${isShowHost.toString()}`)
 
     let SubURLArr = decodeURIComponent(SubURLs).replaceAll("\r", "\n").split("\n").filter((i) => !!i).map(i => encodeURIComponent(i.trim())).map(i => decodeURIComponent(i)) as SubURLArr;
     let ParsedData = [];
     for (let i in SubURLArr) {
         console.info(`[Fetch Sub Data] Fetching ${parseInt(i) + 1}/${SubURLArr.length}`)
         ParsedData = [...ParsedData, ...(await ParseSubData(SubURLArr[i], headers, EdgeSubDB))]
+    }
+
+    if (isShowHost === true) {
+        ParsedData = ParsedData.map(i => {
+            i.__Remark = `${i.__Remark} - ${i.Hostname}:${i.Port}`
+            return i;
+        })
     }
 
     console.info(`[Fetch Sub Data] Job done, wasting ${performance.now() - __startTime}ms.`)

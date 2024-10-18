@@ -22,6 +22,7 @@ class SubURLGenerator extends HTMLElement {
         SubURL: this.querySelector("k-form#SubURL") as Form,
         Backend: this.querySelector("k-form#Backend") as Form,
         Endpoint: this.querySelector("k-form#Endpoint") as Form,
+        isShowHost: this.querySelector("k-form#isShowHost") as Form,
     }
     ExtendConfigElement = {
         RemoteConfigUserspec: this.querySelector("k-form#RemoteConfigUserspec") as Form,
@@ -57,6 +58,7 @@ class SubURLGenerator extends HTMLElement {
             SubURL: this.BasicConfigElement.SubURL.get(),
             Backend: this.BasicConfigElement.Backend.get() || this.defaultBackend,
             Endpoint: this.BasicConfigElement.Endpoint.get(),
+            isShowHost: this.BasicConfigElement.isShowHost.get()
         }
         const ExtendConfig = {
             RemoteConfig: this.ExtendConfigElement.RemoteConfigUserspec.get() || this.ExtendConfigElement.RemoteConfig.get(),
@@ -91,7 +93,7 @@ class SubURLGenerator extends HTMLElement {
 
     }
 
-    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; }) {
+    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; isShowHost: any }) {
         console.log(Config)
         let URLObj = new URL(Config.Backend);
         URLObj.pathname = Config.Endpoint;
@@ -100,7 +102,8 @@ class SubURLGenerator extends HTMLElement {
 
         URLObj.searchParams.append("url", Config.SubURL)
         Config.RemoteConfig && URLObj.searchParams.append("remote_config", Config.RemoteConfig)
-        Config.isUDP && URLObj.searchParams.append("udp", Config.isUDP)
+        Config.isUDP && URLObj.searchParams.append("udp", Config.isUDP.toString())
+        Config.isShowHost && URLObj.searchParams.append("show_host", Config.isShowHost.toString())
         return URLObj.toString();
     }
     CopyURL () {

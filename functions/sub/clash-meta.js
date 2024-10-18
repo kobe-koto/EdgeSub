@@ -6,7 +6,12 @@ import Yaml from "js-yaml";
 export async function onRequest (context, isClashOriginal = false) {
     const { request } = context;
     const URLObject = new URL(request.url);
-    let Proxies = await getParsedSubData(URLObject.searchParams.get("url"), request.headers, context.env.EdgeSubDB);
+    let Proxies = await getParsedSubData(
+        URLObject.searchParams.get("url"), 
+        request.headers, 
+        context.env.EdgeSubDB, 
+        URLObject.searchParams.get("show_host") === "true"
+    );
     
     // process proxies if its a clash original request.
     if (isClashOriginal === true) {
@@ -23,7 +28,7 @@ export async function onRequest (context, isClashOriginal = false) {
         Proxies,
         context.env.EdgeSubDB,
         {
-            isUDP: URLObject.searchParams.get("udp") === "false" ? false : true,
+            isUDP: URLObject.searchParams.get("udp") === "true",
             isInsecure: true,
             RemoteConfig: URLObject.searchParams.get("remote_config") || "__DEFAULT__",
             isForcedRefresh: URLObject.searchParams.get("forced_refresh") === "true" ? true : false
