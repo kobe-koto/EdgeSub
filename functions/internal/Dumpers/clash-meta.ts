@@ -1,5 +1,11 @@
+import type { RealityConfig, TransportGRPC, TransportH2, TransportHTTP, TransportWS } from "../types/ClashMetaConfig";
+
 export default class Dumper {
-    config = {}
+    config = {
+        UDP: true,
+        SkipCertVerify: true,
+        ClientFingerprint: "chrome"
+    }
     constructor (
         UDP = true,
         SkipCertVerify = true,
@@ -9,7 +15,7 @@ export default class Dumper {
         this.config.SkipCertVerify = SkipCertVerify;
         this.config.ClientFingerprint = ClientFingerprint;
 
-        return true;
+        return this;
     }
 
     // __appendCommonField () {}
@@ -91,8 +97,6 @@ export default class Dumper {
             password: TUIC.Auth.password,
             alpn: TUIC.Query.alpn ? [ TUIC.Query.alpn ] : undefined,
             "disable-sni": !!parseInt(TUIC.Query.disable_sni),
-            "reduce-rtt": true,        // default
-            "request-timeout": 8000,   // default
             "udp-relay-mode": TUIC.Query.udp_relay_mode,
             "congestion-controller": TUIC.Query.congestion_control,
             "skip-cert-verify": this.config.SkipCertVerify,
@@ -118,36 +122,13 @@ export default class Dumper {
             "client-fingerprint": VLESS.Query.fp,
             network: VLESS.Query.type,
 
-            "reality-opts": VLESS.Query.security === "reality" ? {
-                "public-key": VLESS.Query.pbk,
-                "short-id": VLESS.Query.sid
-            } : undefined,
+            "reality-opts": __genRealityConfig(VLESS),
 
             // transport layer config
-            "ws-opts": VLESS.Query.type === "ws" ? {
-                "path": VLESS.Query.path,
-                "max-early-data": VLESS.Query.ed,
-                "early-data-header-name": VLESS.Query.eh,
-                headers: VLESS.Query.host ? {
-                    "Host": VLESS.Query.host
-                } : undefined,
-                //v2ray-http-upgrade
-                //v2ray-http-upgrade-fast-open
-            } : undefined,
-            "grpc-opts": VLESS.Query.type === "grpc" ? {
-                "grpc-service-name": VLESS.Query.serviceName
-            } : undefined,
-            "h2-opts": VLESS.Query.type === "h2" ? {
-                host: VLESS.Query.host,
-                path: VLESS.Query.path,
-            } : undefined,
-            "http-opts": VLESS.Query.type === "http" ? {
-                method: VLESS.Query.method,
-                path: VLESS.Query.path ? [ VLESS.Query.path ] : undefined,
-                headers: VLESS.Query.host ? {
-                    "Host": VLESS.Query.host
-                } : undefined,
-            } : undefined,
+            "ws-opts": __genTransportWS(VLESS),
+            "grpc-opts": __genTransportGRPC(VLESS),
+            "h2-opts": __genTransportH2(VLESS),
+            "http-opts": __genTransportHTTP(VLESS),
 
             udp: this.config.UDP,
             "skip-cert-verify": this.config.SkipCertVerify,
@@ -179,30 +160,10 @@ export default class Dumper {
             // },
 
             // transport layer config
-            "ws-opts": VMESS.Query.net === "ws" ? {
-                path: VMESS.Query.path,
-                headers: VMESS.Query.host ? {
-                    "Host": VMESS.Query.host
-                } : undefined,
-                //max-early-data
-                //early-data-header-name
-                //v2ray-http-upgrade
-                //v2ray-http-upgrade-fast-open
-            } : undefined,
-            "grpc-opts": VMESS.Query.net === "grpc" ? {
-                "grpc-service-name": VMESS.Query.path
-            } : undefined,
-            "h2-opts": VMESS.Query.net === "h2" ? {
-                host: VMESS.Query.host,
-                path: VMESS.Query.path,
-            } : undefined,
-            "http-opts": VMESS.Query.net === "http" ? {
-                //method: VMESS.Query.method,
-                path: VMESS.Query.path,
-                headers: {
-                    Host: VMESS.Query.host
-                }
-            } : undefined,
+            "ws-opts": __genTransportWS(VMESS),
+            "grpc-opts": __genTransportGRPC(VMESS),
+            "h2-opts": __genTransportH2(VMESS),
+            "http-opts": __genTransportHTTP(VMESS),
 
             "skip-cert-verify": this.config.SkipCertVerify,
             udp: this.config.UDP,
@@ -229,26 +190,10 @@ export default class Dumper {
             servername: VMESS.Query.peer,
 
             // transport layer config
-            "ws-opts": VMESS.Query.obfs === "ws" ? {
-                path: VMESS.Query.path,
-                headers: VMESS.Query.obfsParam ? {
-                    "Host": VMESS.Query.obfsParam
-                } : undefined,
-                //max-early-data
-                //early-data-header-name
-                //v2ray-http-upgrade
-                //v2ray-http-upgrade-fast-open
-            } : undefined,
-            "grpc-opts": VMESS.Query.obfs === "grpc" ? {
-                "grpc-service-name": VMESS.Query.path
-            } : undefined,
-            "http-opts": VMESS.Query.obfs === "http" ? {
-                //method: VMESS.Query.method,
-                path: VMESS.Query.path,
-                headers: {
-                    Host: VMESS.Query.obfsParam
-                }
-            } : undefined,
+            "ws-opts": __genTransportWS(VMESS),
+            "grpc-opts": __genTransportGRPC(VMESS),
+            "http-opts": __genTransportHTTP(VMESS),
+            "h2-opts": __genTransportH2(VMESS),
 
             "skip-cert-verify": this.config.SkipCertVerify,
             udp: this.config.UDP,
@@ -285,30 +230,12 @@ export default class Dumper {
             sni: TROJAN.Query.sni,
             alpn: ["h2", "http/1.1"],
 
-            "reality-opts": TROJAN.Query.security === "reality" ? {
-                "public-key": TROJAN.Query.pbk,
-                "short-id": TROJAN.Query.sid
-            } : undefined,
+            "reality-opts": __genRealityConfig(TROJAN),
             
             // transport layer config
-            "ws-opts": TROJAN.Query.type === "ws" ? {
-                "path": TROJAN.Query.path,
-                "max-early-data": TROJAN.Query.ed,
-                "early-data-header-name": TROJAN.Query.eh,
-                headers: TROJAN.Query.host ? {
-                    "Host": TROJAN.Query.host
-                } : undefined,
-            } : undefined,
-            "grpc-opts": TROJAN.Query.type === "grpc" ? {
-                "grpc-service-name": TROJAN.Query.serviceName
-            } : undefined,
-            "http-opts": TROJAN.Query.type === "http" ? {
-                method: TROJAN.Query.method,
-                path: TROJAN.Query.path ? [ TROJAN.Query.path ] : undefined,        
-                headers: TROJAN.Query.host ? {
-                    "Host": TROJAN.Query.host
-                } : undefined,
-            } : undefined,
+            "ws-opts": __genTransportWS(TROJAN),
+            "grpc-opts": __genTransportGRPC(TROJAN),
+            "http-opts": __genTransportHTTP(TROJAN),
 
             "client-fingerprint": TROJAN.Query.fp,
 
@@ -316,4 +243,59 @@ export default class Dumper {
             "skip-cert-verify": this.config.SkipCertVerify,
         }
     }
+}
+
+
+function __genRealityConfig (Obj) : RealityConfig | undefined {
+    return Obj.Query.security === "reality" ? {
+        "public-key": Obj.Query.pbk ? Obj.Query.pbk : undefined,
+        "short-id": Obj.Query.sid ? Obj.Query.sid : undefined
+    } : undefined
+}
+
+
+function __genTransportWS (Obj) : TransportWS | undefined {
+    const PassedTransportType = Obj.Query.obfs || Obj.Query.net || Obj.Query.type;
+
+    if (PassedTransportType !== "ws") {
+        return undefined;
+    }
+
+    const host = Obj.Query.host || Obj.Query.obfsParam;
+    const PathObj = new URL(`path:${Obj.Query.path}`)
+    const ParsedMaxEarlyData = parseInt(Obj.Query.path.ed || PathObj.searchParams.get("ed"));
+    const MaxEarlyData = isNaN(ParsedMaxEarlyData) ? undefined : ParsedMaxEarlyData,
+          EarlyDataHeaderName = Obj.Query.path.eh || (MaxEarlyData ? "Sec-WebSocket-Protocol" : undefined)
+
+    return {
+        path: PathObj.pathname,
+        headers: host ? { host } : undefined,
+        "max-early-data": MaxEarlyData,
+        "early-data-header-name": EarlyDataHeaderName,
+        //"v2ray-http-upgrade"?: unknown,
+        //"v2ray-http-upgrade-fast-open"?: unknown,
+    }
+}
+function __genTransportGRPC (Obj) : TransportGRPC | undefined {
+    const PassedTransportType = Obj.Query.obfs || Obj.Query.net || Obj.Query.type;
+    return PassedTransportType === "grpc" ? {
+        "grpc-service-name": Obj.Query.serviceName || Obj.Query.path
+    } : undefined;
+}
+
+function __genTransportHTTP (Obj) : TransportHTTP | undefined {
+    const PassedTransportType = Obj.Query.obfs || Obj.Query.net || Obj.Query.type;
+    const host = Obj.Query.host || Obj.Query.obfsParam;
+    return PassedTransportType === "http" ? {
+        method: Obj.Query.method,
+        path: Obj.Query.path ? [ Obj.Query.path ] : undefined,
+        headers: host ? { host } : undefined,
+    } : undefined;
+}
+function __genTransportH2 (Obj) : TransportH2 | undefined {
+    const PassedTransportType = Obj.Query.obfs || Obj.Query.net || Obj.Query.type;
+    return PassedTransportType === "h2" ? {
+        method: Obj.Query.method,
+        path: Obj.Query.path,
+    } : undefined;
 }
