@@ -12,7 +12,7 @@ class SubURLGenerator extends HTMLElement {
         document.body.dataset.defaultBackend = this.defaultBackend;
         customElements.whenDefined("k-form").then(() => {
             this.BasicConfigElement.Backend.setDetail(`${this.BasicConfigElement.Backend.getDetail()} (${this.defaultBackend})`);
-            console.log("[k-sub-url-generator] k-form registration detected, default backend modified")
+            console.info("[k-sub-url-generator] k-form registration detected, default backend modified")
         })
     }
     GenerateButton = this.querySelector("button#generate") as HTMLButtonElement;
@@ -38,17 +38,14 @@ class SubURLGenerator extends HTMLElement {
         throw `no targeted endpoint found, expected value ${EndpointPath}`
     }
     ChangeEndpoint (event: CustomEvent) {
-        console.log(event)
         const SelectedEndpointPath: string = event.detail.selectedValue;
         let Endpoint: EndpointPrototype = this.GetEndpoint(SelectedEndpointPath);
         let NeededExtendConfig = Endpoint.ExtendConfig || [];
 
         for (let i in this.ExtendConfigElement) {
             if (NeededExtendConfig.includes(i as EndpointExtendConfigPrototype)) {
-                console.log(i)
                 this.ExtendConfigElement[i].style.removeProperty("display")
             } else {
-                console.log(i)
                 this.ExtendConfigElement[i].style.setProperty("display", "none")
             }
         }
@@ -121,7 +118,7 @@ class SubURLGenerator extends HTMLElement {
 }
 
 customElements.define("k-suburl-generator", SubURLGenerator)
-console.log("[k-suburl-generator] registered")
+console.info("[k-suburl-generator] registered")
 
 function __getDefaultBackend () {
     let URLObj = new URL(location.href);

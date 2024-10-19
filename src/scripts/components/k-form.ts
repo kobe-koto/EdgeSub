@@ -47,4 +47,4 @@ export class Form extends HTMLElement {
     }
 }
 customElements.define("k-form", Form);
-console.log("[k-form] registered")
+console.info("[k-form] registered")

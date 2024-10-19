@@ -38,4 +38,4 @@ export class Dropdown extends HTMLElement {
     }
 }
 customElements.define("k-dropdown", Dropdown);
-console.log("[k-dropdown] registered")
+console.info("[k-dropdown] registered")

@@ -48,4 +48,4 @@ export class Shorter extends HTMLElement {
 }
 
 customElements.define("k-shorter", Shorter);
-console.log("[k-shorter] registered")
+console.info("[k-shorter] registered")

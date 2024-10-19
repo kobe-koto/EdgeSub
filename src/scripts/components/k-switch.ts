@@ -16,4 +16,4 @@ export class Switch extends HTMLElement {
     }
 }
 customElements.define("k-switch", Switch);
-console.log("[k-switch] registered")
+console.info("[k-switch] registered")
