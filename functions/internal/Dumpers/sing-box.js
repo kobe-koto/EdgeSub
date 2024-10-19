@@ -151,7 +151,7 @@ export default class Dumper {
             server_port: VLESS.Port,
             uuid: VLESS.Auth,
             flow: VLESS.Query.flow,
-            packet_encoding: VLESS.Query.packetEncoding || "xudp",
+            packet_encoding: VLESS.Query.packetEncoding,
             tls: !!VLESS.Query.sni ? {
                 enabled: true,
                 server_name: VLESS.Query.sni,
@@ -222,7 +222,6 @@ export default class Dumper {
             alter_id: VMESS.Query.aid,
             // global_padding: false, //??
             // authenticated_length: true, //??
-            packet_encoding: "xudp",
             tls: (VMESS.Query.tls === "tls") ? {
                 enabled: true,
                 server_name: VMESS.Query.sni,
