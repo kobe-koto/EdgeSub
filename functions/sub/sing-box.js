@@ -7,7 +7,7 @@ export async function onRequest (context) {
     let Proxies = await getParsedSubData(URLObject.searchParams.get("url"), request.headers, context.env.EdgeSubDB, URLObject.searchParams.get("show_host") === "true");
 
     // a javascript object !!! not YAML !!!
-    let ClashMetaConfigObject = await getSingBoxConfig (
+    let SingBoxConfigObject = await getSingBoxConfig (
         Proxies,
         context.env.EdgeSubDB,
         {
@@ -18,7 +18,7 @@ export async function onRequest (context) {
         }
     )
 
-    return new Response(JSON.stringify(ClashMetaConfigObject), {
+    return new Response(JSON.stringify(SingBoxConfigObject), {
         status: 200,
         headers: {
             "Content-Type": "application/json; charset=utf-8"
