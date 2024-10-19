@@ -1,5 +1,7 @@
 import type { ClashMetaConfig } from "./types/ClashMetaConfig";
 
+import { RequestHeaders } from "./configs";
+
 import { ShareLinkParser } from "./Parsers/share-link";
 import { ClashMetaParser } from "./Parsers/clash-meta";
 
@@ -15,7 +17,6 @@ type SubURLArr = SubURL[]; // usually it is some SubURLs squeeze into a Array.
  */
 export default async function getParsedSubData (
     SubURLs: SubURLs, 
-    headers = [] as unknown as Headers, 
     EdgeSubDB, 
     isShowHost = false as boolean
 ) {
@@ -27,7 +28,7 @@ export default async function getParsedSubData (
     let ParsedData = [];
     for (let i in SubURLArr) {
         console.info(`[Fetch Sub Data] Fetching ${parseInt(i) + 1}/${SubURLArr.length}`)
-        ParsedData = [...ParsedData, ...(await ParseSubData(SubURLArr[i], headers, EdgeSubDB))]
+        ParsedData = [...ParsedData, ...(await ParseSubData(SubURLArr[i], EdgeSubDB))]
     }
 
     if (isShowHost === true) {
@@ -40,12 +41,12 @@ export default async function getParsedSubData (
     console.info(`[Fetch Sub Data] Job done, wasting ${performance.now() - __startTime}ms.`)
     return ParsedData;
 }
-async function ParseSubData (SubURL: SubURL, headers = [] as unknown as Headers, EdgeSubDB) {
+async function ParseSubData (SubURL: SubURL, EdgeSubDB) {
     // handle `short` here
     if (SubURL.match(/^short:/i)) {
         let ShortData: SubURLs = await EdgeSubDB.get(SubURL).then(res => JSON.parse(res).subdata);
         console.info(`[Fetch Sub Data] starting sub task for ${SubURL}`)
-        let ParsedShortData = await getParsedSubData(ShortData, headers, EdgeSubDB);
+        let ParsedShortData = await getParsedSubData(ShortData, EdgeSubDB);
         console.info(`[Fetch Sub Data] sub task for ${SubURL} done`)
         return ParsedShortData;
     }
@@ -58,8 +59,8 @@ async function ParseSubData (SubURL: SubURL, headers = [] as unknown as Headers,
             data: SubURL
         }
     } else {
-        SubData = await fetch(SubURL, { headers })
-            .then(res => res.text())
+        SubData = await fetch(SubURL, { headers: RequestHeaders })
+            .then(async res => await res.text())
             .then(res => {
                 // try decode as yaml, for clash-meta config
                 try {
