@@ -35,10 +35,13 @@ export async function onRequest (context, isClashOriginal = false) {
         }
     )
 
-    return new Response(Yaml.dump(ClashMetaConfigObject), {
+    const ResponseBody = Yaml.dump(ClashMetaConfigObject)
+
+    return new Response(ResponseBody, {
         status: 200,
         headers: {
-            "Content-Type": "text/plain; charset=utf-8"
+            "Content-Type": "text/plain; charset=utf-8",
+            "Content-Length": ResponseBody.length
         }
     })
 }

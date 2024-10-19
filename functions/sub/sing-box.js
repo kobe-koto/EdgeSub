@@ -18,10 +18,13 @@ export async function onRequest (context) {
         }
     )
 
-    return new Response(JSON.stringify(SingBoxConfigObject), {
+    const ResponseBody = JSON.stringify(SingBoxConfigObject)
+
+    return new Response(ResponseBody, {
         status: 200,
         headers: {
-            "Content-Type": "application/json; charset=utf-8"
+            "Content-Type": "application/json; charset=utf-8",
+            "Content-Length": ResponseBody.length,
         }
     })
 }
