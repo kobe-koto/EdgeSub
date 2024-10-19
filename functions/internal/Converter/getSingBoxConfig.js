@@ -238,7 +238,7 @@ export async function getSingBoxConfig (
             ProxyGroup.type = "urltest"
 
             ProxyGroup.url = i.TestConfig.TestURL;
-            ProxyGroup.interval = i.TestConfig.Interval;
+            ProxyGroup.interval = `${i.TestConfig.Interval}s`;
         }
 
         if (i.type === "url-test") {
