@@ -18,6 +18,21 @@ export async function onRequest (context) {
         }
     )
 
+    // handle forced ws 0-rtt
+    if (URLObject.searchParams.get("forced_ws0rtt") === "true") {
+        console.info("[Main] ForcedWS0RTT enabled.")
+        for (let i of SingBoxConfigObject.outbounds) {
+            if (!("transport" in i)) {
+                continue;
+            }
+            if (i.transport.type !== "ws") {
+                continue;
+            }
+            i.transport.max_early_data = 2560
+            i.transport.early_data_header_name = "Sec-WebSocket-Protocol"
+        }
+    }
+
     const ResponseBody = JSON.stringify(SingBoxConfigObject)
 
     return new Response(ResponseBody, {

@@ -28,6 +28,7 @@ class SubURLGenerator extends HTMLElement {
         RemoteConfigUserspec: this.querySelector("k-form#RemoteConfigUserspec") as Form,
         RemoteConfig: this.querySelector("k-form#RemoteConfig") as Form,
         isUDP: this.querySelector("k-form#isUDP") as Form,
+        ForcedWS0RTT: this.querySelector("k-form#ForcedWS0RTT") as Form,
     }
     GetEndpoint (EndpointPath: string = this.BasicConfigElement.Endpoint.get()) {
         for (let i of this.Endpoints) {
@@ -60,6 +61,7 @@ class SubURLGenerator extends HTMLElement {
         const ExtendConfig = {
             RemoteConfig: this.ExtendConfigElement.RemoteConfigUserspec.get() || this.ExtendConfigElement.RemoteConfig.get(),
             isUDP: this.ExtendConfigElement.isUDP.get(),
+            ForcedWS0RTT: this.ExtendConfigElement.ForcedWS0RTT.get()
         }
         const NeededExtendConfig = this.GetEndpoint().ExtendConfig || [];
         let Config = { ...BasicConfig }
@@ -90,8 +92,7 @@ class SubURLGenerator extends HTMLElement {
 
     }
 
-    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; isShowHost: any }) {
-        console.log(Config)
+    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; ForcedWS0RTT?: any; isShowHost: any }) {
         let URLObj = new URL(Config.Backend);
         URLObj.pathname = Config.Endpoint;
         URLObj.search = "";
@@ -101,6 +102,7 @@ class SubURLGenerator extends HTMLElement {
         Config.RemoteConfig && URLObj.searchParams.append("remote_config", Config.RemoteConfig)
         Config.isUDP && URLObj.searchParams.append("udp", Config.isUDP.toString())
         Config.isShowHost && URLObj.searchParams.append("show_host", Config.isShowHost.toString())
+        Config.ForcedWS0RTT && URLObj.searchParams.append("forced_ws0rtt", Config.ForcedWS0RTT.toString())
         return URLObj.toString();
     }
     CopyURL () {

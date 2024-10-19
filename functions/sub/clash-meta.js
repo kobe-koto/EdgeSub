@@ -34,6 +34,18 @@ export async function onRequest (context, isClashOriginal = false) {
         }
     )
 
+    // handle forced ws 0-rtt
+    if (URLObject.searchParams.get("forced_ws0rtt") === "true") {
+        console.info("[Main] ForcedWS0RTT enabled.")
+        for (let i of ClashMetaConfigObject.proxies) {
+            if (!("ws-opts" in i)) {
+                continue;
+            }
+            i["ws-opts"]["max-early-data"] = 2560
+            i["ws-opts"]["early-data-header-name"] = "Sec-WebSocket-Protocol"
+        }
+    }
+
     const ResponseBody = Yaml.dump(ClashMetaConfigObject)
 
     return new Response(ResponseBody, {
