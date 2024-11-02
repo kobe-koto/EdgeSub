@@ -23,6 +23,7 @@ class SubURLGenerator extends HTMLElement {
         Backend: this.querySelector("k-form#Backend") as Form,
         Endpoint: this.querySelector("k-form#Endpoint") as Form,
         isShowHost: this.querySelector("k-form#isShowHost") as Form,
+        HTTPHeaders: this.querySelector("k-form#HTTPHeaders") as Form,
     }
     ExtendConfigElement = {
         RemoteConfigUserspec: this.querySelector("k-form#RemoteConfigUserspec") as Form,
@@ -56,7 +57,8 @@ class SubURLGenerator extends HTMLElement {
             SubURL: this.BasicConfigElement.SubURL.get(),
             Backend: this.BasicConfigElement.Backend.get() || this.defaultBackend,
             Endpoint: this.BasicConfigElement.Endpoint.get(),
-            isShowHost: this.BasicConfigElement.isShowHost.get()
+            isShowHost: this.BasicConfigElement.isShowHost.get(),
+            HTTPHeaders: JSON.stringify(JSON.parse(this.BasicConfigElement.HTTPHeaders.get() || "{}"))
         }
         const ExtendConfig = {
             RemoteConfig: this.ExtendConfigElement.RemoteConfigUserspec.get() || this.ExtendConfigElement.RemoteConfig.get(),
@@ -92,7 +94,7 @@ class SubURLGenerator extends HTMLElement {
 
     }
 
-    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; ForcedWS0RTT?: any; isShowHost: any }) {
+    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; ForcedWS0RTT?: any; isShowHost: any, HTTPHeaders: any }) {
         let URLObj = new URL(Config.Backend);
         URLObj.pathname = Config.Endpoint;
         URLObj.search = "";
@@ -103,6 +105,7 @@ class SubURLGenerator extends HTMLElement {
         Config.isUDP && URLObj.searchParams.append("udp", Config.isUDP.toString())
         Config.isShowHost && URLObj.searchParams.append("show_host", Config.isShowHost.toString())
         Config.ForcedWS0RTT && URLObj.searchParams.append("forced_ws0rtt", Config.ForcedWS0RTT.toString())
+        Config.HTTPHeaders !== "{}" && URLObj.searchParams.append("http_headers", Config.HTTPHeaders)
         return URLObj.toString();
     }
     CopyURL () {
