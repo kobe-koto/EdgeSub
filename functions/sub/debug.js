@@ -1,4 +1,4 @@
-import getParsedSubData from "../internal/getParsedSubData.js";
+import getParsedSubData from "../internal/getParsedSubData.ts";
 
 export async function onRequest (context) {
     const { request } = context;

@@ -1,5 +1,5 @@
 import { getClashMetaConfig } from "../internal/Converter/getClashMetaConfig.js";
-import getParsedSubData from "../internal/getParsedSubData.js";
+import getParsedSubData from "../internal/getParsedSubData.ts";
 import Yaml from "js-yaml";
 
 

@@ -1,4 +1,4 @@
-import getParsedSubData from "../internal/getParsedSubData.js";
+import getParsedSubData from "../internal/getParsedSubData.ts";
 import { ShareLinkDumper } from "../internal/Dumpers/share-link.js";
 
 export async function onRequest (context, isBase64 = false) {
