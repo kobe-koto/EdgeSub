@@ -263,9 +263,10 @@ function __genTransportWS (Obj) : TransportWS | undefined {
 
     const host = Obj.Query.host || Obj.Query.obfsParam;
     const PathObj = new URL(`path:${Obj.Query.path}`)
-    const ParsedMaxEarlyData = parseInt(Obj.Query.path.ed || PathObj.searchParams.get("ed"));
-    const MaxEarlyData = isNaN(ParsedMaxEarlyData) ? undefined : ParsedMaxEarlyData,
-          EarlyDataHeaderName = Obj.Query.path.eh || (MaxEarlyData ? "Sec-WebSocket-Protocol" : undefined)
+    const ParsedMaxEarlyData = parseInt(Obj.Query.ed || PathObj.searchParams.get("ed"));
+    
+    const MaxEarlyData = isNaN(ParsedMaxEarlyData) ? undefined : ParsedMaxEarlyData;
+    const EarlyDataHeaderName = Obj.Query.eh || (MaxEarlyData ? "Sec-WebSocket-Protocol" : undefined)
 
     return {
         path: PathObj.pathname,
