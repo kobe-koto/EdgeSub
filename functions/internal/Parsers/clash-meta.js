@@ -120,8 +120,8 @@ export class ClashMetaParser {
                 method: Obj.method,
 
                 // - http & ws & h2
-                path: Obj.path,
-                host: Obj.host || (Obj.headers || {}).Host,
+                path: Obj["ws-path"] || Obj.path,
+                host: Obj.host || (Obj["ws-headers"] || Obj.headers || {}).Host,
             }
         }
     }
@@ -144,9 +144,10 @@ export class ClashMetaParser {
 
                 // transport layer config
                 // - http & ws & h2 
-                host: (Obj.headers || {}).Host,
+                host: (Obj["ws-headers"] || Obj.headers || {}).Host,
                 // - http & ws & h2 & grpc
                 path: 
+                    Obj["ws-path"] || 
                     ( Obj["ws-opts"] || Obj["h2-opts"] || {} ).path || 
                     ( (Obj["http-opts"] || {}).path || [] )[0] || 
                     Obj["grpc-service-name"] ||
@@ -196,8 +197,8 @@ export class ClashMetaParser {
                 method: Obj.method,
 
                 // - http & ws
-                path: Obj.path,
-                host: (Obj.headers || {}).Host,
+                path: Obj["ws-path"] || Obj.path,
+                host: (Obj["ws-headers"] || Obj.headers || {}).Host,
             }
         }
     }
