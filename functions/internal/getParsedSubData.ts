@@ -107,8 +107,13 @@ async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) {
         let Parser = new ShareLinkParser();
         for (let i of links) {
             let protocol = i.split(":")[0];
-            if (Parser.__validate(i)) {
-                ParsedSubData.push(Parser[protocol](i))
+            try {
+                if (Parser.__validate(i)) {
+                    ParsedSubData.push(Parser[protocol](i))
+                }
+            } catch (e) {
+                console.warn(`[Fetch Sub Data] this share-url doesn't seem right, ignoring... ('${i}')`)
+                console.warn(e)
             }
         }
     } else if (SubData.type === "clash-meta") {
