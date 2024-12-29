@@ -16,7 +16,8 @@ export async function onRequest (context) {
         Proxies,
         context.env.EdgeSubDB,
         {
-            isUDP: URLObject.searchParams.get("udp") === "false" ? false : true,
+            isUDP: URLObject.searchParams.get("udp") === "true",
+            isSSUoT: URLObject.searchParams.get("ss_uot") === "true",
             isInsecure: true,
             RemoteConfig: URLObject.searchParams.get("remote_config") || "__DEFAULT__",
             isForcedRefresh: URLObject.searchParams.get("forced_refresh") === "true" ? true : false

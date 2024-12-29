@@ -78,7 +78,7 @@
   | TUIC v5      | ✅    | ✅        |                                       |
   | Vmess        | ✅    | ☑️        | 未經完全測試                          |
   | Vless        | ✅    | ☑️        | 未經完全測試                          |
-  | Shadowsocks  | ✅    | ✅        | 全局設定為開啓 UDP 时會開啓 UDP over TCP |
+  | Shadowsocks  | ✅    | ✅        | 全局設定為開啓 SS UoT 时會開啓 UDP over TCP |
   | Trojan       | ✅    | ✅        |                                    |
   | WireGuard    | 🚫    | -        | 似乎沒有通用的 ShareLink 格式         |
   | ShadowsocksR | 🚫    | -        | 暫無計劃實現                          |

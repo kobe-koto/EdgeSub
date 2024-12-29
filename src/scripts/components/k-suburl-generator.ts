@@ -29,6 +29,7 @@ class SubURLGenerator extends HTMLElement {
         RemoteConfigUserspec: this.querySelector("k-form#RemoteConfigUserspec") as Form,
         RemoteConfig: this.querySelector("k-form#RemoteConfig") as Form,
         isUDP: this.querySelector("k-form#isUDP") as Form,
+        isSSUoT: this.querySelector("k-form#isSSUoT") as Form,
         ForcedWS0RTT: this.querySelector("k-form#ForcedWS0RTT") as Form,
     }
     GetEndpoint (EndpointPath: string = this.BasicConfigElement.Endpoint.get()) {
@@ -63,6 +64,7 @@ class SubURLGenerator extends HTMLElement {
         const ExtendConfig = {
             RemoteConfig: this.ExtendConfigElement.RemoteConfigUserspec.get() || this.ExtendConfigElement.RemoteConfig.get(),
             isUDP: this.ExtendConfigElement.isUDP.get(),
+            isSSUoT: this.ExtendConfigElement.isSSUoT.get(),
             ForcedWS0RTT: this.ExtendConfigElement.ForcedWS0RTT.get()
         }
         const NeededExtendConfig = this.GetEndpoint().ExtendConfig || [];
@@ -94,7 +96,7 @@ class SubURLGenerator extends HTMLElement {
 
     }
 
-    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; ForcedWS0RTT?: any; isShowHost: any, HTTPHeaders: any }) {
+    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; isSSUoT?: any; ForcedWS0RTT?: any; isShowHost: any, HTTPHeaders: any }) {
         let URLObj = new URL(Config.Backend);
         URLObj.pathname = Config.Endpoint;
         URLObj.search = "";
@@ -103,6 +105,7 @@ class SubURLGenerator extends HTMLElement {
         URLObj.searchParams.append("url", Config.SubURL)
         Config.RemoteConfig && URLObj.searchParams.append("remote_config", Config.RemoteConfig)
         Config.isUDP && URLObj.searchParams.append("udp", Config.isUDP.toString())
+        Config.isSSUoT && URLObj.searchParams.append("ss_uot", Config.isSSUoT.toString())
         Config.isShowHost && URLObj.searchParams.append("show_host", Config.isShowHost.toString())
         Config.ForcedWS0RTT && URLObj.searchParams.append("forced_ws0rtt", Config.ForcedWS0RTT.toString())
         Config.HTTPHeaders !== "{}" && URLObj.searchParams.append("http_headers", Config.HTTPHeaders)

@@ -17,6 +17,7 @@ const BasicClashConfig = {
 
 const BasicConfig = {
     isUDP: true,
+    isSSUoT: false,
     isInsecure: true,
     RemoteConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/assets/minimal_remote_conf/basic.ini",
     isForcedRefresh: false
@@ -36,7 +37,7 @@ export async function getClashMetaConfig (
 
     let ClashConfig = JSON.parse(JSON.stringify(BasicClashConfig))
 
-    let Dumper = new ClashMetaDumper()
+    let Dumper = new ClashMetaDumper(Config.isUDP, Config.isSSUoT, Config.isInsecure)
     
     // validate proxies
     Proxies = Proxies.map(i => {

@@ -101,6 +101,7 @@ const BasicSingBoxConfig = {
 
 const BasicConfig = {
     isUDP: true,
+    isSSUoT: true,
     isInsecure: true,
     RemoteConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/assets/minimal_remote_conf/basic.ini",
     isForcedRefresh: false
@@ -183,7 +184,7 @@ export async function getSingBoxConfig (
 
     }
 
-    let Dumper = new SingBoxDumper();
+    let Dumper = new SingBoxDumper(Config.isUDP, Config.isSSUoT, Config.isInsecure);
     // validate proxies
     Proxies = Proxies.map(i => {
         if (Dumper.__validate(i)) {

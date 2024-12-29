@@ -3,15 +3,18 @@ import type { RealityConfig, TransportGRPC, TransportH2, TransportHTTP, Transpor
 export default class Dumper {
     config = {
         UDP: true,
+        SSUoT: true,
         SkipCertVerify: true,
         ClientFingerprint: "chrome"
     }
     constructor (
         UDP = true,
+        SSUoT = true,
         SkipCertVerify = true,
         ClientFingerprint = "chrome"
     ) {
         this.config.UDP = UDP;
+        this.config.SSUoT = SSUoT;
         this.config.SkipCertVerify = SkipCertVerify;
         this.config.ClientFingerprint = ClientFingerprint;
 
@@ -213,8 +216,8 @@ export default class Dumper {
             cipher: SS.Auth.cipher,
             password: SS.Auth.password,
   
-            "udp-over-tcp": this.config.UDP,
-            "udp-over-tcp-version": this.config.UDP ? 2 : undefined,
+            "udp-over-tcp": this.config.SSUoT,
+            "udp-over-tcp-version": this.config.SSUoT ? 2 : undefined,
             // udp: true,
         }
     }
