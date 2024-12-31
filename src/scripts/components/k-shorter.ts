@@ -1,7 +1,8 @@
 import type { Form } from "./k-form";
+import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 
 export class Shorter extends HTMLElement {
-    defaultBackend = document.body.dataset.defaultBackend;
+    defaultBackend = getDefaultBackend();
     constructor () {
         super();
         this.Elements.SubmitButton.addEventListener("click", () => {this.SubmitShorterRequest()})
@@ -15,7 +16,7 @@ export class Shorter extends HTMLElement {
         }
 
         // build api Endpoint
-        let requestURL = new URL(this.Elements.Backend.get() || this.defaultBackend);
+        let requestURL = new URL(this.defaultBackend);
         requestURL.pathname = "/short/put";
 
         await fetch(requestURL, {
@@ -36,8 +37,7 @@ export class Shorter extends HTMLElement {
         })
     }
     Elements = {
-        Backend: document.querySelector("k-form#Backend") as Form,
-        subdata: document.querySelector("k-form#SubURL") as Form,
+        subdata: this.querySelector("k-form#SubURL") as Form,
 
         slug: this.querySelector("k-form#short-slug") as Form,
         password: this.querySelector("k-form#short-password") as Form,
@@ -49,3 +49,4 @@ export class Shorter extends HTMLElement {
 
 customElements.define("k-shorter", Shorter);
 console.info("[k-shorter] registered")
+

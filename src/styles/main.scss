@@ -26,3 +26,14 @@ code {
     border-radius: 8px;
     word-break: break-all;
 }
+
+
+a:link, a:visited {
+    color: white;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-style: dashed;
+    &:hover {
+        text-decoration-style: solid;
+    }    
+}

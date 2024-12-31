@@ -1,9 +1,10 @@
 import type { Form } from "@scripts/components/k-form";
 import type { EndpointExtendConfigPrototype, EndpointPrototype } from "@config/AvalibleOptoutFormat";
+import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 class SubURLGenerator extends HTMLElement {
     TargetExtendConfig: ( "RemoteConfig" | "isUDP" )[];
     Endpoints: EndpointPrototype[] = JSON.parse(this.dataset.endpoints);
-    defaultBackend = __getDefaultBackend();
+    defaultBackend = getDefaultBackend();
     constructor () {
         super()
         this.GenerateButton.addEventListener("click", () => {this.CheckAndGenerate()});
@@ -127,12 +128,3 @@ class SubURLGenerator extends HTMLElement {
 
 customElements.define("k-suburl-generator", SubURLGenerator)
 console.info("[k-suburl-generator] registered")
-
-function __getDefaultBackend () {
-    let URLObj = new URL(location.href);
-    URLObj.pathname = "/";
-    URLObj.search = "";
-    URLObj.hash = "";
-
-    return URLObj.host === "localhost:4321" ? "http://localhost:8788/" : URLObj.toString();
-}

@@ -1,0 +1,17 @@
+---
+import KForm from "@components/k-form.astro";
+---
+
+<h2>List all the shorts</h2>
+<shorter-list class="flex-contents">
+    <KForm
+        slug="password"
+        desc="Password"
+        detail="Password"
+        type="input"
+    />
+    <code id="list-status">Submit first.</code>
+    <button id="list-submit">Submit</button>
+</div>
+
+<script src="@scripts/components/shorter-list.ts"></script>
