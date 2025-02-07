@@ -1,11 +1,12 @@
 import type { ClashMetaConfig } from "./types/ClashMetaConfig";
 
-import { RequestHeaders } from "./configs";
+import { DefaultRequestHeaders } from "./configs";
 
 import { ShareLinkParser } from "./Parsers/share-link";
 import { ClashMetaParser } from "./Parsers/clash-meta";
 
 import Yaml from "js-yaml";
+import { TrulyAssign } from "./utils/TrulyAssign";
 
 type SubURL = string; // start with `short:`, `http(s)://`, or sth like `[proxy protocol]://`
 type SubURLs = string; // contains SubURL a lot
@@ -18,17 +19,20 @@ type SubURLArr = SubURL[]; // usually it is some SubURLs squeeze into a Array.
 export default async function getParsedSubData (
     SubURLs: SubURLs, 
     EdgeSubDB, 
-    isShowHost = false as boolean
+    isShowHost = false as boolean,
+    CustomHTTPHeaders = {} as Headers
 ) {
     let __startTime = performance.now();
     console.info("[Fetch Sub Data] Job started")
     console.info(`[Fetch Sub Data] isShowHost: ${isShowHost.toString()}`)
 
-    let SubURLArr = decodeURIComponent(SubURLs).replaceAll("\r", "\n").split("\n").filter((i) => !!i).map(i => encodeURIComponent(i.trim())).map(i => decodeURIComponent(i)) as SubURLArr;
+    const RequestHeaders = TrulyAssign(DefaultRequestHeaders, CustomHTTPHeaders);
+
+    let SubURLArr = SubURLs.replaceAll("\r", "\n").split("\n").filter((i) => !!i).map(i => encodeURIComponent(i.trim())).map(i => decodeURIComponent(i)) as SubURLArr;
     let ParsedData = [];
     for (let i in SubURLArr) {
         console.info(`[Fetch Sub Data] Fetching ${parseInt(i) + 1}/${SubURLArr.length}`)
-        ParsedData = [...ParsedData, ...(await ParseSubData(SubURLArr[i], EdgeSubDB))]
+        ParsedData = [...ParsedData, ...(await ParseSubData(SubURLArr[i], EdgeSubDB, RequestHeaders))]
     }
 
     if (isShowHost === true) {
@@ -41,12 +45,12 @@ export default async function getParsedSubData (
     console.info(`[Fetch Sub Data] Job done, wasting ${performance.now() - __startTime}ms.`)
     return ParsedData;
 }
-async function ParseSubData (SubURL: SubURL, EdgeSubDB) {
+async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) {
     // handle `short` here
     if (SubURL.match(/^short:/i)) {
         let ShortData: SubURLs = await EdgeSubDB.get(SubURL).then(res => JSON.parse(res).subdata);
         console.info(`[Fetch Sub Data] starting sub task for ${SubURL}`)
-        let ParsedShortData = await getParsedSubData(ShortData, EdgeSubDB);
+        let ParsedShortData = await getParsedSubData(ShortData, EdgeSubDB, RequestHeaders);
         console.info(`[Fetch Sub Data] sub task for ${SubURL} done`)
         return ParsedShortData;
     }
@@ -103,8 +107,13 @@ async function ParseSubData (SubURL: SubURL, EdgeSubDB) {
         let Parser = new ShareLinkParser();
         for (let i of links) {
             let protocol = i.split(":")[0];
-            if (Parser.__validate(i)) {
-                ParsedSubData.push(Parser[protocol](i))
+            try {
+                if (Parser.__validate(i)) {
+                    ParsedSubData.push(Parser[protocol](i))
+                }
+            } catch (e) {
+                console.warn(`[Fetch Sub Data] this share-url doesn't seem right, ignoring... ('${i}')`)
+                console.warn(e)
             }
         }
     } else if (SubData.type === "clash-meta") {

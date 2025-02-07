@@ -1,9 +1,10 @@
 import type { Form } from "@scripts/components/k-form";
 import type { EndpointExtendConfigPrototype, EndpointPrototype } from "@config/AvalibleOptoutFormat";
+import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 class SubURLGenerator extends HTMLElement {
     TargetExtendConfig: ( "RemoteConfig" | "isUDP" )[];
     Endpoints: EndpointPrototype[] = JSON.parse(this.dataset.endpoints);
-    defaultBackend = __getDefaultBackend();
+    defaultBackend = getDefaultBackend();
     constructor () {
         super()
         this.GenerateButton.addEventListener("click", () => {this.CheckAndGenerate()});
@@ -23,11 +24,13 @@ class SubURLGenerator extends HTMLElement {
         Backend: this.querySelector("k-form#Backend") as Form,
         Endpoint: this.querySelector("k-form#Endpoint") as Form,
         isShowHost: this.querySelector("k-form#isShowHost") as Form,
+        HTTPHeaders: this.querySelector("k-form#HTTPHeaders") as Form,
     }
     ExtendConfigElement = {
         RemoteConfigUserspec: this.querySelector("k-form#RemoteConfigUserspec") as Form,
         RemoteConfig: this.querySelector("k-form#RemoteConfig") as Form,
         isUDP: this.querySelector("k-form#isUDP") as Form,
+        isSSUoT: this.querySelector("k-form#isSSUoT") as Form,
         ForcedWS0RTT: this.querySelector("k-form#ForcedWS0RTT") as Form,
     }
     GetEndpoint (EndpointPath: string = this.BasicConfigElement.Endpoint.get()) {
@@ -56,11 +59,13 @@ class SubURLGenerator extends HTMLElement {
             SubURL: this.BasicConfigElement.SubURL.get(),
             Backend: this.BasicConfigElement.Backend.get() || this.defaultBackend,
             Endpoint: this.BasicConfigElement.Endpoint.get(),
-            isShowHost: this.BasicConfigElement.isShowHost.get()
+            isShowHost: this.BasicConfigElement.isShowHost.get(),
+            HTTPHeaders: JSON.stringify(JSON.parse(this.BasicConfigElement.HTTPHeaders.get() || "{}"))
         }
         const ExtendConfig = {
             RemoteConfig: this.ExtendConfigElement.RemoteConfigUserspec.get() || this.ExtendConfigElement.RemoteConfig.get(),
             isUDP: this.ExtendConfigElement.isUDP.get(),
+            isSSUoT: this.ExtendConfigElement.isSSUoT.get(),
             ForcedWS0RTT: this.ExtendConfigElement.ForcedWS0RTT.get()
         }
         const NeededExtendConfig = this.GetEndpoint().ExtendConfig || [];
@@ -92,7 +97,7 @@ class SubURLGenerator extends HTMLElement {
 
     }
 
-    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; ForcedWS0RTT?: any; isShowHost: any }) {
+    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; isSSUoT?: any; ForcedWS0RTT?: any; isShowHost: any, HTTPHeaders: any }) {
         let URLObj = new URL(Config.Backend);
         URLObj.pathname = Config.Endpoint;
         URLObj.search = "";
@@ -101,8 +106,10 @@ class SubURLGenerator extends HTMLElement {
         URLObj.searchParams.append("url", Config.SubURL)
         Config.RemoteConfig && URLObj.searchParams.append("remote_config", Config.RemoteConfig)
         Config.isUDP && URLObj.searchParams.append("udp", Config.isUDP.toString())
+        Config.isSSUoT && URLObj.searchParams.append("ss_uot", Config.isSSUoT.toString())
         Config.isShowHost && URLObj.searchParams.append("show_host", Config.isShowHost.toString())
         Config.ForcedWS0RTT && URLObj.searchParams.append("forced_ws0rtt", Config.ForcedWS0RTT.toString())
+        Config.HTTPHeaders !== "{}" && URLObj.searchParams.append("http_headers", Config.HTTPHeaders)
         return URLObj.toString();
     }
     CopyURL () {
@@ -121,12 +128,3 @@ class SubURLGenerator extends HTMLElement {
 
 customElements.define("k-suburl-generator", SubURLGenerator)
 console.info("[k-suburl-generator] registered")
-
-function __getDefaultBackend () {
-    let URLObj = new URL(location.href);
-    URLObj.pathname = "/";
-    URLObj.search = "";
-    URLObj.hash = "";
-
-    return URLObj.host === "localhost:4321" ? "http://localhost:8788/" : URLObj.toString();
-}

@@ -1,3 +1,4 @@
-export const RequestHeaders = {
-    "User-Agent": "EdgeSub/v0.0.0-git"
+export const DefaultRequestHeaders = {
+    "Accept": "*/*",
+    "User-Agent": "EdgeSub-git/0.0.0",
 }

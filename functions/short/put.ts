@@ -1,4 +1,4 @@
-import { getDefaultHeader } from "./utils/defaultHeader";
+import { getDefaultHeader, getDefaultOptionsHeader } from "./utils/defaultHeader";
 
 export async function onRequestPost (context) {
     const { request } = context;
@@ -53,17 +53,12 @@ export async function onRequestOptions (context) {
     const url = new URL(context.request.url);
     return new Response("OK", {
         status: 200,
-        headers: {
-            //"Access-Control-Allow-Origin":  "localhost:4321")
-            "Access-Control-Allow-Origin":  url.hostname === "localhost" ? "*" : `${url.protocol}//${url.host}`,
-            "Access-Control-Allow-Credentials": "true",
-            "Access-Control-Allow-Methods": "POST, OPTIONS",
-        }
+        headers: getDefaultOptionsHeader(url)
     });
 }
 
 
-async function generatePassword (length, EdgeSubDB = false) {
+async function generatePassword (length, EdgeSubDB = undefined) {
     const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let strArr = [];
     for (let i = 0, n = chars.length; i < length; i++) {

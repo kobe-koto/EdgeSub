@@ -27,9 +27,16 @@ export default defineConfig({
         }),
         icon()
     ],
-    // vite: {
-    //     esbuild: {
-    //         drop: ["console", "debugger"],
-    //     },
-    // },
+    vite: {
+        css: {
+            preprocessorOptions: {
+                scss: {
+                    api: "modern-compiler"
+                }
+            }
+        },
+        // esbuild: {
+        //     drop: ["console", "debugger"],
+        // },
+    },
 });

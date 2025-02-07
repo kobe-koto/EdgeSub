@@ -4,7 +4,14 @@ import KForm from "@components/k-form.astro";
 
 <k-shorter class="flex-contents">
 
-    <h3>Shorter 设定</h3>
+    <h2>Shorter 设定</h2>
+
+    <KForm
+        slug="SubURL"
+        desc="订阅链接"
+        detail="仅支持 http(s):// 和 short: 开头的订阅链接, 类似于 vless:// 开头的分享链接。以换行分割。"
+        type="textarea"
+    />
 
     <KForm
         slug="short-slug"

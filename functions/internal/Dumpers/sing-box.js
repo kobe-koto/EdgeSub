@@ -2,9 +2,11 @@ export default class Dumper {
     config = {}
     constructor (
         UDP = true,
+        SSUoT = false,
         SkipCertVerify = true
     ) {
         this.config.UDP = UDP;
+        this.config.SSUoT = SSUoT;
         this.config.SkipCertVerify = SkipCertVerify;
 
         return true;
@@ -246,7 +248,7 @@ export default class Dumper {
             server_port: SS.Port,
             method: SS.Auth.cipher,
             password: SS.Auth.password,
-            udp_over_tcp: this.config.UDP ? {
+            udp_over_tcp: this.config.SSUoT ? {
                 enabled: true,
                 version: 2
             } : false,

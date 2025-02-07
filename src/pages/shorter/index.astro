@@ -1,0 +1,74 @@
+---
+import Base from "@layouts/base.astro";
+import KForm from "@components/k-form.astro";
+import { Icon } from "astro-icon/components";
+
+import KShorter from "@components/index/k-shorter.astro";
+import ShorterList from "@components/shorter/shorter-list.astro"
+import ShorterPassword from "@components/shorter/shorter-password.astro";
+---
+<Base>
+    <h1>Shorts management</h1>
+    <p><Icon name="iconoir:info-circle-solid" />  Please ensure that you have binded a KV correctly to the project.</p>
+    <p><Icon name="iconoir:info-circle-solid" />  You will need a admin password to list all shorts, and this is all the things this password can do.</p>
+    <p><Icon name="iconoir:info-circle-solid" />  Current backend: <code id="backend">[Checking]</code></p>
+    <h2>Short ID / Password explained:</h2>
+    <p>a short id is used to view a short's content. that means once someone have the short id, whatever he/she/they is, they can view this short's content. </p>
+    <p>a short password is used to edit a short's content.</p>
+    <p>Q: so what should i protect?</p>
+    <p>A: both. and you have better access your EdgeSub instance ONLY in HTTPS, not HTTP.</p>
+    <p>Q: what can i do if i forget my passwords?</p>
+    <p>A: - for short password: there is a only way to change it: go to cloudflare docs and edit the KV Database by hand. theoretically, yes, EdgeSub can do this, but i personally refuse to imple this feature.</p>
+    <p>A: - for admin password: same as short password, but there is no way to directly edit it. it's sha256 hashed, while short password is not. recommend: delete the key "short_password" and set a new one.</p>
+    <div data-role="passwordStatus" data-status="checking">
+        <h2>Password status</h2>
+        <p data-status="true"><Icon name="iconoir:check-circle-solid" />  Password defined.</p>
+        <p data-status="false"><Icon name="iconoir:warning-triangle-solid" />  Password undefined.</p>
+        <p data-status="checking"><Icon name="iconoir:refresh-circle-solid" />  Checking..</p>
+        <p data-status="fail"><Icon name="iconoir:xmark-circle-solid" />  Check failed, open console to get more information.</p>
+    </div>
+
+
+    <KShorter />
+    <ShorterList />
+    <ShorterPassword />
+</Base>
+
+
+<style lang="scss">
+    div[data-role="passwordStatus"] {
+        > p {
+            display: none;
+        }
+        &[data-status="true"] > [data-status="true"] {
+            display: block;
+        }
+        &[data-status="false"] > [data-status="false"] {
+            display: block;
+        }
+        &[data-status="checking"] > [data-status="checking"] {
+            display: block;
+        }
+        &[data-status="fail"] > [data-status="fail"] {
+            display: block;
+        }
+    }
+    [data-icon] {
+        vertical-align: -0.125rem;
+    }
+</style>
+
+<script> // init
+    import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
+    const defaultBackend = getDefaultBackend()
+    document.body.dataset.defaultBackend = defaultBackend;
+    document.querySelector("#backend").innerText = defaultBackend;
+    fetch (`${defaultBackend}/short/password/status`)
+        .then(res => res.json())
+        .then(res => {
+            document.querySelector("[data-role=\"passwordStatus\"]").dataset.status = res.isPasswordSet.toString();
+        })
+        .catch(() => {
+            document.querySelector("[data-role=\"passwordStatus\"]").dataset.status = "fail"
+        })
+</script>

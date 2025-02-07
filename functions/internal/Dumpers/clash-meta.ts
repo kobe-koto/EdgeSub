@@ -3,15 +3,18 @@ import type { RealityConfig, TransportGRPC, TransportH2, TransportHTTP, Transpor
 export default class Dumper {
     config = {
         UDP: true,
+        SSUoT: true,
         SkipCertVerify: true,
         ClientFingerprint: "chrome"
     }
     constructor (
         UDP = true,
+        SSUoT = true,
         SkipCertVerify = true,
         ClientFingerprint = "chrome"
     ) {
         this.config.UDP = UDP;
+        this.config.SSUoT = SSUoT;
         this.config.SkipCertVerify = SkipCertVerify;
         this.config.ClientFingerprint = ClientFingerprint;
 
@@ -213,8 +216,8 @@ export default class Dumper {
             cipher: SS.Auth.cipher,
             password: SS.Auth.password,
   
-            "udp-over-tcp": this.config.UDP,
-            "udp-over-tcp-version": this.config.UDP ? 2 : undefined,
+            "udp-over-tcp": this.config.SSUoT,
+            "udp-over-tcp-version": this.config.SSUoT ? 2 : undefined,
             // udp: true,
         }
     }
@@ -263,9 +266,10 @@ function __genTransportWS (Obj) : TransportWS | undefined {
 
     const host = Obj.Query.host || Obj.Query.obfsParam;
     const PathObj = new URL(`path:${Obj.Query.path}`)
-    const ParsedMaxEarlyData = parseInt(Obj.Query.path.ed || PathObj.searchParams.get("ed"));
-    const MaxEarlyData = isNaN(ParsedMaxEarlyData) ? undefined : ParsedMaxEarlyData,
-          EarlyDataHeaderName = Obj.Query.path.eh || (MaxEarlyData ? "Sec-WebSocket-Protocol" : undefined)
+    const ParsedMaxEarlyData = parseInt(Obj.Query.ed || PathObj.searchParams.get("ed"));
+    
+    const MaxEarlyData = isNaN(ParsedMaxEarlyData) ? undefined : ParsedMaxEarlyData;
+    const EarlyDataHeaderName = Obj.Query.eh || (MaxEarlyData ? "Sec-WebSocket-Protocol" : undefined)
 
     return {
         path: PathObj.pathname,

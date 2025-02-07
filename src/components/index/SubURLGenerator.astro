@@ -44,9 +44,15 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
     />
     <KForm
         slug="isUDP"
-        desc="开启 UDP (SS 使用 UoT)"
+        desc="开启 UDP"
         type="k-switch"
         SwitchDefault={true}
+    />
+    <KForm
+        slug="isSSUoT"
+        desc="开启 SS UoT"
+        type="k-switch"
+        SwitchDefault={false}
     />
     <KForm
         slug="isShowHost"
@@ -59,6 +65,14 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
         desc="强制打开 WS 0-RTT"
         type="k-switch"
         SwitchDefault={false}
+    />
+
+
+    <KForm
+        slug="HTTPHeaders"
+        desc="HTTP Headers"
+        detail="请求远端订阅位址时使用的 HTTP Headers, 请务必使用 JSON 格式书写."
+        type="textarea"
     />
         
     <Spliter />
