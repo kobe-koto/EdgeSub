@@ -42,6 +42,7 @@ export async function getClashMetaConfig (
     // validate proxies
     Proxies = Proxies.map(i => {
         if (Dumper.__validate(i)) {
+            i.Hostname = i.Hostname.replace(/(^\[|\]$)/g, "");
             return i;
         }
     }).filter(i => !!i);
