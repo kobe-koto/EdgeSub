@@ -1,4 +1,4 @@
-import { getDefaultHeader, getDefaultOptionsHeader } from "../utils/defaultHeader";
+import { getDefaultHeader, getOptionsHeader } from "../utils/defaultHeader";
 import { sha256 } from "js-sha256";
 
 export async function onRequestPost (context) {
@@ -30,7 +30,6 @@ export async function onRequestPost (context) {
     if (!newPassword) {
         return new Response (
             JSON.stringify({
-                status: 400,
                 msg: "new password cant be empty",
                 passwordUpdated: false
             }), {
@@ -41,16 +40,15 @@ export async function onRequestPost (context) {
     }
 
 
-    let oldPasswordInDB = await EdgeSubDB.get("short_password");
+    let oldPasswordInDB = await EdgeSubDB.get("admin-password");
     if (
         !oldPasswordInDB || // should be true when there isn't any old password
         hashedOldPassword == oldPasswordInDB // should be true when there is an password in db and matched
     ) {
-        await EdgeSubDB.put("short_password", hashedNewPassword);
+        await EdgeSubDB.put("admin-password", hashedNewPassword);
     } else {
         return new Response (
             JSON.stringify({
-                status: 422,
                 msg: "the provided old password does not match with the old password in database.",
                 passwordUpdated: false
             }), {
@@ -63,7 +61,6 @@ export async function onRequestPost (context) {
 
     return new Response (
         JSON.stringify({
-            status: 200,
             msg: "OK",
             passwordUpdated: true
         }), {
@@ -77,6 +74,6 @@ export async function onRequestOptions (context) {
     const url = new URL(context.request.url);
     return new Response("OK", {
         status: 200,
-        headers: getDefaultOptionsHeader(url)
+        headers: getOptionsHeader(url)
     });
 }

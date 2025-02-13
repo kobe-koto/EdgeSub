@@ -2,10 +2,8 @@
 import KForm from "@components/k-form.astro";
 ---
 
+<h2>Shorter 设定</h2>
 <k-shorter class="flex-contents">
-
-    <h2>Shorter 设定</h2>
-
     <KForm
         slug="SubURL"
         desc="订阅链接"
@@ -20,8 +18,8 @@ import KForm from "@components/k-form.astro";
         type="input"
     />
     <KForm
-        slug="short-password"
-        desc="Short 密码"
+        slug="short-token"
+        desc="Short Token"
         detail="默认随机"
         type="input"
     />
@@ -34,4 +32,4 @@ import KForm from "@components/k-form.astro";
 </k-shorter>
 
 
-<script src="@scripts/components/k-shorter"></script>
+<script src="@scripts/components/shorter/k-shorter"></script>

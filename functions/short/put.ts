@@ -1,48 +1,46 @@
-import { getDefaultHeader, getDefaultOptionsHeader } from "./utils/defaultHeader";
+import { getDefaultHeader, getOptionsHeader } from "./utils/defaultHeader";
 
 export async function onRequestPost (context) {
     const { request } = context;
-    const url = new URL(request.url);
-    const defaultHeader = getDefaultHeader(url);
+    const defaultHeader = getDefaultHeader(new URL(request.url));
 
     const EdgeSubDB = context.env.EdgeSubDB;
-    let { slug, password, subdata } = await request.json();
+    let { slug, token, subdata } = await request.json();
 
-    if (!slug && !password) {
-        slug = await generatePassword(8, EdgeSubDB);
-        password = await generatePassword(16);
+    if (!slug && !token) {
+        slug = await generateToken(8, EdgeSubDB);
+        token = await generateToken(16);
     }
 
 
     let storedData = await EdgeSubDB.get(`short:${slug}`);
     if (storedData) {
         // when data exists
-        let { password: storedPassword } = JSON.parse(storedData);
-        if (storedPassword !== password) { 
-            // when password doesnt matchs
+        let storedJSON = JSON.parse(storedData);
+        let storedToken = storedJSON.token ?? storedJSON.password;
+        if (storedToken !== token) { 
+            // when token doesnt matchs
             return new Response(
                 JSON.stringify({
-                    status: 403,
-                    msg: "Failed, wrong password",
+                    msg: "401 Unauthorized. Incorrect short token.",
                     slug,
                 }), {
-                    status: 403,
+                    status: 401,
                     headers: defaultHeader
                 }
             )
         }
     }
 
-    // when all the things seems right, eg: data not exist or password matches.
+    // when all the things seems right, eg: data not exist or token matches.
     await EdgeSubDB.put(`short:${slug}`, JSON.stringify({
-        password, subdata,
+        token, subdata,
     }))
     return new Response(
         JSON.stringify({
-            status: 200,
             msg: "OK",
             slug,
-            password
+            token
         }), {
             status: 200,
             headers: defaultHeader
@@ -50,15 +48,14 @@ export async function onRequestPost (context) {
     )
 }
 export async function onRequestOptions (context) {
-    const url = new URL(context.request.url);
     return new Response("OK", {
         status: 200,
-        headers: getDefaultOptionsHeader(url)
+        headers: getOptionsHeader(new URL(context.request.url))
     });
 }
 
 
-async function generatePassword (length, EdgeSubDB = undefined) {
+async function generateToken (length, EdgeSubDB = undefined) {
     const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let strArr = [];
     for (let i = 0, n = chars.length; i < length; i++) {
@@ -66,7 +63,7 @@ async function generatePassword (length, EdgeSubDB = undefined) {
     }
     let str =  strArr.join("");
     if ( EdgeSubDB && !!(await EdgeSubDB.get(`short:${str}`)) ) {
-        return generatePassword(length, EdgeSubDB);
+        return generateToken(length, EdgeSubDB);
     }
     return str;
 }

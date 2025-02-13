@@ -1,13 +1,13 @@
-import type { Form } from "./k-form";
+import type { Form } from "../k-form";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 
 export class ShorterList extends HTMLElement {
     defaultBackend = getDefaultBackend()
     constructor () {
         super();
-        this.Elements.SubmitButton.addEventListener("click", () => {this.SubmitShorterRequest()})
+        this.Elements.SubmitButton.addEventListener("click", () => {this.Submit()})
     }
-    async SubmitShorterRequest () {
+    async Submit () {
         this.Elements.Msg.innerText = "submitting..";
         // build request body
         let requestBody = {

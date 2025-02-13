@@ -1,18 +1,18 @@
-import type { Form } from "./k-form";
+import type { Form } from "../k-form";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 
 export class Shorter extends HTMLElement {
     defaultBackend = getDefaultBackend();
     constructor () {
         super();
-        this.Elements.SubmitButton.addEventListener("click", () => {this.SubmitShorterRequest()})
+        this.Elements.SubmitButton.addEventListener("click", () => {this.Submit()})
     }
-    async SubmitShorterRequest () {
+    async Submit () {
         // build request body
         let requestBody = {
             subdata: this.Elements.subdata.get(),
             slug: this.Elements.slug.get(),
-            password: this.Elements.password.get(),
+            token: this.Elements.token.get(),
         }
 
         // build api Endpoint
@@ -29,9 +29,9 @@ export class Shorter extends HTMLElement {
             return res.json()
         }).then(res => {
             this.Elements.Msg.innerText = `short:${res.slug}`;
-            // sync slug and password with reponse
+            // sync slug and token with reponse
             this.Elements.slug.set(res.slug);
-            this.Elements.password.set(res.password);
+            this.Elements.token.set(res.token);
         }).catch((err) => {
             this.Elements.Msg.innerText = `提交失败: ${err}`;
         })
@@ -40,7 +40,7 @@ export class Shorter extends HTMLElement {
         subdata: this.querySelector("k-form#SubURL") as Form,
 
         slug: this.querySelector("k-form#short-slug") as Form,
-        password: this.querySelector("k-form#short-password") as Form,
+        token: this.querySelector("k-form#short-token") as Form,
 
         Msg: this.querySelector("code"),
         SubmitButton: this.querySelector("#shorter"),

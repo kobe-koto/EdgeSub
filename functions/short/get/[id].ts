@@ -1,16 +1,15 @@
 import { getDefaultHeader } from "../utils/defaultHeader";
 
 export async function onRequest (context) {
-    const { slug } = context.params;
+    const { id } = context.params;
     const EdgeSubDB = context.env.EdgeSubDB;
     const defaultHeader = getDefaultHeader(new URL(context.request.url));
 
-    let storedData = await EdgeSubDB.get(`short:${slug}`);
+    let storedData = await EdgeSubDB.get(`short:${id}`);
     if (storedData) {
         let { subdata } = JSON.parse(storedData);
         return new Response(
             JSON.stringify({
-                status: 200,
                 msg: "OK",
                 subdata,
             }), {
@@ -21,9 +20,7 @@ export async function onRequest (context) {
     } else {
         return new Response(
             JSON.stringify({
-                status: 404,
-                msg: "Not Found",
-                slug,
+                msg: "Not Found"
             }), {
                 status: 404,
                 headers: defaultHeader

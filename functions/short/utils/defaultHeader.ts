@@ -5,12 +5,13 @@ export const getDefaultHeader = (url: URL) => {
         "Access-Control-Allow-Credentials": "true",
     } as unknown as Headers;
 }
-export const getDefaultOptionsHeader = (url: URL) => { 
+export const getOptionsHeader = (url: URL, Methods = [ "POST" ]) => { 
+    Methods.push("OPTIONS")
     return {
         //"Access-Control-Allow-Origin":  "localhost:4321")
         "Access-Control-Allow-Origin": getAllowedOriginHeader(url),
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Methods": Methods.join(", "),
     } as unknown as Headers;
 }
 
