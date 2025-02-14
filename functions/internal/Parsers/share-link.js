@@ -54,7 +54,7 @@ export class ShareLinkParser {
         const HY2 = {
             __Type: "hysteria2",
             __Remark: decodeURIComponent(URIObject.hash.replace(/^#/, "")) || URIObject.host,
-            Auth: URIObject.username,
+            Auth: decodeURIComponent(URIObject.password || URIObject.username),
             Hostname: URIObject.hostname,
             Port: parseInt(URIObject.port),
             Query: __searchParamsMapper(URIObject.searchParams)
