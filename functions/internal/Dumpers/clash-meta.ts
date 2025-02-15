@@ -80,7 +80,6 @@ export default class Dumper {
             port: hy2Object.Port,
             ports: hy2Object.Query.mport,
             password: hy2Object.Auth,
-            auth: hy2Object.Auth,
             obfs: hy2Object.Query.obfs,
             "obfs-password": hy2Object.Query["obfs-password"],
             "client-fingerprint": this.config.ClientFingerprint,
