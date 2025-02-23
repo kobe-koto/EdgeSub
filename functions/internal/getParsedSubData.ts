@@ -30,9 +30,14 @@ export default async function getParsedSubData (
 
     let SubURLArr = SubURLs.replaceAll("\r", "\n").split("\n").filter((i) => !!i).map(i => encodeURIComponent(i.trim())).map(i => decodeURIComponent(i)) as SubURLArr;
     let ParsedData = [];
+    let AllHeaders = {};
+
     for (let i in SubURLArr) {
         console.info(`[Fetch Sub Data] Fetching ${parseInt(i) + 1}/${SubURLArr.length}`)
-        ParsedData = [...ParsedData, ...(await ParseSubData(SubURLArr[i], EdgeSubDB, RequestHeaders))]
+        const result = await ParseSubData(SubURLArr[i], EdgeSubDB, RequestHeaders);
+        ParsedData = [...ParsedData, ...(result.data || [])];
+        // 合并所有上游响应头
+        AllHeaders = { ...AllHeaders, ...result.headers };
     }
 
     if (isShowHost === true) {
@@ -42,9 +47,13 @@ export default async function getParsedSubData (
         })
     }
 
-    console.info(`[Fetch Sub Data] Job done, wasting ${performance.now() - __startTime}ms.`)
-    return ParsedData;
+    console.info(`[Fetch Sub Data] Job done, used ${performance.now() - __startTime}ms`)
+    return {
+        data: ParsedData,
+        headers: AllHeaders
+    };
 }
+
 async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) {
     // handle `short` here
     if (SubURL.match(/^short:/i)) {
@@ -56,6 +65,7 @@ async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) {
     }
 
     let SubData;
+    let UpstreamHeaders = {};
     // handle bundle share link (not starts with `http(s|)://` )
     if (!SubURL.match(/^http(s|):\/\//i)) {
         SubData = {
@@ -63,8 +73,17 @@ async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) {
             data: SubURL
         }
     } else {
-        SubData = await fetch(SubURL, { headers: RequestHeaders })
-            .then(async res => await res.text())
+        const response = await fetch(SubURL, { headers: RequestHeaders });
+        // 保存上游响应头
+        const importantHeaders = ['subscription-userinfo', 'profile-update-interval', 'profile-web-page-url'];
+        importantHeaders.forEach(header => {
+            const value = response.headers.get(header);
+            if (value) {
+                UpstreamHeaders[header] = value;
+            }
+        });
+        
+        SubData = await response.text()
             .then(res => {
                 // try decode as yaml, for clash-meta config
                 try {
@@ -126,5 +145,9 @@ async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) {
         }
     }
     
-    return ParsedSubData;
+    // 将上游响应头附加到解析后的数据中
+    return {
+        data: ParsedSubData,
+        headers: UpstreamHeaders
+    };
 }

@@ -4,7 +4,7 @@ import getParsedSubData from "../internal/getParsedSubData.ts";
 export async function onRequest (context) {
     const { request } = context;
     const URLObject = new URL(request.url);
-    let Proxies = await getParsedSubData(
+    let { data: Proxies, headers: UpstreamHeaders } = await getParsedSubData(
         URLObject.searchParams.get("url"), 
         context.env.EdgeSubDB, 
         URLObject.searchParams.get("show_host") === "true",
@@ -39,13 +39,15 @@ export async function onRequest (context) {
         }
     }
 
-    const ResponseBody = JSON.stringify(SingBoxConfigObject)
+    let JSONString = JSON.stringify(SingBoxConfigObject, null, 4);
 
-    return new Response(ResponseBody, {
-        status: 200,
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "Content-Length": ResponseBody.length,
-        }
+    // 构建响应头
+    const responseHeaders = {
+        'Content-Type': 'application/json; charset=utf-8',
+        ...UpstreamHeaders
+    };
+
+    return new Response(JSONString, {
+        headers: responseHeaders
     })
 }

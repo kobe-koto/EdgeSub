@@ -5,7 +5,7 @@ export async function onRequest (context, isBase64 = false) {
     const { request } = context;
     const URLObject = new URL(request.url);
     // do convert
-    const Proxies = await getParsedSubData(
+    let { data: Proxies, headers: UpstreamHeaders } = await getParsedSubData(
         URLObject.searchParams.get("url"), 
         context.env.EdgeSubDB, 
         URLObject.searchParams.get("show_host") === "true",
@@ -25,11 +25,13 @@ export async function onRequest (context, isBase64 = false) {
         ShareLinkResponse = btoa(ShareLinkResponse);
     }
 
+    // 构建响应头
+    const responseHeaders = {
+        'Content-Type': 'text/plain; charset=utf-8',
+        ...UpstreamHeaders
+    };
+
     return new Response(ShareLinkResponse, {
-        status: 200,
-        headers: {
-            "Content-Type": "text/plain, charset=utf-8",
-            "Content-Length": ShareLinkResponse.length
-        }
+        headers: responseHeaders
     })
 }
