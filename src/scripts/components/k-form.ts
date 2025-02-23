@@ -3,11 +3,69 @@ import type { Dropdown } from "@scripts/components/k-dropdown";
 
 export class Form extends HTMLElement {
     type = this.dataset.type;
-    // id = this.id;
+    
     constructor () {
         super ();
+        console.log(`[k-form] Initializing form ${this.id} of type ${this.type}`);
+        // 延迟加载缓存值，确保子组件已经初始化
+        setTimeout(() => this.loadCachedValue(), 500);
+        this.setupChangeListener();
         return this;
     }
+
+    private loadCachedValue() {
+        const cachedValue = localStorage.getItem(`form-${this.id}`);
+        console.log(`[k-form] Loading cached value for ${this.id}:`, cachedValue);
+        
+        if (cachedValue !== null) {
+            if (this.type === "textarea" || this.type === "input") {
+                this.set(cachedValue);
+            } else if (this.type === "k-switch") {
+                const SwitchElement = this.querySelector("k-switch") as Switch;
+                if (SwitchElement) {
+                    SwitchElement.checked = cachedValue === "true";
+                }
+            } else if (this.type === "k-dropdown") {
+                const DropdownElement = this.querySelector("k-dropdown") as Dropdown;
+                console.log(`[k-form] Found dropdown for ${this.id}:`, DropdownElement);
+                if (DropdownElement) {
+                    console.log(`[k-form] Setting dropdown value for ${this.id} to:`, cachedValue);
+                    DropdownElement.dataset.selectedValue = cachedValue;
+                    // 手动触发一个事件来通知下拉框组件更新显示
+                    DropdownElement.dispatchEvent(new CustomEvent('DropdownSelect', {
+                        detail: { selectedValue: cachedValue },
+                        bubbles: true,
+                        cancelable: true
+                    }));
+                }
+            }
+        }
+    }
+
+    private setupChangeListener() {
+        if (this.type === "textarea" || this.type === "input") {
+            const element = this.querySelector(this.type === "textarea" ? "textarea" : "input");
+            element?.addEventListener("input", () => this.cacheValue());
+        } else if (this.type === "k-switch") {
+            const element = this.querySelector("k-switch");
+            element?.addEventListener("change", () => this.cacheValue());
+        } else if (this.type === "k-dropdown") {
+            const element = this.querySelector("k-dropdown");
+            element?.addEventListener("DropdownSelect", (event: CustomEvent) => {
+                console.log(`[k-form] Dropdown value changed for ${this.id}:`, event.detail);
+                this.cacheValue();
+            });
+        }
+    }
+
+    private cacheValue() {
+        const value = this.get();
+        console.log(`[k-form] Caching value for ${this.id}:`, value);
+        if (value !== undefined) {
+            localStorage.setItem(`form-${this.id}`, value);
+        }
+    }
+
     get () {
         if (this.type === "textarea") {
             return this.querySelector("textarea").value
@@ -15,19 +73,21 @@ export class Form extends HTMLElement {
             return this.querySelector("input").value
         } else if (this.type === "k-dropdown") {
             const DropdownElement = this.querySelector("k-dropdown") as Dropdown;
-            return DropdownElement.dataset.selectedValue;
+            return DropdownElement?.dataset.selectedValue;
         } else if (this.type === "k-switch") {
             const SwitchElement = this.querySelector("k-switch") as Switch;
             return SwitchElement.checked.toString();
         }
     }
-    set (value: ("textarea" | "input")) {
+    
+    set (value: string) {
         if (this.type === "textarea") {
             this.querySelector("textarea").value = value.trim()
         } else if (this.type === "input") {
             this.querySelector("input").value = value.trim()
         }
     }
+
     setDetail(value: string) {
         if (this.type === "textarea") {
             this.querySelector("textarea").placeholder = value;
@@ -38,6 +98,7 @@ export class Form extends HTMLElement {
         }
         return false;
     }
+
     getDetail() {
         if (this.type === "textarea") {
             return this.querySelector("textarea").placeholder;
@@ -46,5 +107,6 @@ export class Form extends HTMLElement {
         }
     }
 }
+
 customElements.define("k-form", Form);
 console.info("[k-form] registered")

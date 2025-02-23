@@ -1,21 +1,24 @@
 import type { Form } from "@scripts/components/k-form";
 import type { EndpointExtendConfigPrototype, EndpointPrototype } from "@config/AvalibleOptoutFormat";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
+
 class SubURLGenerator extends HTMLElement {
     TargetExtendConfig: ( "RemoteConfig" | "isUDP" )[];
     Endpoints: EndpointPrototype[] = JSON.parse(this.dataset.endpoints);
     defaultBackend = getDefaultBackend();
+
     constructor () {
         super()
         this.GenerateButton.addEventListener("click", () => {this.CheckAndGenerate()});
         this.CopyButton.addEventListener("click", () => {this.CopyURL()});
-        this.BasicConfigElement.Endpoint.querySelector("k-dropdown").addEventListener("DropdownSelect", (event: CustomEvent) => {this.ChangeEndpoint(event)});
+        this.BasicConfigElement.Endpoint.addEventListener("change", (event: CustomEvent) => {this.ChangeEndpoint(event)});
         document.body.dataset.defaultBackend = this.defaultBackend;
         customElements.whenDefined("k-form").then(() => {
             this.BasicConfigElement.Backend.setDetail(`${this.BasicConfigElement.Backend.getDetail()} (${this.defaultBackend})`);
             console.info("[k-sub-url-generator] k-form registration detected, default backend modified")
         })
     }
+
     GenerateButton = this.querySelector("button#generate") as HTMLButtonElement;
     CopyButton = this.querySelector("button#copy") as HTMLButtonElement;
     MsgBlock = this.querySelector("code") as HTMLElement;
@@ -33,6 +36,7 @@ class SubURLGenerator extends HTMLElement {
         isSSUoT: this.querySelector("k-form#isSSUoT") as Form,
         ForcedWS0RTT: this.querySelector("k-form#ForcedWS0RTT") as Form,
     }
+
     GetEndpoint (EndpointPath: string = this.BasicConfigElement.Endpoint.get()) {
         for (let i of this.Endpoints) {
             if (i.value === EndpointPath) {
@@ -41,6 +45,7 @@ class SubURLGenerator extends HTMLElement {
         }
         throw `no targeted endpoint found, expected value ${EndpointPath}`
     }
+
     ChangeEndpoint (event: CustomEvent) {
         const SelectedEndpointPath: string = event.detail.selectedValue;
         let Endpoint: EndpointPrototype = this.GetEndpoint(SelectedEndpointPath);
@@ -54,6 +59,7 @@ class SubURLGenerator extends HTMLElement {
             }
         }
     }
+
     CheckAndGenerate () {
         const BasicConfig = {
             SubURL: this.BasicConfigElement.SubURL.get(),
@@ -112,6 +118,7 @@ class SubURLGenerator extends HTMLElement {
         Config.HTTPHeaders !== "{}" && URLObj.searchParams.append("http_headers", Config.HTTPHeaders)
         return URLObj.toString();
     }
+
     CopyURL () {
         if (!navigator.clipboard) {
             alert("navigator.clipboard API not found on your drowser")

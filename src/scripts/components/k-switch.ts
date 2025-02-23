@@ -1,19 +1,48 @@
 export class Switch extends HTMLElement {
-    checked: boolean = this.dataset.checked === "true"
+    private _checked: boolean = this.dataset.checked === "true"
+
     constructor () {
         super ();
-
+        
         this.addEventListener("click", () => {
-            this.setChecked(!this.getChecked())
+            this.updateCheckedState(!this.getChecked(), true);
+        });
+
+        // Listen for external switch events
+        this.addEventListener("SwitchChange", (event: CustomEvent) => {
+            this.updateCheckedState(event.detail.checked, false);
         });
     }
-    setChecked (TargetStatus: boolean) {
-        this.checked = TargetStatus;
-        this.dataset.checked = this.checked.toString();
+
+    get checked(): boolean {
+        return this._checked;
     }
-    getChecked () {
+
+    set checked(value: boolean) {
+        this.updateCheckedState(value, false);
+    }
+
+    private updateCheckedState(value: boolean, dispatchEvent: boolean = true) {
+        this._checked = value;
+        this.dataset.checked = value.toString();
+
+        if (dispatchEvent) {
+            this.dispatchEvent(new CustomEvent("SwitchChange", {
+                detail: { checked: value },
+                bubbles: true
+            }));
+            this.dispatchEvent(new Event("change"));
+        }
+    }
+
+    setChecked(TargetStatus: boolean) {
+        this.updateCheckedState(TargetStatus, true);
+    }
+
+    getChecked() {
         return this.checked;
     }
 }
+
 customElements.define("k-switch", Switch);
 console.info("[k-switch] registered")
