@@ -6,7 +6,7 @@ import Yaml from "js-yaml";
 export async function onRequest (context, isClashOriginal = false) {
     const { request } = context;
     const URLObject = new URL(request.url);
-    let Proxies = await getParsedSubData(
+    let { data: Proxies, headers: UpstreamHeaders } = await getParsedSubData(
         URLObject.searchParams.get("url"), 
         context.env.EdgeSubDB, 
         URLObject.searchParams.get("show_host") === "true",
@@ -48,13 +48,15 @@ export async function onRequest (context, isClashOriginal = false) {
         }
     }
 
-    const ResponseBody = Yaml.dump(ClashMetaConfigObject)
+    let YAMLString = Yaml.dump(ClashMetaConfigObject);
 
-    return new Response(ResponseBody, {
-        status: 200,
-        headers: {
-            "Content-Type": "text/plain; charset=utf-8",
-            "Content-Length": ResponseBody.length
-        }
+    // 构建响应头
+    const responseHeaders = {
+        'Content-Type': 'text/yaml; charset=utf-8',
+        ...UpstreamHeaders
+    };
+
+    return new Response(YAMLString, {
+        headers: responseHeaders
     })
 }
