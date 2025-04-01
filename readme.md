@@ -93,7 +93,7 @@
   | ShareLink 集合 (Base64) | ✅    | ✅    | `/sub/base64`     |
   | Clash Meta 配置         | ✅    | ✅    | `/sub/clash-meta` |
   | Clash 配置              | ✅    | ✅    | `/sub/clash`      |
-  | Sing-Box 配置           | 🚫    | ✅    | `/sub/sing-box`   |
+  | Sing-Box 配置           | ✅    | ✅    | `/sub/sing-box`   |
 
   Notes:
   
