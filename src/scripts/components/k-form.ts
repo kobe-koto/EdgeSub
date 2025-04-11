@@ -6,16 +6,17 @@ export class Form extends HTMLElement {
     
     constructor () {
         super ();
-        console.log(`[k-form] Initializing form ${this.id} of type ${this.type}`);
-        // 延迟加载缓存值，确保子组件已经初始化
-        setTimeout(() => this.loadCachedValue(), 500);
-        this.setupChangeListener();
-        return this;
+        
+        // restore cache
+        if (this.dataset.enableCache === "true") {
+            this.restoreCachedValue()
+            this.setupChangeListener()
+        }
     }
 
-    private loadCachedValue() {
+    private restoreCachedValue() {
         const cachedValue = localStorage.getItem(`form-${this.id}`);
-        console.log(`[k-form] Loading cached value for ${this.id}:`, cachedValue);
+        console.info(`[k-form] Restored cache for Form ID '${this.id}' (cached value: ${cachedValue})`);
         
         if (cachedValue !== null) {
             if (this.type === "textarea" || this.type === "input") {
@@ -41,7 +42,6 @@ export class Form extends HTMLElement {
             }
         }
     }
-
     private setupChangeListener() {
         if (this.type === "textarea" || this.type === "input") {
             const element = this.querySelector(this.type === "textarea" ? "textarea" : "input");
@@ -60,7 +60,7 @@ export class Form extends HTMLElement {
 
     private cacheValue() {
         const value = this.get();
-        console.log(`[k-form] Caching value for ${this.id}:`, value);
+        console.debug(`[k-form] Caching value for ${this.id}:`, value);
         if (value !== undefined) {
             localStorage.setItem(`form-${this.id}`, value);
         }

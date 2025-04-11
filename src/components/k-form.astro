@@ -12,6 +12,7 @@ interface Props {
     DropdownDefault?: DropdownItemPrototype;
     DropdownItems?: DropdownItemPrototype[];
     SwitchDefault?: boolean;
+    EnableCache?: boolean;
 }
 
 const { 
@@ -21,11 +22,12 @@ const {
     type, 
     DropdownDefault, 
     DropdownItems, 
-    SwitchDefault = false 
+    SwitchDefault = false,
+    EnableCache = true,
 } = Astro.props;
 ---
 
-<k-form id={slug} data-type={type}>
+<k-form id={slug} data-type={type} data-enable-cache={EnableCache}>
 
     <label>{desc}</label>
 
