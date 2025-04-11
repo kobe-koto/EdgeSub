@@ -3,6 +3,7 @@ import { getDefaultHeader, getOptionsHeader } from "./utils/defaultHeader";
 export async function onRequestPost (context) {
     const { request } = context;
     const defaultHeader = getDefaultHeader(new URL(request.url));
+    const timestamp = Date.now();
 
     const EdgeSubDB = context.env.EdgeSubDB;
     let { slug, token, subdata } = await request.json();
@@ -34,7 +35,7 @@ export async function onRequestPost (context) {
 
     // when all the things seems right, eg: data not exist or token matches.
     await EdgeSubDB.put(`short:${slug}`, JSON.stringify({
-        token, subdata,
+        token, subdata, timestamp
     }))
     return new Response(
         JSON.stringify({
