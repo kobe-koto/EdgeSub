@@ -95,23 +95,32 @@ export async function getClashMetaConfig (
         ClashConfig["proxy-groups"].push(ProxyGroup)
     }
 
+    // append rule providers
+    ClashConfig["rule-providers"] = {};
+    for (let i in RemoteConfig.RuleProviders) {
+        for (let t in RemoteConfig.RuleProviders[i]) {
+            const RuleProviderItem = RemoteConfig.RuleProviders[i][t];
+            const RuleProviderID = `${i}__${t}`;
+            ClashConfig["rule-providers"][RuleProviderID] = {
+                type: "http",
+                behavior: "classical",
+                url: RuleProviderItem,
+                format: (RuleProviderItem.endsWith(".yaml") || RuleProviderItem.endsWith(".yml")) ? "yaml" : "text",
+                interval: 21600
+            }
+        }
+    }
+
     // Append rule sets;
     ClashConfig.rules = []
-    for (let i of RemoteConfig.RuleSet) {
-        i.Rules = i.Rules
-            .filter(l => 
-                 ! (
-                    l.startsWith("USER-AGENT,") ||
-                    l.startsWith("URL-REGEX,")
-                )
-            )
-        for (let t of i.Rules) {
-            let RuleEntry = t.split(",")
-            if (RuleEntry[0] === "FINAL") {
-                RuleEntry[0] = "MATCH"
-            }
-            ClashConfig.rules.push([...RuleEntry.slice(0, 2), i.Outbound, ...RuleEntry.slice(2)].join(","))
+    for (let i in RemoteConfig.RuleProviders) {
+        for (let t in RemoteConfig.RuleProviders[i]) {
+            const RuleProviderID = `${i}__${t}`;
+            ClashConfig.rules.push(`RULE-SET,${RuleProviderID},${i}`)
         }
+    }
+    for (let i in RemoteConfig.Rules) {
+        ClashConfig.rules.push(`${RemoteConfig.Rules[i]},${i}`)
     }
 
     return ClashConfig;

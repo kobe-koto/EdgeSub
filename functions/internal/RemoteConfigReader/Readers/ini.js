@@ -1,12 +1,12 @@
 import { parse as INIParse } from "ini";
 
-import { fetchCached } from "../utils/fetchCached.js";
-import { RuleSetReader } from "../RuleSetReader/main.js";
+import { fetchCached } from "../../utils/fetchCached.js";
 
 export async function ini (RemoteConfigURL, CacheDB, isForcedRefresh) {
 
     let Config = {
-        RuleSet: [],
+        RuleProviders: [],
+        Rules: [],
         ProxyGroup: []
     };
 
@@ -21,15 +21,30 @@ export async function ini (RemoteConfigURL, CacheDB, isForcedRefresh) {
         .then(res => INIParse(res));
 
 
-    // process rulesets
+    // process rules
     for (let i of RemoteConfig.custom.ruleset) {
-        let NowRuleSetReader = new RuleSetReader(i);
-        Config.RuleSet.push(await NowRuleSetReader.Process(CacheDB, isForcedRefresh))
+        const rulesetBreakdown = i.split(",")
+        const slug = rulesetBreakdown[0];
+        const content = rulesetBreakdown.slice(1).join(",");
+        if (content.startsWith("https://") || content.startsWith("http://")) {
+            if (!Config.RuleProviders[slug]) {
+                Config.RuleProviders[slug] = [];
+            }
+            Config.RuleProviders[slug].push(content)
+        } else {
+            if (!Config.Rules[slug]) {
+                Config.Rules[slug] = [];
+            }
+            const postProcessedContent = content
+                .replace(/^\[\]FINAL/i, "MATCH")
+                .replace(/^\[\]/g, "")
+            Config.Rules[slug].push(postProcessedContent)
+        }
     }
 
     // process proxy groups
     for (let i of RemoteConfig.custom.custom_proxy_group) {
-        // we dont support these "特殊筛选条件" that starts with "!!", sorry. #todo
+        // "特殊筛选条件" (starts with "!!") are not supported. #todo
         const ConfigArr = i.split("`").filter(t => !t.startsWith("!!"));
         const Args = ConfigArr.slice(2).filter(t => !t.startsWith("[]"));
         const type = ConfigArr[1];
