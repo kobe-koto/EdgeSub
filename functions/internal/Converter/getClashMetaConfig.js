@@ -15,6 +15,7 @@ const BasicClashConfig = {
 };
 
 const BasicConfig = {
+    ProxyRuleProviders: false,
     isUDP: true,
     isSSUoT: false,
     isInsecure: true,
@@ -101,10 +102,20 @@ export async function getClashMetaConfig (
         for (let t in RemoteConfig.RuleProviders[i]) {
             const RuleProviderItem = RemoteConfig.RuleProviders[i][t];
             const RuleProviderID = `${i}__${t}`;
+            let RuleProviderURL;
+            if (Config.ProxyRuleProviders) {
+                let RuleProviderURLObject = new URL(Config.ProxyRuleProviders);
+                RuleProviderURLObject.pathname = "/ruleset/proxy"
+                RuleProviderURLObject.search = ""
+                RuleProviderURLObject.searchParams.append("target", RuleProviderItem)
+                RuleProviderURL = RuleProviderURLObject.toString()
+            } else {
+                RuleProviderURL = RuleProviderItem;
+            }
             ClashConfig["rule-providers"][RuleProviderID] = {
                 type: "http",
                 behavior: "classical",
-                url: RuleProviderItem,
+                url: RuleProviderURL,
                 format: (RuleProviderItem.endsWith(".yaml") || RuleProviderItem.endsWith(".yml")) ? "yaml" : "text",
                 interval: 21600
             }

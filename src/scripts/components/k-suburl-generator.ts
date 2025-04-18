@@ -32,6 +32,7 @@ class SubURLGenerator extends HTMLElement {
     ExtendConfigElement = {
         RemoteConfigUserspec: this.querySelector("k-form#RemoteConfigUserspec") as Form,
         RemoteConfig: this.querySelector("k-form#RemoteConfig") as Form,
+        ProxyRuleProviders: this.querySelector("k-form#ProxyRuleProviders") as Form,
         isUDP: this.querySelector("k-form#isUDP") as Form,
         isSSUoT: this.querySelector("k-form#isSSUoT") as Form,
         ForcedWS0RTT: this.querySelector("k-form#ForcedWS0RTT") as Form,
@@ -70,6 +71,7 @@ class SubURLGenerator extends HTMLElement {
         }
         const ExtendConfig = {
             RemoteConfig: this.ExtendConfigElement.RemoteConfigUserspec.get() || this.ExtendConfigElement.RemoteConfig.get(),
+            ProxyRuleProviders: this.ExtendConfigElement.ProxyRuleProviders.get(),
             isUDP: this.ExtendConfigElement.isUDP.get(),
             isSSUoT: this.ExtendConfigElement.isSSUoT.get(),
             ForcedWS0RTT: this.ExtendConfigElement.ForcedWS0RTT.get()
@@ -103,7 +105,7 @@ class SubURLGenerator extends HTMLElement {
 
     }
 
-    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; isSSUoT?: any; ForcedWS0RTT?: any; isShowHost: any, HTTPHeaders: any }) {
+    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; ProxyRuleProviders?: any; isUDP?: any; isSSUoT?: any; ForcedWS0RTT?: any; isShowHost: any, HTTPHeaders: any }) {
         let URLObj = new URL(Config.Backend);
         URLObj.pathname = Config.Endpoint;
         URLObj.search = "";
@@ -111,6 +113,7 @@ class SubURLGenerator extends HTMLElement {
 
         URLObj.searchParams.append("url", Config.SubURL)
         Config.RemoteConfig && URLObj.searchParams.append("remote_config", Config.RemoteConfig)
+        Config.ProxyRuleProviders && URLObj.searchParams.append("proxy_rule_providers", Config.ProxyRuleProviders && Config.Backend)
         Config.isUDP && URLObj.searchParams.append("udp", Config.isUDP.toString())
         Config.isSSUoT && URLObj.searchParams.append("ss_uot", Config.isSSUoT.toString())
         Config.isShowHost && URLObj.searchParams.append("show_host", Config.isShowHost.toString())
