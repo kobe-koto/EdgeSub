@@ -8,7 +8,9 @@
   "scripts": {
     "dev": "wrangler pages dev ./",
     "dev:frontend": "astro dev",
-    "build:frontend": "astro build"
+    "build:frontend": "astro build",
+    "generate-types": "wrangler types ./types/worker-configuration.d.ts",
+    "type-check": "generate-types && tsc"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.2.1",
