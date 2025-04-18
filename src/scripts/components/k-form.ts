@@ -24,7 +24,7 @@ export class Form extends HTMLElement {
             } else if (this.type === "k-switch") {
                 const SwitchElement = this.querySelector("k-switch") as Switch;
                 if (SwitchElement) {
-                    SwitchElement.checked = cachedValue === "true";
+                    SwitchElement.set(cachedValue === "true");
                 }
             } else if (this.type === "k-dropdown") {
                 const DropdownElement = this.querySelector("k-dropdown") as Dropdown;
@@ -59,7 +59,7 @@ export class Form extends HTMLElement {
     }
 
     private cacheValue() {
-        const value = this.get();
+        const value = this.get().toString();
         console.debug(`[k-form] Caching value for ${this.id}:`, value);
         if (value !== undefined) {
             localStorage.setItem(`form-${this.id}`, value);
@@ -76,7 +76,7 @@ export class Form extends HTMLElement {
             return DropdownElement?.dataset.selectedValue;
         } else if (this.type === "k-switch") {
             const SwitchElement = this.querySelector("k-switch") as Switch;
-            return SwitchElement.checked.toString();
+            return SwitchElement.get()
         }
     }
     
@@ -85,6 +85,9 @@ export class Form extends HTMLElement {
             this.querySelector("textarea").value = value.trim()
         } else if (this.type === "input") {
             this.querySelector("input").value = value.trim()
+        } else if (this.type === "k-switch") {
+            const SwitchElement = this.querySelector("k-switch") as Switch;
+            return SwitchElement.set(value === "true")
         }
     }
 
@@ -108,5 +111,11 @@ export class Form extends HTMLElement {
     }
 }
 
-customElements.define("k-form", Form);
-console.info("[k-form] registered")
+Promise.all([
+    customElements.whenDefined("k-switch"),
+    customElements.whenDefined("k-dropdown")
+]).then(() => {
+    console.log("[k-form] dependency k-switch and k-dropdown registration detected, initializing");
+    customElements.define("k-form", Form);
+    console.info("[k-form] registered")
+});
