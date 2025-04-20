@@ -111,11 +111,27 @@ export class Form extends HTMLElement {
     }
 }
 
+
+function maybeWaitFor(tag) {
+    return customElements.get(tag) || document.querySelector(tag)
+      ? customElements.whenDefined(tag)
+      : Promise.resolve(); // No need to wait
+  }
+  
 Promise.all([
-    customElements.whenDefined("k-switch"),
-    customElements.whenDefined("k-dropdown")
+    maybeWaitFor("k-switch"),
+    maybeWaitFor("k-dropdown")
 ]).then(() => {
-    console.log("[k-form] dependency k-switch and k-dropdown registration detected, initializing");
+    console.log("[k-form] dependency elements k-switch and k-dropdown registered, initializing");
     customElements.define("k-form", Form);
     console.info("[k-form] registered")
 });
+
+// Promise.all([
+//     customElements.whenDefined("k-switch"),
+//     customElements.whenDefined("k-dropdown")
+// ]).then(() => {
+//     console.log("[k-form] dependency k-switch and k-dropdown registration detected, initializing");
+//     customElements.define("k-form", Form);
+//     console.info("[k-form] registered")
+// });
