@@ -36,6 +36,7 @@ export async function ini (RemoteConfigURL, CacheDB, isForcedRefresh) {
                 Config.Rules[slug] = [];
             }
             const postProcessedContent = content
+                .split(",").map(i=>i.trim()).join(",")
                 .replace(/^\[\]FINAL/i, "MATCH")
                 .replace(/^\[\]/g, "")
             Config.Rules[slug].push(postProcessedContent)
