@@ -14,8 +14,9 @@ export class RemoteConfigReader {
         if (this.RemoteConfig.Type in this.Reader) {
             return true;
         } else {
-            console.warn("[Remote Config Reader] [WARN] Inputed remote config type not supported, skipping.");
-            return false;
+            console.warn("[Remote Config Reader] [WARN] Inputed remote config type cannot be detected, assume as .ini.");
+            this.RemoteConfig.Type = "ini"
+            return true;
         }
     }
 
