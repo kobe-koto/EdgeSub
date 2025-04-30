@@ -216,9 +216,9 @@ export default class Dumper {
             cipher: SS.Auth.cipher,
             password: SS.Auth.password,
   
+            udp: this.config.UDP,
             "udp-over-tcp": this.config.SSUoT,
             "udp-over-tcp-version": this.config.SSUoT ? 2 : undefined,
-            // udp: true,
         }
     }
     trojan (TROJAN) {
