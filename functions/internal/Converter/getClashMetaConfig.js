@@ -131,7 +131,9 @@ export async function getClashMetaConfig (
         }
     }
     for (let i in RemoteConfig.Rules) {
-        ClashConfig.rules.push(`${RemoteConfig.Rules[i]},${i}`)
+        for (let t of RemoteConfig.Rules[i]) {
+            ClashConfig.rules.push(`${t},${i}`)
+        }
     }
 
     return ClashConfig;
