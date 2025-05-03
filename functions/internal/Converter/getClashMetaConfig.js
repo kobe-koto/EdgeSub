@@ -98,25 +98,27 @@ export async function getClashMetaConfig (
 
     // append rule providers
     ClashConfig["rule-providers"] = {};
+    let RuleProvidersMapping = {}; // { URL: ID }[]
     for (let i in RemoteConfig.RuleProviders) {
         for (let t in RemoteConfig.RuleProviders[i]) {
-            const RuleProviderItem = RemoteConfig.RuleProviders[i][t];
+            const RuleProviderPayload = RemoteConfig.RuleProviders[i][t];
             const RuleProviderID = `${i}__${t}`;
+            RuleProvidersMapping[RuleProviderPayload] = RuleProviderID;
             let RuleProviderURL;
             if (Config.ProxyRuleProviders) {
                 let RuleProviderURLObject = new URL(Config.ProxyRuleProviders);
                 RuleProviderURLObject.pathname = "/ruleset/proxy"
                 RuleProviderURLObject.search = ""
-                RuleProviderURLObject.searchParams.append("target", RuleProviderItem)
+                RuleProviderURLObject.searchParams.append("target", RuleProviderPayload)
                 RuleProviderURL = RuleProviderURLObject.toString()
             } else {
-                RuleProviderURL = RuleProviderItem;
+                RuleProviderURL = RuleProviderPayload;
             }
             ClashConfig["rule-providers"][RuleProviderID] = {
                 type: "http",
                 behavior: "classical",
                 url: RuleProviderURL,
-                format: (RuleProviderItem.endsWith(".yaml") || RuleProviderItem.endsWith(".yml")) ? "yaml" : "text",
+                format: (RuleProviderPayload.endsWith(".yaml") || RuleProviderPayload.endsWith(".yml")) ? "yaml" : "text",
                 interval: 21600
             }
         }
@@ -124,16 +126,15 @@ export async function getClashMetaConfig (
 
     // Append rule sets;
     ClashConfig.rules = []
-    for (let i in RemoteConfig.RuleProviders) {
-        for (let t in RemoteConfig.RuleProviders[i]) {
-            const RuleProviderID = `${i}__${t}`;
-            ClashConfig.rules.push(`RULE-SET,${RuleProviderID},${i}`)
+    for (let i of RemoteConfig.Rules) {
+        
+        const rulesetBreakdown = i.split(",")
+        const id = rulesetBreakdown[0];
+        let payload = rulesetBreakdown.slice(1).join(",");
+        if (payload.startsWith("http://") || payload.startsWith("https://")) {
+            payload = `RULE-SET,${RuleProvidersMapping[payload]}`;
         }
-    }
-    for (let i in RemoteConfig.Rules) {
-        for (let t of RemoteConfig.Rules[i]) {
-            ClashConfig.rules.push(`${t},${i}`)
-        }
+        ClashConfig.rules.push(`${payload},${id}`)
     }
 
     return ClashConfig;

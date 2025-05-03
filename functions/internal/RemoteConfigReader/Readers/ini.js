@@ -23,24 +23,25 @@ export async function ini (RemoteConfigURL, CacheDB, isForcedRefresh) {
 
     // process rules
     for (let i of RemoteConfig.custom.ruleset) {
-        const rulesetBreakdown = i.split(",")
-        const slug = rulesetBreakdown[0];
-        const content = rulesetBreakdown.slice(1).join(",");
-        if (content.startsWith("https://") || content.startsWith("http://")) {
-            if (!Config.RuleProviders[slug]) {
-                Config.RuleProviders[slug] = [];
+        const rulesetBreakdown = i.split(",").map(i=>i.trim())
+        const id = rulesetBreakdown[0];
+        const payload = rulesetBreakdown.slice(1).join(",");
+
+        // append rule providers
+        if (payload.startsWith("https://") || payload.startsWith("http://")) {
+            if (!Config.RuleProviders[id]) {
+                Config.RuleProviders[id] = [];
             }
-            Config.RuleProviders[slug].push(content)
-        } else {
-            if (!Config.Rules[slug]) {
-                Config.Rules[slug] = [];
-            }
-            const postProcessedContent = content
-                .split(",").map(i=>i.trim()).join(",")
+            Config.RuleProviders[id].push(payload)
+        }
+
+        // append route rules
+        const postProcessedContent = 
+            `${id},${payload
                 .replace(/^\[\]FINAL/i, "MATCH")
                 .replace(/^\[\]/g, "")
-            Config.Rules[slug].push(postProcessedContent)
-        }
+            }`
+        Config.Rules.push(postProcessedContent)
     }
 
     // process proxy groups
