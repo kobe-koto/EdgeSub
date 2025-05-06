@@ -1,42 +1,15 @@
 name: Sync Fork
-
 on:
   schedule:
-    - cron: '0 0 * * *' # 每天 UTC 时间 00:00 运行
-  workflow_dispatch: # 允许手动触发
-
+    - cron: '0 0 * * *'  # 每天午夜运行
+  workflow_dispatch:  # 允许手动触发
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: tgymnich/fork-sync@v1.8
         with:
-          fetch-depth: 0 # 获取所有历史记录
-          token: ${{ secrets.GITHUB_TOKEN }} # 使用 GITHUB_TOKEN 进行身份验证
-
-      - name: Configure Git
-        run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-
-      - name: Add upstream repository
-        run: |
-          git remote add upstream https://github.com/792121621/xd.Irelia.git
-          git fetch upstream
-
-      - name: Merge upstream changes
-        run: |
-          git checkout main # 假设默认分支是 main，必要时改为 master 或其他
-          git merge upstream/main --allow-unrelated-histories
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 用于推送更改
-
-      - name: Restore sync.yml
-        run: |
-          git checkout HEAD -- .github/workflows/sync.yml
-          git commit -m "Restore sync.yml after sync" || true
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 用于推送恢复后的更改
+          owner: upstream-owner  # 替换为上游仓库所有者
+          base: main  # 你 fork 的分支
+          head: main  # 上游的分支
+          token: ${{ secrets.GITHUB_TOKEN }}
