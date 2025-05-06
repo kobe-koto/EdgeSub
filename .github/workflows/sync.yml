@@ -21,7 +21,7 @@ jobs:
 
       - name: Add upstream repository
         run: |
-          git remote add upstream https://github.com/ORIGINAL_OWNER/ORIGINAL_REPO.git
+          git remote add upstream https://github.com/kobe-koto/EdgeSub.git
           git fetch upstream
 
       - name: Merge upstream changes
