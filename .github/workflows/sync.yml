@@ -1,20 +1,24 @@
-name: Sync Fork with Third-Party Action
-
+name: Sync Fork with fork-sync
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *'  # 每天午夜 UTC 运行
   workflow_dispatch:
-
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Fork Sync
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Fork 同步
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
         with:
-          owner: kobe-koto
-          repo: EdgeSub
-          base: main
-          head: main
-          token: ${{ secrets.GITHUB_TOKEN }}
-          merge_method: merge # 可选：merge, rebase, 或 hardreset
+          target_sync_branch: main
+          upstream_sync_branch: main
+          upstream_sync_repo: <upstream-owner>/<upstream-repo>  # 替换为上游仓库
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          upstream_repo_access_token: ${{ secrets.UPSTREAM_REPO_SECRET }}  # 若上游私有
+          test_mode: false
