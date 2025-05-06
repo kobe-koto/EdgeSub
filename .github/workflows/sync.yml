@@ -1,20 +1,20 @@
-name: Sync Fork
+name: Sync Fork with Third-Party Action
+
 on:
   schedule:
-    - cron: '0 0 * * 0'  # 每周日午夜运行
-  workflow_dispatch:  # 允许手动触发
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: tgymnich/fork-sync@v1.8
+      - name: Fork Sync
+        uses: aormsby/fork-sync@v2.0
         with:
           owner: kobe-koto
           repo: EdgeSub
-          base: main    # fork 仓库的目标分支
-          head: main    # 上游仓库的分支
+          base: main
+          head: main
           token: ${{ secrets.GITHUB_TOKEN }}
-          auto_approve: false
-          git_pull_args: '--no-rebase --strategy-option=ours --no-commit .github/workflows/sync.yml'  # 优先保留你的 sync.yml
-    env:
-      ACTIONS_STEP_DEBUG: true  # 保留调试日志
+          merge_method: merge # 可选：merge, rebase, 或 hardreset
