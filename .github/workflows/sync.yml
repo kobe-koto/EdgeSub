@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fork Sync
-        aormsby/fork-sync@v3.4.1
+        uses: aormsby/fork-sync@v3.4.1
         with:
           owner: kobe-koto
           repo: EdgeSub
