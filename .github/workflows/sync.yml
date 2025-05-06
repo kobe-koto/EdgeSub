@@ -22,7 +22,7 @@ jobs:
 
       - name: Add upstream repository
         run: |
-          git remote add upstream https://github.com/kobe-koto/EdgeSub.git
+          git remote add upstream https://github.com/792121621/xd.Irelia.git
           git fetch upstream
 
       - name: Merge upstream changes
