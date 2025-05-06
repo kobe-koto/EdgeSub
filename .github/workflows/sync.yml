@@ -11,7 +11,7 @@ jobs:
         with:
           owner: kobe-koto  # 上游仓库所有者
           repo: EdgeSub  # 上游仓库名称
-          base: Sync  # 你的 fork 仓库的分支
+          base: main  # 你的 fork 仓库的分支
           head: main  # 上游仓库的分支
           token: ${{ secrets.GITHUB_TOKEN }}  # 默认使用 GITHUB_TOKEN
           auto_approve: false  # 避免权限问题
