@@ -18,7 +18,7 @@ jobs:
         with:
           target_sync_branch: main
           upstream_sync_branch: main
-          upstream_sync_repo: <upstream-owner>/<upstream-repo>  # 替换为上游仓库
+          upstream_sync_repo: kobe-koto/EdgeSub  # 替换为上游仓库
           target_repo_token: ${{ secrets.GITHUB_TOKEN }}
           upstream_repo_access_token: ${{ secrets.UPSTREAM_REPO_SECRET }}  # 若上游私有
           test_mode: false
