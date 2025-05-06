@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: tgymnich/fork-sync@v1.8
         with:
-          owner: upstream-owner  # 替换为上游仓库所有者
+          owner: kobe-koto/EdgeSub  # 替换为上游仓库所有者
           base: main  # 你 fork 的分支
           head: main  # 上游的分支
           token: ${{ secrets.GITHUB_TOKEN }}
