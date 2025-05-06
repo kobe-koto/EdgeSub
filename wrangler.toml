@@ -1,9 +1,0 @@
-name = "edge-sub"
-compatibility_date = "2023-10-10"
-
-main = "workers-site/index.js"
-site.bucket = "./"
-
-kv_namespaces = [
-    { binding = "EdgeSubDB", id = "1761dfb08e78486aaae6ebf0fce7065f" },
-]
