@@ -1,0 +1,19 @@
+name: Sync Fork
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天午夜运行
+  workflow_dispatch:  # 允许手动触发
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: tgymnich/fork-sync@v1.8
+        with:
+          owner: kobe-koto  # 上游仓库所有者
+          repo: EdgeSub  # 上游仓库名称
+          base: main  # 你的 fork 仓库的分支
+          head: main  # 上游仓库的分支
+          token: ${{ secrets.GITHUB_TOKEN }}  # 默认使用 GITHUB_TOKEN
+          auto_approve: false  # 避免权限问题
+env:
+  ACTIONS_STEP_DEBUG: true  # 启用调试日志
