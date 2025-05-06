@@ -21,18 +21,25 @@ jobs:
           git remote -v # 输出远程仓库信息
           git branch -a # 输出所有分支
 
-      - name: Merge upstream changes
+      - name: Check for updates
+        id: check_updates
         run: |
           git checkout main
-          git merge upstream/main --allow-unrelated-histories || { echo "Merge failed, possible conflict"; exit 1; }
-          git status # 输出合并后的状态
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Verify sync.yml exists
-        run: |
-          if [ ! -f .github/workflows/sync.yml ]; then
-            echo "Error: sync.yml is missing!"
-            exit 1
+          git fetch upstream
+          if [ "$(git rev-parse main)" != "$(git rev-parse upstream/main)" ]; then
+            echo "Updates found, merging upstream/main"
+            git merge upstream/main --allow-unrelated-histories || { echo "Merge failed, possible conflict"; exit 1; }
+            echo "UPDATE_NEEDED=true" >> $GITHUB_ENV
+            echo "TAG_NAME=$(git describe --tags --abbrev=0 upstream/main 2>/dev/null || echo 'latest')" >> $GITHUB_ENV
+          else
+            echo "No updates needed, already up to date"
+            echo "UPDATE_NEEDED=false" >> $GITHUB_ENV
           fi
+
+      - name: 提交更改
+        if: env.UPDATE_NEEDED == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🔄 自动同步最新 Worker 版本：${{ env.TAG_NAME }}"
+          commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          push_options: --force
