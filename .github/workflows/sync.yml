@@ -1,0 +1,37 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # 每天 UTC 时间 00:00 运行
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取所有历史记录
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+
+      - name: Add upstream repository
+        run: |
+          git remote add upstream https://github.com/ORIGINAL_OWNER/ORIGINAL_REPO.git
+          git fetch upstream
+
+      - name: Merge upstream changes
+        run: |
+          git checkout main # 假设你的默认分支是 main，必要时改为 master 或其他
+          git merge upstream/main --allow-unrelated-histories
+          git push origin main
+
+      - name: Restore sync.yml
+        run: |
+          git checkout HEAD -- .github/workflows/sync.yml
+          git commit -m "Restore sync.yml after sync" || true
+          git push origin main
