@@ -2,8 +2,8 @@ name: Sync Fork
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight UTC
-  workflow_dispatch: # Allows manual triggering
+    - cron: '0 0 * * *' # 每天午夜 UTC 运行
+  workflow_dispatch: # 支持手动触发
 
 jobs:
   sync:
@@ -12,17 +12,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for proper merging
+          fetch-depth: 0 # 获取完整历史以便合并
 
       - name: Add upstream remote
         run: |
           git remote add upstream https://github.com/kobe-koto/EdgeSub.git
           git fetch upstream
+          git remote -v # 输出远程仓库信息
+          git branch -a # 输出所有分支
 
       - name: Merge upstream changes
         run: |
           git checkout main
-          git merge upstream/main --allow-unrelated-histories
+          git merge upstream/main --allow-unrelated-histories || { echo "Merge failed, possible conflict"; exit 1; }
+          git status # 输出合并后的状态
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify sync.yml exists
+        run: |
+          if [ ! -f .github/workflows/sync.yml ]; then
+            echo "Error: sync.yml is missing!"
+            exit 1
+          fi
