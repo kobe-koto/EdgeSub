@@ -7,8 +7,8 @@ interface Props {
     noindex?: boolean;
 }
 const { 
-    Title = "Edge Sub Web",
-    Desc = "A sub converter frontend, using EdgeSub as background.",
+    Title = "EdgeSub",
+    Desc = "A proxy toolchain config converter, KISS and privacy on.",
     noindex = false 
 } = Astro.props;
 ---
@@ -26,7 +26,7 @@ const {
         ],
         meta: [
             { name: "viewport", content: "width=device-width" },
-            { name: "author", content: "kobe koto" },
+            { name: "author", content: "EdgeSub Project" },
         ]
     }}
     openGraph={{
@@ -39,13 +39,6 @@ const {
             description: Desc,
             siteName: Title,
         }
-
-    }}
-    twitter={{
-        title: Title,
-        description: Desc,
-        card: "summary",
-        creator: "@kobe_koto"
     }}
 />
 

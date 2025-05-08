@@ -80,7 +80,7 @@ export default class Dumper {
             port: hy2Object.Port,
             ports: hy2Object.Query.mport,
             password: hy2Object.Auth,
-            auth: hy2Object.Auth,
+            sni: hy2Object.Query.sni,
             obfs: hy2Object.Query.obfs,
             "obfs-password": hy2Object.Query["obfs-password"],
             "client-fingerprint": this.config.ClientFingerprint,
@@ -216,9 +216,9 @@ export default class Dumper {
             cipher: SS.Auth.cipher,
             password: SS.Auth.password,
   
+            udp: this.config.UDP,
             "udp-over-tcp": this.config.SSUoT,
             "udp-over-tcp-version": this.config.SSUoT ? 2 : undefined,
-            // udp: true,
         }
     }
     trojan (TROJAN) {

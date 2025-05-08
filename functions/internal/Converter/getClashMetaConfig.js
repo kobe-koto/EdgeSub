@@ -4,7 +4,6 @@ import ClashMetaDumper from "../Dumpers/clash-meta.js";
 const BasicClashConfig = {
     "port": 7890,
     "socks-port": 7891,
-    "allow-lan": true,
     "mode": "Rule",
     "log-level": "info",
     "external-controller": ":9090",
@@ -16,10 +15,11 @@ const BasicClashConfig = {
 };
 
 const BasicConfig = {
+    ProxyRuleProviders: false,
     isUDP: true,
     isSSUoT: false,
     isInsecure: true,
-    RemoteConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/assets/minimal_remote_conf/basic.ini",
+    RemoteConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini",
     isForcedRefresh: false
 }
 
@@ -42,6 +42,7 @@ export async function getClashMetaConfig (
     // validate proxies
     Proxies = Proxies.map(i => {
         if (Dumper.__validate(i)) {
+            i.Hostname = i.Hostname.replace(/(^\[|\]$)/g, "");
             return i;
         }
     }).filter(i => !!i);
@@ -95,23 +96,45 @@ export async function getClashMetaConfig (
         ClashConfig["proxy-groups"].push(ProxyGroup)
     }
 
+    // append rule providers
+    ClashConfig["rule-providers"] = {};
+    let RuleProvidersMapping = {}; // { URL: ID }[]
+    for (let i in RemoteConfig.RuleProviders) {
+        for (let t in RemoteConfig.RuleProviders[i]) {
+            const RuleProviderPayload = RemoteConfig.RuleProviders[i][t];
+            const RuleProviderID = `${i}__${t}`;
+            RuleProvidersMapping[RuleProviderPayload] = RuleProviderID;
+            let RuleProviderURL;
+            if (Config.ProxyRuleProviders) {
+                let RuleProviderURLObject = new URL(Config.ProxyRuleProviders);
+                RuleProviderURLObject.pathname = "/ruleset/proxy"
+                RuleProviderURLObject.search = ""
+                RuleProviderURLObject.searchParams.append("target", RuleProviderPayload)
+                RuleProviderURL = RuleProviderURLObject.toString()
+            } else {
+                RuleProviderURL = RuleProviderPayload;
+            }
+            ClashConfig["rule-providers"][RuleProviderID] = {
+                type: "http",
+                behavior: "classical",
+                url: RuleProviderURL,
+                format: (RuleProviderPayload.endsWith(".yaml") || RuleProviderPayload.endsWith(".yml")) ? "yaml" : "text",
+                interval: 21600
+            }
+        }
+    }
+
     // Append rule sets;
     ClashConfig.rules = []
-    for (let i of RemoteConfig.RuleSet) {
-        i.Rules = i.Rules
-            .filter(l => 
-                 ! (
-                    l.startsWith("USER-AGENT,") ||
-                    l.startsWith("URL-REGEX,")
-                )
-            )
-        for (let t of i.Rules) {
-            let RuleEntry = t.split(",")
-            if (RuleEntry[0] === "FINAL") {
-                RuleEntry[0] = "MATCH"
-            }
-            ClashConfig.rules.push([...RuleEntry.slice(0, 2), i.Outbound, ...RuleEntry.slice(2)].join(","))
+    for (let i of RemoteConfig.Rules) {
+        
+        const rulesetBreakdown = i.split(",")
+        const id = rulesetBreakdown[0];
+        let payload = rulesetBreakdown.slice(1).join(",");
+        if (payload.startsWith("http://") || payload.startsWith("https://")) {
+            payload = `RULE-SET,${RuleProvidersMapping[payload]}`;
         }
+        ClashConfig.rules.push(`${payload},${id}`)
     }
 
     return ClashConfig;

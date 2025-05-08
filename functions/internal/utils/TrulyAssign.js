@@ -8,7 +8,7 @@
 export function TrulyAssign (target, source) {
     let DeepCopiedTarget = JSON.parse(JSON.stringify(target))
     for (let key in source) {
-        if (key in source && source[key] !== "__DEFAULT__") {
+        if (key in source && source[key] !== "__DEFAULT") {
             DeepCopiedTarget[key] = source[key];
         }
     }

@@ -4,6 +4,7 @@ import { DefaultRequestHeaders } from "./configs";
 
 import { ShareLinkParser } from "./Parsers/share-link";
 import { ClashMetaParser } from "./Parsers/clash-meta";
+import { SingBoxParser } from "./Parsers/sing-box";
 
 import Yaml from "js-yaml";
 import { TrulyAssign } from "./utils/TrulyAssign";
@@ -76,7 +77,19 @@ async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) {
                         }
                     }
                 } catch (e) {
-                    console.warn(`[Fetch Sub Data] try parse as yaml: ${e}, skipping...`)
+                    console.warn(`[Fetch Sub Data] Err when try parse as yaml: ${e}, skipping...`)
+                }
+                // try decode as json, for sing-box config
+                try {
+                    let SingBoxConfig = JSON.parse(res);
+                    if (SingBoxConfig.outbounds) {
+                        return {
+                            type: "sing-box",
+                            data: SingBoxConfig
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`[Fetch Sub Data] Err when try parse as JSON (sing-box): ${e}, skipping...`)
                 }
 
                 // try decode as base64 endoded share-links
@@ -120,6 +133,14 @@ async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) {
         let { proxies } = SubData.data;
         let Parser = new ClashMetaParser();
         for (let i of proxies) {
+            if (Parser.__validate(i)) {
+                ParsedSubData.push(Parser[i.type](i))
+            }
+        }
+    } else if (SubData.type === "sing-box") {
+        let { outbounds } = SubData.data;
+        let Parser = new SingBoxParser();
+        for (let i of outbounds) {
             if (Parser.__validate(i)) {
                 ParsedSubData.push(Parser[i.type](i))
             }

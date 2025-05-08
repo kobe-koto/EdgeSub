@@ -1,0 +1,35 @@
+---
+import KForm from "@components/k-form.astro";
+import { Icon } from "astro-icon/components";
+---
+
+<short-editor class="flex-contents">
+    <KForm
+        slug="short-id"
+        desc="Short ID"
+        detail="Short ID"
+        type="input"
+        EnableCache={false}
+    />
+    <button id="editor-fetch"><Icon name="iconoir:send-diagonal" /> Fetch</button>
+    <KForm
+        slug="short-data"
+        desc="订阅链接"
+        detail="请先拉取数据。仅支持 http(s):// 或 short: 开头的订阅链接、类似于 vless:// 开头的分享链接。以换行分割。"
+        type="textarea"
+        EnableCache={false}
+    />
+    <KForm
+        slug="short-password"
+        desc="Short password"
+        detail="Short password"
+        type="input"
+        EnableCache={false}
+    />
+    <code>请先提交</code>
+    <p>可将以上内容作为本程式内专用的 订阅链接</p>
+    <button id="editor-submit"><Icon name="iconoir:send-diagonal" /> Submit</button>
+
+</div>
+
+<script src="@scripts/components/shorter/short-editor.ts"></script>

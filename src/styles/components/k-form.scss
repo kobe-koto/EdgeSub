@@ -19,7 +19,6 @@ k-form {
     }
     textarea {
         @extend input;
-        resize: none;
         height: 75px;
     }
     input {

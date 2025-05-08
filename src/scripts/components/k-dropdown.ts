@@ -1,41 +1,67 @@
 export class Dropdown extends HTMLElement {
     selectedValue: string = this.dataset.selectedValue;
+
     constructor () {
         super();
+        this.initializeElements();
+        // 延迟初始化选中值
+        setTimeout(() => {
+            this.setupEventListeners();
+            this.updateSelectedValue(this.selectedValue, false);
+        }, 100);
 
-        this.Elements.DropdownBotton.addEventListener("click", () => {
-            this.dataset.onfocus = 
-                this.dataset.onfocus === "false"
-                 ? "true"
-                 : "false"
-        }) 
-
-        for (let i of this.Elements.Items) {
-            i.addEventListener("click", (event) => {
-                const TargetElement = event.target as HTMLElement;
-                for (let i of this.Elements.Items) {
-                    i.dataset.selected = "false"
-                }
-                TargetElement.dataset.selected = "true";
-                this.Elements.DropdownBottonText.innerText = TargetElement.innerText;
-                this.selectedValue = TargetElement.dataset.value;
-                this.dataset.selectedValue = this.selectedValue;
-                this.dispatchEvent(
-                    new CustomEvent("DropdownSelect", { 
-                        detail: {
-                            selectedValue: this.selectedValue
-                        }
-                    })
-                )
-            })
-
-        }
+        this.addEventListener("DropdownSelect", (event: CustomEvent) => {
+            this.updateSelectedValue(event.detail.selectedValue, false);
+        });
     }
-    Elements = {
-        DropdownBotton: this.querySelector("button") as HTMLElement,
-        DropdownBottonText: this.querySelector("button > span") as HTMLElement,
-        Items: this.querySelectorAll(".dropdown-content > button") as unknown as HTMLButtonElement[]
+
+    private initializeElements() {
+        this.Elements = {
+            DropdownBotton: this.querySelector("button") as HTMLElement,
+            DropdownBottonText: this.querySelector("button > span") as HTMLElement,
+            Items: this.querySelectorAll(".dropdown-content > button") as NodeListOf<HTMLButtonElement>
+        };
+    }
+
+    private setupEventListeners() {
+        this.Elements.DropdownBotton.addEventListener("click", () => {
+            this.dataset.onfocus = this.dataset.onfocus === "false" ? "true" : "false";
+        });
+
+        this.Elements.Items.forEach(item => {
+            item.addEventListener("click", (event) => {
+                const targetElement = event.target as HTMLElement;
+                this.updateSelectedValue(targetElement.dataset.value, true);
+            });
+        });
+    }
+
+    private updateSelectedValue(value: string, dispatchEvent: boolean = true) {
+        if (!value) return;
+        
+        this.Elements.Items.forEach(item => {
+            item.dataset.selected = (item.dataset.value === value).toString();
+            if (item.dataset.value === value) {
+                this.Elements.DropdownBottonText.innerText = item.innerText;
+                const shouldDispatchEvent = dispatchEvent && this.selectedValue !== value;
+                if (shouldDispatchEvent) {
+                    this.selectedValue = value
+                    this.dataset.selectedValue = value
+                    this.dispatchEvent(new CustomEvent("DropdownSelect", {
+                        detail: { selectedValue: value },
+                        bubbles: true
+                    }))
+                }
+            }
+        });
+    }
+
+    Elements: {
+        DropdownBotton: HTMLElement;
+        DropdownBottonText: HTMLElement;
+        Items: NodeListOf<HTMLButtonElement>;
     }
 }
+
 customElements.define("k-dropdown", Dropdown);
 console.info("[k-dropdown] registered")

@@ -1,13 +1,13 @@
-import type { Form } from "./k-form";
+import type { Form } from "../k-form";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 
 export class ShorterPassword extends HTMLElement {
     defaultBackend = getDefaultBackend()
     constructor () {
         super();
-        this.Elements.SubmitButton.addEventListener("click", () => {this.SubmitShorterRequest()})
+        this.Elements.SubmitButton.addEventListener("click", () => {this.Submit()})
     }
-    async SubmitShorterRequest () {
+    async Submit () {
         this.Elements.Msg.innerText = "submitting..";
         // build request body
         let requestBody = {
@@ -17,7 +17,7 @@ export class ShorterPassword extends HTMLElement {
 
         // build api Endpoint
         let requestURL = new URL(this.defaultBackend);
-        requestURL.pathname = "/short/password/set";
+        requestURL.pathname = "/short/admin-password/set";
 
         await fetch(requestURL, {
             body: JSON.stringify(requestBody),

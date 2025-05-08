@@ -1,21 +1,24 @@
 import type { Form } from "@scripts/components/k-form";
 import type { EndpointExtendConfigPrototype, EndpointPrototype } from "@config/AvalibleOptoutFormat";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
+
 class SubURLGenerator extends HTMLElement {
     TargetExtendConfig: ( "RemoteConfig" | "isUDP" )[];
     Endpoints: EndpointPrototype[] = JSON.parse(this.dataset.endpoints);
     defaultBackend = getDefaultBackend();
+
     constructor () {
         super()
         this.GenerateButton.addEventListener("click", () => {this.CheckAndGenerate()});
         this.CopyButton.addEventListener("click", () => {this.CopyURL()});
-        this.BasicConfigElement.Endpoint.querySelector("k-dropdown").addEventListener("DropdownSelect", (event: CustomEvent) => {this.ChangeEndpoint(event)});
+        this.BasicConfigElement.Endpoint.addEventListener("change", (event: CustomEvent) => {this.ChangeEndpoint(event)});
         document.body.dataset.defaultBackend = this.defaultBackend;
         customElements.whenDefined("k-form").then(() => {
             this.BasicConfigElement.Backend.setDetail(`${this.BasicConfigElement.Backend.getDetail()} (${this.defaultBackend})`);
             console.info("[k-sub-url-generator] k-form registration detected, default backend modified")
         })
     }
+
     GenerateButton = this.querySelector("button#generate") as HTMLButtonElement;
     CopyButton = this.querySelector("button#copy") as HTMLButtonElement;
     MsgBlock = this.querySelector("code") as HTMLElement;
@@ -29,10 +32,12 @@ class SubURLGenerator extends HTMLElement {
     ExtendConfigElement = {
         RemoteConfigUserspec: this.querySelector("k-form#RemoteConfigUserspec") as Form,
         RemoteConfig: this.querySelector("k-form#RemoteConfig") as Form,
+        ProxyRuleProviders: this.querySelector("k-form#ProxyRuleProviders") as Form,
         isUDP: this.querySelector("k-form#isUDP") as Form,
         isSSUoT: this.querySelector("k-form#isSSUoT") as Form,
         ForcedWS0RTT: this.querySelector("k-form#ForcedWS0RTT") as Form,
     }
+
     GetEndpoint (EndpointPath: string = this.BasicConfigElement.Endpoint.get()) {
         for (let i of this.Endpoints) {
             if (i.value === EndpointPath) {
@@ -41,6 +46,7 @@ class SubURLGenerator extends HTMLElement {
         }
         throw `no targeted endpoint found, expected value ${EndpointPath}`
     }
+
     ChangeEndpoint (event: CustomEvent) {
         const SelectedEndpointPath: string = event.detail.selectedValue;
         let Endpoint: EndpointPrototype = this.GetEndpoint(SelectedEndpointPath);
@@ -54,6 +60,7 @@ class SubURLGenerator extends HTMLElement {
             }
         }
     }
+
     CheckAndGenerate () {
         const BasicConfig = {
             SubURL: this.BasicConfigElement.SubURL.get(),
@@ -64,6 +71,7 @@ class SubURLGenerator extends HTMLElement {
         }
         const ExtendConfig = {
             RemoteConfig: this.ExtendConfigElement.RemoteConfigUserspec.get() || this.ExtendConfigElement.RemoteConfig.get(),
+            ProxyRuleProviders: this.ExtendConfigElement.ProxyRuleProviders.get(),
             isUDP: this.ExtendConfigElement.isUDP.get(),
             isSSUoT: this.ExtendConfigElement.isSSUoT.get(),
             ForcedWS0RTT: this.ExtendConfigElement.ForcedWS0RTT.get()
@@ -97,7 +105,7 @@ class SubURLGenerator extends HTMLElement {
 
     }
 
-    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; isUDP?: any; isSSUoT?: any; ForcedWS0RTT?: any; isShowHost: any, HTTPHeaders: any }) {
+    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RemoteConfig?: any; ProxyRuleProviders?: any; isUDP?: any; isSSUoT?: any; ForcedWS0RTT?: any; isShowHost: any, HTTPHeaders: any }) {
         let URLObj = new URL(Config.Backend);
         URLObj.pathname = Config.Endpoint;
         URLObj.search = "";
@@ -105,6 +113,7 @@ class SubURLGenerator extends HTMLElement {
 
         URLObj.searchParams.append("url", Config.SubURL)
         Config.RemoteConfig && URLObj.searchParams.append("remote_config", Config.RemoteConfig)
+        Config.ProxyRuleProviders && URLObj.searchParams.append("proxy_rule_providers", Config.ProxyRuleProviders && Config.Backend)
         Config.isUDP && URLObj.searchParams.append("udp", Config.isUDP.toString())
         Config.isSSUoT && URLObj.searchParams.append("ss_uot", Config.isSSUoT.toString())
         Config.isShowHost && URLObj.searchParams.append("show_host", Config.isShowHost.toString())
@@ -112,6 +121,7 @@ class SubURLGenerator extends HTMLElement {
         Config.HTTPHeaders !== "{}" && URLObj.searchParams.append("http_headers", Config.HTTPHeaders)
         return URLObj.toString();
     }
+
     CopyURL () {
         if (!navigator.clipboard) {
             alert("navigator.clipboard API not found on your drowser")

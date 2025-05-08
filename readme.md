@@ -15,7 +15,7 @@
   需要以下參數:
 
   - `url`: 輸入的訂閱的遠程位址
-  - `remote_config` (可選): 遠端設定位址 (INI 格式), 默認為 https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/assets/minimal_remote_conf/basic.ini
+  - `remote_config` (可選): 遠端設定位址 (INI 格式), 默認為 https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini
   - `udp` (可選): 遠端設定位址, 默認為 true
   - `forced_refresh` (可選): 是否強制刷新已緩存的遠端設定, 默認為 false
 
@@ -93,7 +93,7 @@
   | ShareLink 集合 (Base64) | ✅    | ✅    | `/sub/base64`     |
   | Clash Meta 配置         | ✅    | ✅    | `/sub/clash-meta` |
   | Clash 配置              | ✅    | ✅    | `/sub/clash`      |
-  | Sing-Box 配置           | 🚫    | ✅    | `/sub/sing-box`   |
+  | Sing-Box 配置           | ✅    | ✅    | `/sub/sing-box`   |
 
   Notes:
   

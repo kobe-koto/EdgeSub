@@ -14,17 +14,18 @@ export class RemoteConfigReader {
         if (this.RemoteConfig.Type in this.Reader) {
             return true;
         } else {
-            console.warn("[Remote Config Reader] [WARN] Inputed remote config type not supported, skipping.");
-            return false;
+            console.warn("[Remote Config Reader] [WARN] Inputed remote config type cannot be detected, assume as .ini.");
+            this.RemoteConfig.Type = "ini"
+            return true;
         }
     }
 
     Process = async function (EdgeSubDB, isForcedRefresh) {
         let __startTime = performance.now();
-        console.info(`[Remote Config Reader] Job started`);
+        console.info(`[Remote Config Reader] started`);
         const response = this.Reader[this.RemoteConfig.Type](this.RemoteConfig.URL, EdgeSubDB, isForcedRefresh);
         //let RawConfig = await fetchRemoteConfig(RemoteConfigURL, isForcedRefresh);
-        console.info(`[Remote Config Reader] Job done, wasting ${performance.now() - __startTime}ms`);
+        console.info(`[Remote Config Reader] done, wasting ${performance.now() - __startTime}ms`);
         return response
     }
 

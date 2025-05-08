@@ -1,10 +1,10 @@
-export async function fetchCached (URL, Prefix = "Cached", CacheDB, isForcedRefresh = false) {
+export async function fetchCached (URL: URL, Prefix = "Cached", CacheDB: KVNamespace, isForcedRefresh = false) {
     // const CacheKey = `RemoteConfig_${URL}`;
     const CacheKey = `${Prefix}_${URL}`;
     const CacheTTL =  6 * 60 * 60; // 6hrs for default
 
     // check if data was cached
-    let CachedData;
+    let CachedData: string | null;
     if (!CacheDB) {
         CachedData = null;
         console.info(`[fetchCached] - CacheDB is not configured, fetching.`)
@@ -32,10 +32,10 @@ export async function fetchCached (URL, Prefix = "Cached", CacheDB, isForcedRefr
             }
         })
         .then(res => res.text())
-        .catch(() => false);
+        .catch(() => null);
     // save it into CacheDB when success, and, whatever, when CacheDB exist.
-    if (data !== false && CacheDB) {
-        await CacheDB.put(CacheKey, data, { expirationTtl: CacheTTL })
+    if (data !== null && CacheDB) {
+        await CacheDB.put(CacheKey, data.toString(), { expirationTtl: CacheTTL })
     }
     // just return
     return data;

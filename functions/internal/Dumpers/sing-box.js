@@ -19,18 +19,6 @@ export default class Dumper {
             console.warn(`[Dumper: Sing Box] [WARN] ${ProxyObject.__Type} is not supported to dump, ignoring...`)
             return false;
         }
-        if (
-            ProxyObject.__Type in this && 
-            (
-                ProxyObject.__Type === "hysteria" ||
-                ProxyObject.__Type === "hysteria2" ||
-                ProxyObject.__Type === "hy2"
-            ) &&
-            ProxyObject.Query.mport
-        ) {
-            console.warn(`[Dumper: Sing Box] [WARN] ${ProxyObject.__Type} Port Hopping is not supported by sing-box, ignoring...`)
-            return false;
-        }
         if (ProxyObject.__Type === "vmess__shadowsocks_type" && ProxyObject.Query.obfs === "none") {
             console.warn(`[Dumper: Sing Box] [WARN] ${ProxyObject.__Type} TCP-Transport is not supported by sing-box, ignoring...`)
             return false;
@@ -75,8 +63,7 @@ export default class Dumper {
             server: hyObject.Hostname,
             server_port: hyObject.Port,
 
-            // sing-box doesnt have port hopping
-            // ports: hyObject.Query.mport,
+            server_ports: hyObject.Query.mport ? hyObject.Query.mport.replace(/\-/g, ":").split(",") : undefined,
             up_mbps: parseInt(hyObject.Query.upmbps) || 250,
             down_mbps: parseInt(hyObject.Query.downmbps) || 500,
             obfs: hyObject.Query.obfsParam,
@@ -97,8 +84,7 @@ export default class Dumper {
             server: hy2Object.Hostname,
             server_port: hy2Object.Port,
 
-            // sing-box doesnt have port hopping
-            // ports: hy2Object.Query.mport,
+            server_ports: hy2Object.Query.mport ? hy2Object.Query.mport.replace(/\-/g, ":").split(",") : undefined,
             up_mbps: parseInt(hy2Object.Query.upmbps) || 250,
             down_mbps: parseInt(hy2Object.Query.downmbps) || 500,
             obfs: (hy2Object.Query.obfs && hy2Object.Query["obfs-password"] ) ? {

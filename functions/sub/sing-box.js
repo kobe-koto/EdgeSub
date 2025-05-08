@@ -19,7 +19,7 @@ export async function onRequest (context) {
             isUDP: URLObject.searchParams.get("udp") === "true",
             isSSUoT: URLObject.searchParams.get("ss_uot") === "true",
             isInsecure: true,
-            RemoteConfig: URLObject.searchParams.get("remote_config") || "__DEFAULT__",
+            RemoteConfig: URLObject.searchParams.get("remote_config") || "__DEFAULT",
             isForcedRefresh: URLObject.searchParams.get("forced_refresh") === "true" ? true : false
         }
     )
