@@ -103,12 +103,12 @@ const BasicConfig = {
     isUDP: true,
     isSSUoT: true,
     isInsecure: true,
-    RemoteConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini",
+    RuleProvider: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini",
     isForcedRefresh: false
 }
 
 
-import { RemoteConfigReader } from "../RemoteConfigReader/main.js";
+import { RuleProviderReader } from "../RuleProviderReader/main.js";
 
 export async function getSingBoxConfig (
     Proxies, 
@@ -120,10 +120,10 @@ export async function getSingBoxConfig (
     let SingBoxConfig = JSON.parse(JSON.stringify(BasicSingBoxConfig));
 
     // Append rule sets;
-    // SingBoxConfig.route = RemoteConfig;
+    // SingBoxConfig.route = RuleProvider;
     // SingBoxConfig.route.rules = []
-    let RemoteConfig = await (new RemoteConfigReader(Config.RemoteConfig)).Process(EdgeSubDB, Config.isForcedRefresh)
-    for (let i of RemoteConfig.RuleSet) {
+    let RuleProvider = await (new RuleProviderReader(Config.RuleProvider)).Process(EdgeSubDB, Config.isForcedRefresh)
+    for (let i of RuleProvider.RuleSet) {
         i.Rules = i.Rules
             .filter(l => 
                  ! (
@@ -201,7 +201,7 @@ export async function getSingBoxConfig (
 
     // Append proxy groups.
     // SingBoxConfig.outbounds = []
-    for (let i of RemoteConfig.ProxyGroup) {
+    for (let i of RuleProvider.ProxyGroup) {
 
         // get Matched Proxies
         let MatchedProxies = [];

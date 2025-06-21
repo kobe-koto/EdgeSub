@@ -1,35 +1,60 @@
 ---
-import KForm from "@components/k-form.astro";
+import DataInput from "@components/data-input.astro";
 import { Icon } from "astro-icon/components";
 ---
 
 <short-editor class="flex-contents">
-    <KForm
+    <DataInput
         slug="short-id"
         desc="Short ID"
         detail="Short ID"
         type="input"
-        EnableCache={false}
     />
-    <button id="editor-fetch"><Icon name="iconoir:send-diagonal" /> Fetch</button>
-    <KForm
+    <button class="btn" id="editor-fetch">
+        <label class="swap swap-rotate">
+            <div class="swap-on">
+                <!-- loading -->
+                <span class="loading loading-spinner loading-md"></span>
+            </div>
+            <div class="swap-off">
+                <!-- not loading -->
+                <Icon name="iconoir:send" class="text-xl inline" />
+            </div>
+        </label>
+        <span>Fetch</span>
+    </button>
+    <DataInput
         slug="short-data"
         desc="订阅链接"
         detail="请先拉取数据。仅支持 http(s):// 或 short: 开头的订阅链接、类似于 vless:// 开头的分享链接。以换行分割。"
         type="textarea"
-        EnableCache={false}
     />
-    <KForm
+    <DataInput
         slug="short-password"
         desc="Short password"
         detail="Short password"
         type="input"
-        EnableCache={false}
     />
-    <code>请先提交</code>
-    <p>可将以上内容作为本程式内专用的 订阅链接</p>
-    <button id="editor-submit"><Icon name="iconoir:send-diagonal" /> Submit</button>
 
-</div>
+    <div class="mockup-code w-full my-2">
+        <pre data-prefix="~"><code>请先提交</code></pre>
+    </div>
+    <p>可将以上内容作为本程式内专用的 订阅链接</p>
+
+    <button class="btn" id="editor-submit">
+        <label class="swap swap-rotate">
+            <div class="swap-on">
+                <!-- loading -->
+                <span class="loading loading-spinner loading-md"></span>
+            </div>
+            <div class="swap-off">
+                <!-- not loading -->
+                <Icon name="iconoir:send" class="text-xl inline" />
+            </div>
+        </label>
+        <span>Submit</span>
+    </button>
+
+</short-editor>
 
 <script src="@scripts/components/shorter/short-editor.ts"></script>

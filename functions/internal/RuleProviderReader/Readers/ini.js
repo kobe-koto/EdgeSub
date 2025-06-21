@@ -2,7 +2,7 @@ import { parse as INIParse } from "ini";
 
 import { fetchCached } from "../../utils/fetchCached.js";
 
-export async function ini (RemoteConfigURL, CacheDB, isForcedRefresh) {
+export async function ini (RuleProviderURL, CacheDB, isForcedRefresh) {
 
     let Config = {
         RuleProviders: [],
@@ -11,8 +11,8 @@ export async function ini (RemoteConfigURL, CacheDB, isForcedRefresh) {
     };
 
     // get raw remote config.
-    let RemoteConfig = 
-        await fetchCached(RemoteConfigURL, "RemoteConfig", CacheDB, isForcedRefresh)
+    let RuleProvider = 
+        await fetchCached(RuleProviderURL, "RuleProvider", CacheDB, isForcedRefresh)
         .then(
             res => 
                 res.replaceAll("ruleset=", "ruleset[]=")
@@ -22,7 +22,7 @@ export async function ini (RemoteConfigURL, CacheDB, isForcedRefresh) {
 
 
     // process rules
-    for (let i of RemoteConfig.custom.ruleset) {
+    for (let i of RuleProvider.custom.ruleset) {
         const rulesetBreakdown = i.split(",").map(i=>i.trim())
         const id = rulesetBreakdown[0];
         const payload = rulesetBreakdown.slice(1).join(",");
@@ -45,7 +45,7 @@ export async function ini (RemoteConfigURL, CacheDB, isForcedRefresh) {
     }
 
     // process proxy groups
-    for (let i of RemoteConfig.custom.custom_proxy_group) {
+    for (let i of RuleProvider.custom.custom_proxy_group) {
         // "特殊筛选条件" (starts with "!!") are not supported. #todo
         const ConfigArr = i.split("`").filter(t => !t.startsWith("!!"));
         const Args = ConfigArr.slice(2).filter(t => !t.startsWith("[]"));

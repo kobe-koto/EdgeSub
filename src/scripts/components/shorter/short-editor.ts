@@ -1,4 +1,4 @@
-import type { Form } from "../k-form";
+import type { DataInput } from "../data-input";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 
 export class ShortEditor extends HTMLElement {
@@ -14,6 +14,10 @@ export class ShortEditor extends HTMLElement {
         }
     }
     Fetch () {
+
+        this.Elements.FetchButton.disabled = true;
+        this.Elements.FetchButton.querySelector(".swap").classList.add("swap-active");
+
         this.Elements.ShortData.set("fetching...")
         
         let requestURL = new URL(this.defaultBackend);
@@ -26,9 +30,16 @@ export class ShortEditor extends HTMLElement {
             this.Elements.ShortData.set(res.subdata)
         }).catch((err) => {
             alert(`Error: ${err}`);
+        }).finally(() => {
+            this.Elements.FetchButton.disabled = false;
+            this.Elements.FetchButton.querySelector(".swap").classList.remove("swap-active");
         })
     }
     Submit () {
+
+        this.Elements.SubmitButton.disabled = true;
+        this.Elements.SubmitButton.querySelector(".swap").classList.add("swap-active");
+
         // build request body
         let requestBody = {
             subdata: this.Elements.ShortData.get(),
@@ -52,16 +63,16 @@ export class ShortEditor extends HTMLElement {
             this.Elements.Msg.innerText = `short:${res.slug}`;
         }).catch((err) => {
             this.Elements.Msg.innerText = `提交失败: ${err}`;
+        }).finally(() => {
+            this.Elements.SubmitButton.disabled = false;
+            this.Elements.SubmitButton.querySelector(".swap").classList.remove("swap-active");
         })
-
-
-
     }
     Elements = {
-        ShortID: this.querySelector("#short-id") as Form,
-        ShortPassword: this.querySelector("#short-password") as Form,
+        ShortID: this.querySelector("#short-id") as DataInput,
+        ShortPassword: this.querySelector("#short-password") as DataInput,
 
-        ShortData: this.querySelector("#short-data") as Form,
+        ShortData: this.querySelector("#short-data") as DataInput,
 
         Msg: this.querySelector("code") as HTMLElement,
         

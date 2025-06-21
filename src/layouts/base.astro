@@ -1,27 +1,25 @@
 ---
-import "@styles/main.scss";
+import "@styles/import.css";
 import SEOComponent from "@components/layouts/SEOComponent.astro";
 interface Props {
-	noindex?: boolean
+	noindex?: boolean;
 }
 const { noindex = false } = Astro.props;
+//import "@styles/main.scss";
+//import "@styles/index.scss";
 
-
-import "@styles/index.scss"
-import Title from "@components/layouts/Title.astro";
+import NavBar from "@components/DUI/NavBar.astro";
 ---
 
-<html lang="en">
+<html lang="en" data-theme="Light Mint" class="bg-base-200">
 	<head>
 		<SEOComponent noindex={noindex} />
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 	</head>
 	<body>
-		<div class="main-card-con">
+		<NavBar />
+
+		<div class="my-8 mx-auto max-w-5xl px-6">
 			<div class="main-card">
-				<Title />
 				<div class="contents">
 					<slot />
 				</div>
@@ -29,3 +27,10 @@ import Title from "@components/layouts/Title.astro";
 		</div>
 	</body>
 </html>
+
+
+<script>
+    // update the backend
+    import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
+    document.body.dataset.defaultBackend = getDefaultBackend();
+</script>

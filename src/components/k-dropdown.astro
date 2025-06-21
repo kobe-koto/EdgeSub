@@ -1,8 +1,7 @@
 ---
-import "@styles/components/k-dropdown.scss";
 import { Icon } from "astro-icon/components";
 
-export type DropdownItemPrototype = { key: string, value: string };
+export type DropdownItemPrototype = { key: string; value: string };
 
 interface Props {
     Items: DropdownItemPrototype[];
@@ -12,22 +11,31 @@ const {
     Items,
     Default = {
         key: "还未选择",
-        value: "__NULL__"
-    }
+        value: "__NULL__",
+    },
 } = Astro.props;
 ---
 
-
-<k-dropdown data-onfocus="false" data-selected-value={Default.value}>
-    <button>
+<k-dropdown class="dropdown" data-selected-value={Default.value}>
+    <div tabindex="0" role="button" class="btn m-1">
         <span>{Default.key}</span>
         <Icon name="iconoir:arrow-down-tag" />
-    </button>
-    <div class="dropdown-content">
-        {Items.map(i => {
-            return (<button data-value={i.value}>{i.key}</button>)
-        })}
     </div>
+
+    <ul
+        tabindex="0"
+        class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+    >
+        {
+            Items.map((i) => {
+                return (
+                    <li>
+                        <a data-value={i.value}>{i.key}</a>
+                    </li>
+                );
+            })
+        }
+    </ul>
 </k-dropdown>
 
 <script src="@scripts/components/k-dropdown"></script>
