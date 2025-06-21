@@ -1,4 +1,4 @@
-import type { Form } from "../k-form";
+import type { DataInput } from "../data-input";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 
 export class ShorterPassword extends HTMLElement {
@@ -8,6 +8,10 @@ export class ShorterPassword extends HTMLElement {
         this.Elements.SubmitButton.addEventListener("click", () => {this.Submit()})
     }
     async Submit () {
+
+        this.Elements.SubmitButton.disabled = true;
+        this.Elements.SubmitButton.querySelector(".swap").classList.add("swap-active");
+
         this.Elements.Msg.innerText = "submitting..";
         // build request body
         let requestBody = {
@@ -37,13 +41,16 @@ export class ShorterPassword extends HTMLElement {
             }
         }).catch((err) => {
             this.Elements.Msg.innerText = `Error: ${err}`;
-        })
+        }).finally(() => {
+            this.Elements.SubmitButton.disabled = false;
+            this.Elements.SubmitButton.querySelector(".swap").classList.remove("swap-active");
+        });
     }
     Elements = {
-        oldPassword: this.querySelector("#old-password") as Form,
-        newPassword: this.querySelector("#new-password") as Form,
+        oldPassword: this.querySelector("#old-password") as DataInput,
+        newPassword: this.querySelector("#new-password") as DataInput,
 
-        Msg: this.querySelector("code#password-status") as HTMLElement,
+        Msg: this.querySelector("code") as HTMLElement,
         SubmitButton: this.querySelector("#password-submit") as HTMLButtonElement,
     }
 }

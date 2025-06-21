@@ -1,0 +1,19 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Base Shape - slightly darker for depth -->
+  <path d="M80 60 H160 Q180 60 180 80 V176 Q180 196 160 196 H96 Q80 196 80 180 V132 H140 Q150 132 150 122 V98 Q150 88 140 88 H80 V80 Q80 60 96 60 Z" fill="#6573C3" filter="url(#softShadow)"/>
+
+  <!-- Middle Layer - main color -->
+  <path d="M88 68 H152 Q168 68 168 84 V168 Q168 184 152 184 H100 Q88 184 88 172 V130 H136 Q144 130 144 122 V102 Q144 94 136 94 H88 V84 Q88 68 100 68 Z" fill="#7986CB"/>
+
+  <!-- Top Highlight Layer - lighter shade -->
+  <path d="M96 76 H144 Q156 76 156 88 V160 Q156 172 144 172 H104 Q96 172 96 164 V128 H132 Q138 128 138 122 V106 Q138 100 132 100 H96 V88 Q96 76 104 76 Z" fill="#9FA8DA"/>
+
+  <!-- Optional Inner Detail/Shine (subtle) -->
+  <circle cx="110" cy="92" r="6" fill="#E8EAF6" opacity="0.5"/>
+</svg>

@@ -1,52 +1,55 @@
 ---
-import KForm from "@components/k-form.astro";
+import DataInput from "@components/data-input.astro";
 import { Icon } from "astro-icon/components";
 ---
 
 <shorter-list class="flex-contents">
-    <KForm
+    <DataInput
         slug="password"
         desc="Admin password"
         detail="Admin password"
         type="input"
     />
-    <button id="list-submit"><Icon name="iconoir:send-diagonal" /> Fetch</button>
-    <div id="list-items">
-        <list-item class="prototype">
-            <span class="item-info">
-                <p><Icon name="iconoir:info-circle" /> Short ID: <code class="item-id">cry_me_a_r1ver</code></p>
-                <p><Icon name="iconoir:edit" /> Last edited at: <span class="item-date">11011111101010010</span></p>
-            </span>
-            <span class="item-actions">
-                <button class="item-edit"><Icon name="iconoir:edit" /> Edit</button>
-                <button class="item-copy"><Icon name="iconoir:copy" /> Copy ID</button>
-            </span>
+
+    <button class="btn" id="list-submit">
+        <label class="swap swap-rotate">
+            <div class="swap-on">
+                <!-- loading -->
+                <span class="loading loading-spinner loading-md"></span>
+            </div>
+            <div class="swap-off">
+                <!-- not loading -->
+                <Icon name="iconoir:send-diagonal" class="text-xl inline" />
+            </div>
+        </label>
+        <span>Fetch</span>
+    </button>
+
+    <div id="list-items" class="flex flex-row flex-wrap gap-4 justify-center">
+        <list-item class="hidden">
+            <div class="card bg-neutral text-neutral-content w-96">
+                <div class="card-body items-center text-center">
+                    <p>
+                        <Icon class="inline" name="iconoir:info-circle" /> Short
+                        ID: <code class="item-id">cry_me_a_r1ver</code>
+                    </p>
+                    <p>
+                        <Icon class="inline" name="iconoir:edit" /> Last modified:
+                        <span class="item-date">11011111101010010</span>
+                    </p>
+
+                    <div class="card-actions justify-end">
+                        <button class="btn item-edit">
+                            <Icon name="iconoir:edit" /> Edit
+                        </button>
+                        <button class="btn item-copy">
+                            <Icon name="iconoir:copy" /> Copy ID
+                        </button>
+                    </div>
+                </div>
+            </div>
         </list-item>
     </div>
-</div>
+</shorter-list>
 
-<script src="@scripts/components/shorter/shorter-list.ts"></script>
-
-<style lang="scss">
-    shorter-list {
-        #list-items {
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            gap: 18px;
-            > list-item {
-                display: block;
-                padding: 12px 24px;
-                background-color: rgb(52, 85, 74);
-                border-radius: 14px;
-                .item-actions {
-                    display: flex;
-                    gap: 8px;
-                }
-                &.prototype {
-                    display: none;
-                }
-            }
-        }
-    }
-</style>
+<script src="@scripts/components/shorter/shorter-list"></script>

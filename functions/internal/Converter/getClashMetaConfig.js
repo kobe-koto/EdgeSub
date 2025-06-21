@@ -19,12 +19,12 @@ const BasicConfig = {
     isUDP: true,
     isSSUoT: false,
     isInsecure: true,
-    RemoteConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini",
+    RuleProvider: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini",
     isForcedRefresh: false
 }
 
 
-import { RemoteConfigReader } from "../RemoteConfigReader/main.js";
+import { RuleProviderReader } from "../RuleProviderReader/main.js";
 
 export async function getClashMetaConfig (
     Proxies, 
@@ -33,7 +33,7 @@ export async function getClashMetaConfig (
 ) {
     const Config = TrulyAssign(BasicConfig, PassedConfig);
 
-    let RemoteConfig = await (new RemoteConfigReader(Config.RemoteConfig)).Process(EdgeSubDB, Config.isForcedRefresh)
+    let RuleProvider = await (new RuleProviderReader(Config.RuleProvider)).Process(EdgeSubDB, Config.isForcedRefresh)
 
     let ClashConfig = JSON.parse(JSON.stringify(BasicClashConfig))
 
@@ -53,7 +53,7 @@ export async function getClashMetaConfig (
 
     // Append proxy groups.
     ClashConfig["proxy-groups"] = []
-    for (let i of RemoteConfig.ProxyGroup) {
+    for (let i of RuleProvider.ProxyGroup) {
 
         // get Matched Proxies
         let MatchedProxies = [];
@@ -99,9 +99,9 @@ export async function getClashMetaConfig (
     // append rule providers
     ClashConfig["rule-providers"] = {};
     let RuleProvidersMapping = {}; // { URL: ID }[]
-    for (let i in RemoteConfig.RuleProviders) {
-        for (let t in RemoteConfig.RuleProviders[i]) {
-            const RuleProviderPayload = RemoteConfig.RuleProviders[i][t];
+    for (let i in RuleProvider.RuleProviders) {
+        for (let t in RuleProvider.RuleProviders[i]) {
+            const RuleProviderPayload = RuleProvider.RuleProviders[i][t];
             const RuleProviderID = `${i}__${t}`;
             RuleProvidersMapping[RuleProviderPayload] = RuleProviderID;
             let RuleProviderURL;
@@ -126,7 +126,7 @@ export async function getClashMetaConfig (
 
     // Append rule sets;
     ClashConfig.rules = []
-    for (let i of RemoteConfig.Rules) {
+    for (let i of RuleProvider.Rules) {
         
         const rulesetBreakdown = i.split(",")
         const id = rulesetBreakdown[0];

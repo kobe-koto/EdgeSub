@@ -1,9 +1,9 @@
-type RemoteConfig = {
+type RuleProvider = {
     key: string;
     value: string | URL;
 }
 
-export const RemoteConfigs: RemoteConfig[] = [
+export const RuleProviders: RuleProvider[] = [
     {
         key: "最小配置", 
         value: "__DEFAULT"

@@ -1,4 +1,4 @@
-import type { Form } from "../k-form";
+import type { DataInput } from "../data-input";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 
 export class Shorter extends HTMLElement {
@@ -8,6 +8,10 @@ export class Shorter extends HTMLElement {
         this.Elements.SubmitButton.addEventListener("click", () => {this.Submit()})
     }
     async Submit () {
+
+        this.Elements.SubmitButton.disabled = true;
+        this.Elements.SubmitButton.querySelector(".swap").classList.add("swap-active");
+
         // build api Endpoint
         let requestURL = new URL(this.defaultBackend);
         requestURL.pathname = `/short/delete/${this.Elements.slug.get()}`;
@@ -26,14 +30,17 @@ export class Shorter extends HTMLElement {
             this.Elements.Msg.innerText = res.msg;
         }).catch((err) => {
             this.Elements.Msg.innerText = `提交失败: ${err}`;
+        }).finally(() => {
+            this.Elements.SubmitButton.disabled = false;
+            this.Elements.SubmitButton.querySelector(".swap").classList.remove("swap-active");
         })
     }
     Elements = {
-        slug: this.querySelector("k-form#slug") as Form,
-        token: this.querySelector("k-form#token") as Form,
+        slug: this.querySelector("data-input#slug") as DataInput,
+        token: this.querySelector("data-input#token") as DataInput,
 
         Msg: this.querySelector("code"),
-        SubmitButton: this.querySelector("#submit"),
+        SubmitButton: this.querySelector("#submit") as HTMLButtonElement,
     }
 }
 

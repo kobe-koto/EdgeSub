@@ -3,25 +3,31 @@ import DataInput from "@components/data-input.astro";
 import { Icon } from "astro-icon/components";
 ---
 
-<shorter-password class="flex-contents">
+<short-token-reset class="flex-contents">
     <DataInput
-        slug="old-password"
-        desc="Old admin password"
-        detail="Old admin password (leave it empty if 'Password undefined')"
+        slug="slug"
+        desc="Short ID"
+        detail="Short ID"
         type="input"
     />
     <DataInput
-        slug="new-password"
-        desc="New admin password"
-        detail="New admin password"
+        slug="old-token"
+        desc="Old Token"
+        detail="OLD Short token"
         type="input"
     />
-
+    <DataInput
+        slug="new-token"
+        desc="New Token"
+        detail="NEW Short token"
+        type="input"
+    />
+    
     <div class="mockup-code w-full my-2">
         <pre data-prefix="~"><code>请先提交</code></pre>
     </div>
 
-    <button class="btn" id="password-submit">
+    <button class="btn" id="submit">
         <label class="swap swap-rotate">
             <div class="swap-on">
                 <!-- loading -->
@@ -35,6 +41,6 @@ import { Icon } from "astro-icon/components";
         <span>Submit</span>
     </button>
 
-</div>
+</short-token-reset>
 
-<script src="@scripts/components/shorter/shorter-password.ts"></script>
+<script src="@scripts/components/shorter/short-token-reset.ts"></script>

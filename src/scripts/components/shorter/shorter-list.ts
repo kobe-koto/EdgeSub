@@ -1,4 +1,4 @@
-import type { Form } from "../k-form";
+import type { DataInput } from "../data-input";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 
 export class ShorterList extends HTMLElement {
@@ -8,7 +8,8 @@ export class ShorterList extends HTMLElement {
         this.Elements.SubmitButton.addEventListener("click", () => {this.Submit()})
     }
     async Submit () {
-        // this.Elements.Msg.innerText = "submitting..";
+        this.Elements.SubmitButton.disabled = true;
+        this.Elements.SubmitButton.querySelector(".swap").classList.add("swap-active");
         // build request body
         let requestBody = {
             password: this.Elements.password.get()
@@ -33,11 +34,11 @@ export class ShorterList extends HTMLElement {
                 if (res.shortIDs.length === 0) {
                     alert("no shorts to see, add some and try again :)");
                 }
-                Array.from(this.Elements.ListItems.querySelectorAll("list-item:not(.prototype)")).map(i=>i.remove())
+                Array.from(this.Elements.ListItems.querySelectorAll("list-item:not(.hidden)")).map(i=>i.remove())
                 for (let i of res.shortIDs) {
                     let t = this.Elements.ListItemPrototype.cloneNode(true) as ListItem;
                     t.update(i.name.replace(/^short\:/, ""), i.timestamp || 0)
-                    t.classList.remove("prototype")
+                    t.classList.remove("hidden")
                     this.Elements.ListItems.appendChild(t)
                 }
             } else {
@@ -45,12 +46,15 @@ export class ShorterList extends HTMLElement {
             }
         }).catch((err) => {
             alert(`Error: ${err}`);
+        }).finally(() => {
+            this.Elements.SubmitButton.disabled = false;
+            this.Elements.SubmitButton.querySelector(".swap").classList.remove("swap-active");
         })
     }
     Elements = {
-        password: this.querySelector("#password") as Form,
+        password: this.querySelector("#password") as DataInput,
         SubmitButton: this.querySelector("#list-submit") as HTMLButtonElement,
-        ListItemPrototype: this.querySelector("list-item.prototype") as ListItem,
+        ListItemPrototype: this.querySelector("list-item.hidden") as ListItem,
         ListItems: this.querySelector("#list-items") as HTMLElement,
     }
 }

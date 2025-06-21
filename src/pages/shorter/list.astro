@@ -1,24 +1,13 @@
 ---
 import Base from "@layouts/base.astro";
-import { Icon } from "astro-icon/components";
-//import KForm from "@components/k-form.astro";
+import BackendIndicator from "@components/backendIndicator.astro";
 
 import ShorterList from "@components/shorter/shorter-list.astro"
 ---
 <Base>
-    <h1>Shorts list</h1>
-    <p><Icon name="iconoir:info-circle" />  Current backend: <code id="backend">[Checking...]</code></p>
+    <h1 class="text-2xl font-bold">List all the Shorts</h1>
+    
+    <BackendIndicator />
 
     <ShorterList />
 </Base>
-
-<script>
-    // update the backend
-    import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
-    const defaultBackend = getDefaultBackend()
-    
-    document.body.dataset.defaultBackend = defaultBackend;
-
-    const backendIndicator = document.querySelector("#backend") as HTMLElement;
-    backendIndicator.innerText = defaultBackend;
-</script>

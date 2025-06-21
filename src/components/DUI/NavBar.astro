@@ -1,0 +1,53 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<div class="navbar bg-base-100 shadow-sm mx-auto max-w-5xl rounded-b-box">
+    <div class="flex-1">
+        <a class="btn btn-ghost text-xl" href="/">EdgeSub</a>
+    </div>
+    <div class="flex-none">
+        <ul class="menu menu-horizontal px-1">
+            <li>
+                <details>
+                    <summary><Icon name="iconoir:compress-lines" /> Shorter</summary>
+                    <ul class="bg-base-100 rounded-t-none p-2">
+                        <li><a href="/shorter/create/">
+                            <Icon class="inline" name="iconoir:add-circle" />
+                            <span>Create</span>
+                        </a></li>
+                        <li><a href="/shorter/edit/">
+                            <Icon class="inline" name="iconoir:edit" />
+                            <span>Edit</span>
+                        </a></li>
+                        <li><a href="/shorter/destory/">
+                            <Icon class="inline" name="iconoir:trash" />
+                            <span>Delete</span>
+                        </a></li>
+                        <li><a href="/shorter/reset-token/">
+                            <Icon class="inline" name="iconoir:refresh-double" />
+                            <span>Reset Token</span>
+                        </a></li>
+                        <li><a href="/shorter/list/">
+                            <Icon class="inline" name="iconoir:list" />
+                            <span>List</span>
+                        </a></li>
+                        <li><a href="/shorter/admin/">
+                            <Icon class="inline" name="iconoir:plus" />
+                            <span>Admin</span>
+                        </a></li>
+                    </ul>
+                </details>
+            </li>
+
+            <li>
+                <a
+                    title="GitHub Project"
+                    href="https://github.com/kobe-koto/EdgeSub"
+                    >
+                    <Icon name="iconoir:github" /> GitHub
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

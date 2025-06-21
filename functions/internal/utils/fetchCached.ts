@@ -1,5 +1,5 @@
 export async function fetchCached (URL: URL, Prefix = "Cached", CacheDB: KVNamespace, isForcedRefresh = false) {
-    // const CacheKey = `RemoteConfig_${URL}`;
+    // const CacheKey = `RuleProvider_${URL}`;
     const CacheKey = `${Prefix}_${URL}`;
     const CacheTTL =  6 * 60 * 60; // 6hrs for default
 
