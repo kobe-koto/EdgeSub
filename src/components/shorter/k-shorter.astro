@@ -1,35 +1,57 @@
 ---
-import KForm from "@components/k-form.astro";
+import DataInput from "@components/data-input.astro";
+import { Icon } from "astro-icon/components";
 ---
 
-<h2>Shorter 设定</h2>
 <k-shorter class="flex-contents">
-    <KForm
+    <DataInput
         slug="SubURL"
         desc="订阅链接"
         detail="仅支持 http(s):// 和 short: 开头的订阅链接, 类似于 vless:// 开头的分享链接。以换行分割。"
         type="textarea"
     />
 
-    <KForm
-        slug="short-slug"
-        desc="Short ID"
-        detail="默认随机"
-        type="input"
-    />
-    <KForm
-        slug="short-token"
-        desc="Short Token"
-        detail="默认随机"
-        type="input"
-    />
+    <div class="flex flex-row gap-2 flex-wrap">
+        <DataInput
+            slug="short-slug"
+            desc="Short ID"
+            detail="默认随机"
+            type="input"
+        />
+        <DataInput
+            slug="short-token"
+            desc="Short Token"
+            detail="默认随机"
+            type="input"
+        />
+    </div>
 
-    <code>请先提交</code>
+    <div class="mockup-code w-full my-2">
+        <pre data-prefix="~"><code>请先提交</code></pre>
+    </div>
 
     <p>可将以上内容作为本程式内专用的 订阅链接</p>
 
-    <button id="shorter">Make it shorter.</button>
-</k-shorter>
+    <div class="flex gap-4">
+        <button class="btn" id="shorter">
+            <label class="swap swap-rotate">
+                <div class="swap-on">
+                    <!-- loading -->
+                    <span class="loading loading-spinner loading-md"></span>
+                </div>
+                <div class="swap-off">
+                    <!-- not loading -->
+                    <Icon name="iconoir:send" class="text-xl inline" />
+                </div>
+            </label>
+            <span>Submit</span>
+        </button>
 
+        <button class="btn" id="copy">
+            <Icon name="iconoir:copy" />
+            <span>Copy</span>
+        </button>
+    </div>
+</k-shorter>
 
 <script src="@scripts/components/shorter/k-shorter"></script>

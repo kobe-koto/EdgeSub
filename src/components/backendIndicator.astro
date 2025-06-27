@@ -1,0 +1,20 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<div role="alert" class="alert bg-base-300 my-4">
+    <Icon name="iconoir:info-circle" />
+    <span>
+        Current backend: 
+        <code id="backend">
+            <span class="skeleton h-6 w-28 inline-block align-[-0.45rem] ml-1"></span>
+        </code>
+    </span>
+</div>
+
+<script>
+    addEventListener("DOMContentLoaded", () => {
+        const backendIndicator = document.querySelector("#backend") as HTMLElement;
+        backendIndicator.innerText = document.body.dataset.defaultBackend;
+    });
+</script>

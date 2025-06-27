@@ -1,93 +1,118 @@
 ---
-import Spliter from "@components/spliter.astro";
-import KForm from "@components/k-form.astro";
+import DataInput from "@components/data-input.astro";
 import { Icon } from "astro-icon/components";
 import type { DropdownItemPrototype } from "@components/k-dropdown.astro";
-import { RemoteConfigs } from "@config/RemoteConfigs.js";
+import { RuleProviders } from "@config/RuleProviders";
 import { Endpoints } from "@config/AvalibleOptoutFormat.js"
 ---
 
 <k-suburl-generator data-endpoints={JSON.stringify(Endpoints)} class="flex-contents">
-    <KForm
+    <h1 class="text-2xl font-bold">EdgeSub 订阅转换</h1>
+    <div role="alert" class="alert bg-base-300 my-4">
+        <Icon name="iconoir:info-circle" />
+        <span>
+            如果实例并非您自己的，请谨慎使用。<br />
+            您输入的所有数据将<b>在请求订阅时进行远程处理</b>。<br />
+            与 Shorter 功能相关的数据将<b>以非加密形式远程存储</b>，并且 Short Token 仅用于访问控制，而非加密密码。<br />
+            <b>我们建议您按照 GitHub 上的文档进行自行部署。</b>
+        </span>
+    </div>
+    <DataInput
         slug="SubURL"
         desc="订阅链接"
         detail="仅支持 http(s):// 和 short: 开头的订阅链接, 类似于 vless:// 开头的分享链接。以换行分割。"
         type="textarea"
     />
-    <KForm
-        slug="Backend"
-        desc="后端地址"
-        detail="默认为当前站点"
-        type="input"
-    />
-    <KForm
+    <DataInput
         slug="Endpoint"
         desc="输出格式"
         type="k-dropdown"
         DropdownDefault={{ key: "Clash Meta (默认)", value: "/sub/clash-meta" }}
-        DropdownItems={Endpoints/* .map(i=> {delete i.ExtendConfig; return i}) */ as DropdownItemPrototype[]}
+        DropdownItems={Endpoints as DropdownItemPrototype[]}
     />
 
-
-    <KForm
-        slug="RemoteConfig"
-        desc="远程配置"
+    
+    <DataInput
+        slug="RuleProvider"
+        desc="远程配置 (Rule Providers)"
         type="k-dropdown"
         DropdownDefault={{ key: "最小配置 (默认)", value: "__DEFAULT" }}
-        DropdownItems={RemoteConfigs as DropdownItemPrototype[]}
-    />
-    <KForm
-        slug="RemoteConfigUserspec"
-        desc="自订远程配置(可选)"
-        detail="目前只支持 ini 格式远程配置的解析, 且可能并不完善."
-        type="input"
-    />
-    <KForm
-        slug="ProxyRuleProviders"
-        desc="让 EdgeSub 缓存和代理 Rule Providers"
-        type="k-switch"
-        SwitchDefault={true}
-    />
-    <KForm
-        slug="isUDP"
-        desc="开启 UDP"
-        type="k-switch"
-        SwitchDefault={true}
-    />
-    <KForm
-        slug="isSSUoT"
-        desc="开启 SS UoT"
-        type="k-switch"
-        SwitchDefault={false}
-    />
-    <KForm
-        slug="isShowHost"
-        desc="在节点名称后添加 Host 字段"
-        type="k-switch"
-        SwitchDefault={false}
-    />
-    <KForm
-        slug="ForcedWS0RTT"
-        desc="强制打开 WS 0-RTT"
-        type="k-switch"
-        SwitchDefault={false}
+        DropdownItems={RuleProviders as DropdownItemPrototype[]}
     />
 
 
-    <KForm
+    <h2 class="text-lg font-bold">高级选项</h2>
+    <div class="flex flex-row gap-2 flex-wrap">
+        <DataInput
+            slug="ProxyRuleProviders"
+            desc="让 EdgeSub 缓存和代理 Rule Providers"
+            detail="对于 Sing-Box 始终为 true"
+            type="toggle"
+            SwitchDefault={true}
+        />
+        <DataInput
+            slug="isUDP"
+            desc="开启 UDP"
+            detail="在配置中开启原生 UDP 支持"
+            type="toggle"
+            SwitchDefault={true}
+        />
+        <DataInput
+            slug="isSSUoT"
+            desc="开启 SS UoT"
+            detail="仅对 Shadowsocks 开启 UDP over TCP 支持. 不可与原生 UDP 同时开启."
+            type="toggle"
+            SwitchDefault={false}
+        />
+        <DataInput
+            slug="isShowHost"
+            desc="在节点名称后添加 Host 字段"
+            detail="不知道的别开"
+            type="toggle"
+            SwitchDefault={false}
+        />
+        <DataInput
+            slug="ForcedWS0RTT"
+            desc="强制打开 WS 0-RTT"
+            detail="强制打开 WebSocket 0-RTT 支持, 可能会导致部分节点无法连接."
+            type="toggle"
+            SwitchDefault={false}
+        />
+        <DataInput
+            slug="Backend"
+            desc="后端地址"
+            detail="默认为当前站点"
+            type="input"
+            optional={true}
+        />
+        <DataInput
+            slug="RuleProviderUserspec"
+            desc="自订远程配置 (将覆写已选择的远程配置)"
+            detail="仅不完善地支持 ini 格式"
+            type="input"
+            optional={true}
+        />
+    </div>
+
+
+
+
+    <DataInput
         slug="HTTPHeaders"
         desc="HTTP Headers"
         detail="请求远端订阅位址时使用的 HTTP Headers, 请务必使用 JSON 格式书写."
         type="textarea"
     />
-        
-    <Spliter />
+    
+    <div class="divider"></div>
 
-    <code>https://OpenWrt.lan/luci/123" OR ""==" </code>
+    <div class="mockup-code w-full">
+        <pre data-prefix="~"><code>https://OpenWrt.lan/luci/123" OR ""==" </code></pre>
+    </div>
 
-    <div class="botton-con">
-        <button id="generate"><Icon name="iconoir:refresh-circle" />  Generate</button>
-        <button id="copy"><Icon name="iconoir:copy" />  Copy</button>
+    <div class="flex gap-4">
+        <button class="btn" id="generate"><Icon name="iconoir:refresh-circle" />  Generate</button>
+        <button class="btn" id="copy"><Icon name="iconoir:copy" />  Copy</button>
     </div>
 
 </k-suburl-generator>

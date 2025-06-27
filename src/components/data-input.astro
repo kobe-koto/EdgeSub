@@ -1,0 +1,76 @@
+---
+import type { DropdownItemPrototype } from "@components/k-dropdown.astro";
+import KDropdown from "@components/k-dropdown.astro";
+
+interface Props {
+    slug: string;
+    desc: string;
+    detail?: string;
+    optional?: boolean;
+    type: "input" | "textarea" | "k-dropdown" | "toggle";
+    DropdownDefault?: DropdownItemPrototype;
+    DropdownItems?: DropdownItemPrototype[];
+    SwitchDefault?: boolean;
+}
+
+const { 
+    slug, 
+    desc, 
+    detail = "<暂未设定 detail 属性>", 
+    type,
+    optional = false,
+    DropdownDefault, 
+    DropdownItems, 
+    SwitchDefault = false,
+} = Astro.props;
+---
+
+<data-input id={slug} data-type={type}>
+
+    <!-- <label class="fieldset-legend">{desc}</label> -->
+
+    { type === "input" && (
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend">
+                {desc}
+                { optional && <span class="label">可选</span> }
+            </legend>
+            <input type="text" class="input" placeholder={detail} />
+        </fieldset>
+    ) }
+
+    { type === "textarea" && (
+        <label class="fieldset-legend">
+            {desc}
+            { optional && <span class="label">可选</span> }
+        </label>
+        <textarea class="textarea h-24 w-full p-4" placeholder={detail} />
+    ) }
+
+    { type === "k-dropdown" && (
+        <label class="fieldset-legend">{desc}</label>
+        <KDropdown 
+            Default={DropdownDefault} 
+            Items={DropdownItems}
+        />
+    ) }
+
+    { type === "toggle" && (
+        <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4">
+            <legend class="fieldset-legend">{desc}</legend>
+            <label class="label">
+                <input type="checkbox" checked={SwitchDefault ? "checked" : ""} class="toggle" />
+                {detail}
+            </label>
+        </fieldset>
+    ) }
+    
+</data-input>
+
+<script src="@scripts/components/data-input"></script>
+<!-- 
+<style lang="scss">
+    data-input {
+        margin: 12px 0;
+    }
+</style> -->

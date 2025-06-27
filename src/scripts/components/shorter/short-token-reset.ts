@@ -1,16 +1,20 @@
-import type { Form } from "../k-form";
+import type { DataInput } from "../data-input";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 
-export class Shorter extends HTMLElement {
+export class ShortTokenResetter extends HTMLElement {
     defaultBackend = getDefaultBackend();
     constructor () {
         super();
         this.Elements.SubmitButton.addEventListener("click", () => {this.Submit()})
     }
     async Submit () {
+
+        this.Elements.SubmitButton.disabled = true;
+        this.Elements.SubmitButton.querySelector(".swap").classList.add("swap-active");
+
         // build api Endpoint
         let requestURL = new URL(this.defaultBackend);
-        requestURL.pathname = `/short/token-change/${this.Elements.slug.get()}`;
+        requestURL.pathname = `/short/token-reset/${this.Elements.slug.get()}`;
 
         await fetch(requestURL, {
             body: JSON.stringify({
@@ -27,18 +31,21 @@ export class Shorter extends HTMLElement {
             this.Elements.Msg.innerText = res.msg;
         }).catch((err) => {
             this.Elements.Msg.innerText = `提交失败: ${err}`;
+        }).finally(() => {
+            this.Elements.SubmitButton.disabled = false;
+            this.Elements.SubmitButton.querySelector(".swap").classList.remove("swap-active");
         })
     }
     Elements = {
-        slug: this.querySelector("k-form#slug") as Form,
-        oldToken: this.querySelector("k-form#old-token") as Form,
-        newToken: this.querySelector("k-form#new-token") as Form,
+        slug: this.querySelector("data-input#slug") as DataInput,
+        oldToken: this.querySelector("data-input#old-token") as DataInput,
+        newToken: this.querySelector("data-input#new-token") as DataInput,
 
         Msg: this.querySelector("code"),
-        SubmitButton: this.querySelector("#submit"),
+        SubmitButton: this.querySelector("#submit") as HTMLButtonElement,
     }
 }
 
-customElements.define("short-token-change", Shorter);
-console.info("[short-token-change] registered")
+customElements.define("short-token-reset", ShortTokenResetter);
+console.info("[short-token-reset] registered")
 
