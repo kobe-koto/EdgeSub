@@ -19,11 +19,6 @@ const AvalibleEndpoints: EndpointPrototype[] = [
         ExtendConfig: ["RuleProvider", "RuleProviderUserspec", "RuleProvidersProxy", "isUDP", "isSSUoT", "ForcedWS0RTT"]
     },
     {
-        key: "Clash",
-        value: "/sub/clash",
-        ExtendConfig: ["RuleProvider", "RuleProviderUserspec", "RuleProvidersProxy", "isUDP", "isSSUoT", "ForcedWS0RTT"]
-    },
-    {
         key: "Base 64",
         value: "/sub/base64"
     },

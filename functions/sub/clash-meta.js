@@ -3,7 +3,7 @@ import getParsedSubData from "../internal/getParsedSubData.ts";
 import Yaml from "js-yaml";
 
 
-export async function onRequest (context, isClashOriginal = false) {
+export async function onRequest (context) {
     const { request } = context;
     const URLObject = new URL(request.url);
     let Proxies = await getParsedSubData(
@@ -12,29 +12,6 @@ export async function onRequest (context, isClashOriginal = false) {
         URLObject.searchParams.get("show_host") === "true",
         JSON.parse(URLObject.searchParams.get("http_headers")),
     );
-    
-    // process proxies if its a clash original request.
-    if (isClashOriginal === true) {
-        const ClashSupportedProxyType = ["trojan", "vmess", "ss", "ssr", "http", "socks5" /* "snell" */];
-        const ClashSupportedSSCipher = ["aes-128-gcm", "aes-192-gcm", "aes-256-gcm", "chacha20-ietf-poly1305", "xchacha20-ietf-poly1305", "aes-128-cfb", "aes-192-cfb", "aes-256-cfb", "rc4-md5", "chacha20-ietf", "xchacha20", "aes-128-ctr", "aes-192-ctr", "aes-256-ctr"]
-
-        console.info(`[Main] It's a Clash Original Config request!, \nfiltering out these: ${ClashSupportedProxyType.join(", ")}`)
-
-        // filter the proxies
-        Proxies = Proxies
-            .filter( i => ClashSupportedProxyType.includes(i.__Type) )
-            .filter( i => {
-                console.log(i)
-                if (i.__Type === "ss") {
-                    console.log(i.Auth.cipher)
-                    if (ClashSupportedSSCipher.includes(i.Auth.cipher)) {
-                        return true;
-                    }
-                } else {
-                    return true;
-                }
-            })
-    }
 
     // a javascript object !!! not YAML !!!
     let ClashMetaConfigObject = await getClashMetaConfig (
