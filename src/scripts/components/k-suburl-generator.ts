@@ -1,6 +1,7 @@
 import type { DataInput } from "@scripts/components/data-input";
 import type { EndpointExtendConfigPrototype, EndpointPrototype } from "@config/AvalibleOptoutFormat";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
+import { copyToClipboard } from "@scripts/utils/copy";
 
 class SubURLGenerator extends HTMLElement {
     TargetExtendConfig: ( "RuleProvider" | "isUDP" )[];
@@ -18,11 +19,31 @@ class SubURLGenerator extends HTMLElement {
         })
     }
 
-
     private setupEventListeners () {
         this.Elements.Action.Generate.addEventListener("click", () => {this.CheckAndGenerate()});
-        this.Elements.Action.Copy.addEventListener("click", () => {this.CopyURL()});
-        this.Elements.Config.Basic.Endpoint.addEventListener("dropdown-select", (event: CustomEvent) => {this.ChangeEndpoint(event)});
+        this.Elements.Action.Copy.addEventListener("click", () => {
+            copyToClipboard(this.Elements.Action.MsgBlock.innerText)
+                .then(() => {
+                    alert("已将连接复制到剪贴板");
+                })
+                .catch((err) => {
+                    console.error("[k-suburl-generator] copy failed", err);
+                    alert("复制失败, 请检查浏览器权限设置, 版本, 或尝试手动复制.");
+                });
+        });
+        this.Elements.Config.Basic.Endpoint.addEventListener("dropdown-select", (event: CustomEvent) => {
+            const SelectedEndpointPath: string = event.detail.selectedValue;
+            let Endpoint: EndpointPrototype = this.GetEndpoint(SelectedEndpointPath);
+            let NeededExtendConfig = Endpoint.ExtendConfig || [];
+
+            for (let i in this.Elements.Config.Extended) {
+                if (NeededExtendConfig.includes(i as EndpointExtendConfigPrototype)) {
+                    this.Elements.Config.Extended[i].style.removeProperty("display")
+                } else {
+                    this.Elements.Config.Extended[i].style.setProperty("display", "none")
+                }
+            }
+        });
     }
 
     private Elements = {
@@ -42,7 +63,7 @@ class SubURLGenerator extends HTMLElement {
             Extended: {
                 RuleProviderUserspec: this.querySelector("data-input#RuleProviderUserspec") as DataInput,
                 RuleProvider: this.querySelector("data-input#RuleProvider") as DataInput,
-                ProxyRuleProviders: this.querySelector("data-input#ProxyRuleProviders") as DataInput,
+                RuleProvidersProxy: this.querySelector("data-input#RuleProvidersProxy") as DataInput,
                 isUDP: this.querySelector("data-input#isUDP") as DataInput,
                 isSSUoT: this.querySelector("data-input#isSSUoT") as DataInput,
                 ForcedWS0RTT: this.querySelector("data-input#ForcedWS0RTT") as DataInput,
@@ -50,17 +71,7 @@ class SubURLGenerator extends HTMLElement {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-    GetEndpoint (EndpointPath: string = String(this.Elements.Config.Basic.Endpoint.get())) {
+    private GetEndpoint (EndpointPath: string = String(this.Elements.Config.Basic.Endpoint.get())) {
         for (let i of this.Endpoints) {
             if (i.value === EndpointPath) {
                 return i as EndpointPrototype;
@@ -69,92 +80,82 @@ class SubURLGenerator extends HTMLElement {
         throw `no targeted endpoint found, expected value ${EndpointPath}`
     }
 
-    ChangeEndpoint (event: CustomEvent) {
-        const SelectedEndpointPath: string = event.detail.selectedValue;
-        let Endpoint: EndpointPrototype = this.GetEndpoint(SelectedEndpointPath);
-        let NeededExtendConfig = Endpoint.ExtendConfig || [];
-
-        for (let i in this.Elements.Config.Extended) {
-            if (NeededExtendConfig.includes(i as EndpointExtendConfigPrototype)) {
-                this.Elements.Config.Extended[i].style.removeProperty("display")
-            } else {
-                this.Elements.Config.Extended[i].style.setProperty("display", "none")
+    private getConfig () {
+        return {
+            Basic: {
+                SubURL: this.Elements.Config.Basic.SubURL.get() as string,
+                Backend: (this.Elements.Config.Basic.Backend.get() || this.defaultBackend) as string,
+                Endpoint: this.Elements.Config.Basic.Endpoint.get() as string,
+                isShowHost: this.Elements.Config.Basic.isShowHost.get() as boolean,
+                HTTPHeaders: JSON.stringify(JSON.parse(String(this.Elements.Config.Basic.HTTPHeaders.get()) || "{}")) as string,
+            },
+            Extended: {
+                RuleProvider: (this.Elements.Config.Extended.RuleProviderUserspec.get() || this.Elements.Config.Extended.RuleProvider.get()) as string,
+                RuleProvidersProxy: (this.Elements.Config.Extended.RuleProvidersProxy.get() && this.Elements.Config.Basic.Backend.get() || this.defaultBackend) as string,
+                isUDP: this.Elements.Config.Extended.isUDP.get() as boolean,
+                isSSUoT: this.Elements.Config.Extended.isSSUoT.get() as boolean,
+                ForcedWS0RTT: this.Elements.Config.Extended.ForcedWS0RTT.get() as boolean,
             }
         }
     }
 
+
+
     CheckAndGenerate () {
-        const BasicConfig = {
-            SubURL: this.Elements.Config.Basic.SubURL.get(),
-            Backend: this.Elements.Config.Basic.Backend.get() || this.defaultBackend,
-            Endpoint: this.Elements.Config.Basic.Endpoint.get(),
-            isShowHost: this.Elements.Config.Basic.isShowHost.get(),
-            HTTPHeaders: JSON.stringify(JSON.parse(String(this.Elements.Config.Basic.HTTPHeaders.get()) || "{}")),
-        }
-        const ExtendConfig = {
-            RuleProvider: this.Elements.Config.Extended.RuleProviderUserspec.get() || this.Elements.Config.Extended.RuleProvider.get(),
-            ProxyRuleProviders: this.Elements.Config.Extended.ProxyRuleProviders.get(),
-            isUDP: this.Elements.Config.Extended.isUDP.get(),
-            isSSUoT: this.Elements.Config.Extended.isSSUoT.get(),
-            ForcedWS0RTT: this.Elements.Config.Extended.ForcedWS0RTT.get(),
-        }
-        const NeededExtendConfig = this.GetEndpoint().ExtendConfig || [];
-        let Config = { ...BasicConfig }
-        for (let i of NeededExtendConfig) {
-            if (i in ExtendConfig) {
-                Config[i] = ExtendConfig[i];
-            } else {
-                console.warn(`[Merge Config] ${i} required but not found in ExtendConfig.`)
+        // Get required (extended) config
+        const Config = this.getConfig();
+        for (let i of this.GetEndpoint().ExtendConfig || []) {
+            if (!(i in Config.Extended)) { // not required! just remove it from Config.Extended :D
+                delete Config.Extended[i];
             }
         }
         
 
-        let ErrorState = false;
-        for (let i in Config) {
-            if (
-                ( typeof Config[i] === "string" && Config[i].length === 0 )
-            ) {
-                alert(`${i} can't be empty`);
-                ErrorState = true;
+        // non-empty check
+        let ErrorOccurred = false;
+        for (let [key, value] of Object.entries(Config.Basic)) {
+            if (typeof value === "string" && value.length === 0) {
+                alert(`${key} can't be empty`);
+                ErrorOccurred = true;
                 continue;
             }
         }
-        if (ErrorState === true) {
+        if (ErrorOccurred === true) {
             return;
         }
 
-        this.Elements.Action.MsgBlock.innerText = this.GenerateSubURL(Config);
+        // now we do some real works! con---gra---tu---la--tion---s---!
 
-    }
-
-    GenerateSubURL (Config: { SubURL: any; Backend: any; Endpoint: any; RuleProvider?: any; ProxyRuleProviders?: any; isUDP?: any; isSSUoT?: any; ForcedWS0RTT?: any; isShowHost: any, HTTPHeaders: any }) {
-        let URLObj = new URL(Config.Backend);
-        URLObj.pathname = Config.Endpoint;
+        // grab the backend
+        let URLObj = new URL(Config.Basic.Backend);
+        URLObj.pathname = Config.Basic.Endpoint;
         URLObj.search = "";
         URLObj.hash = "";
 
-        URLObj.searchParams.append("url", Config.SubURL)
-        Config.RuleProvider && URLObj.searchParams.append("remote_config", Config.RuleProvider)
-        Config.ProxyRuleProviders && URLObj.searchParams.append("proxy_rule_providers", Config.ProxyRuleProviders && Config.Backend)
-        Config.isUDP && URLObj.searchParams.append("udp", Config.isUDP.toString())
-        Config.isSSUoT && URLObj.searchParams.append("ss_uot", Config.isSSUoT.toString())
-        Config.isShowHost && URLObj.searchParams.append("show_host", Config.isShowHost.toString())
-        Config.ForcedWS0RTT && URLObj.searchParams.append("forced_ws0rtt", Config.ForcedWS0RTT.toString())
-        Config.HTTPHeaders !== "{}" && URLObj.searchParams.append("http_headers", Config.HTTPHeaders)
-        return URLObj.toString();
-    }
+        // append inputed data (subdata)
+        URLObj.searchParams.append("url", Config.Basic.SubURL)
 
-    CopyURL () {
-        if (!navigator.clipboard) {
-            alert("navigator.clipboard API not found on your drowser")
-            return;
+        // append extended config
+        // - currently we do this mapping on client side, 
+        //   but in the future we may want to do this on server side, 
+        //   just to keep the URL clean and uniform.
+        let Mapping = {
+            "RuleProvider": "remote_config",
+            "RuleProvidersProxy": "rule_providers_proxy",
+            "isUDP": "udp",
+            "isSSUoT": "ss_uot",
+            "ForcedWS0RTT": "forced_ws0rtt",
+            "isShowHost": "show_host",
+            "HTTPHeaders": "http_headers"
         }
-        let URLtoCopy = this.Elements.Action.MsgBlock.innerText;
-        navigator.clipboard.writeText(URLtoCopy).then( () => {
-            alert("已将连接复制到剪贴板");
-        }).catch(function(err) {
-            alert(`err: ${err}`);
-        });
+
+        for (let [key, value] of Object.entries(Config.Extended)) {
+            // empty check would be unnecessary here, since we already checked it above
+            URLObj.searchParams.append(Mapping[key], String(value));
+        }
+
+        this.Elements.Action.MsgBlock.innerText = URLObj.toString();
+
     }
 }
 
