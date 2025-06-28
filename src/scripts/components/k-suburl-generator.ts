@@ -22,7 +22,7 @@ class SubURLGenerator extends HTMLElement {
     private setupEventListeners () {
         this.Elements.Action.Generate.addEventListener("click", () => {this.CheckAndGenerate()});
         this.Elements.Action.Copy.addEventListener("click", () => {this.CopyURL()});
-        this.Elements.Config.Basic.Endpoint.addEventListener("change", (event: CustomEvent) => {this.ChangeEndpoint(event)});
+        this.Elements.Config.Basic.Endpoint.addEventListener("dropdown-select", (event: CustomEvent) => {this.ChangeEndpoint(event)});
     }
 
     private Elements = {

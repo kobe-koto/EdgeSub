@@ -11,17 +11,17 @@ const AvalibleEndpoints: EndpointPrototype[] = [
     {
         key: "Sing Box",
         value: "/sub/sing-box",
-        ExtendConfig: ["RuleProvider", "ProxyRuleProviders", "isUDP", "isSSUoT", "ForcedWS0RTT"]
+        ExtendConfig: ["RuleProvider", "RuleProviderUserspec", "ProxyRuleProviders", "isUDP", "isSSUoT", "ForcedWS0RTT"]
     },
     {
         key: "Clash Meta",
         value: "/sub/clash-meta",
-        ExtendConfig: ["RuleProvider", "ProxyRuleProviders", "isUDP", "isSSUoT", "ForcedWS0RTT"]
+        ExtendConfig: ["RuleProvider", "RuleProviderUserspec", "ProxyRuleProviders", "isUDP", "isSSUoT", "ForcedWS0RTT"]
     },
     {
         key: "Clash",
         value: "/sub/clash",
-        ExtendConfig: ["RuleProvider", "ProxyRuleProviders", "isUDP", "isSSUoT", "ForcedWS0RTT"]
+        ExtendConfig: ["RuleProvider", "RuleProviderUserspec", "ProxyRuleProviders", "isUDP", "isSSUoT", "ForcedWS0RTT"]
     },
     {
         key: "Base 64",
