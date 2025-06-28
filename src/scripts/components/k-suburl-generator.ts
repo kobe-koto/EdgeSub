@@ -13,22 +13,41 @@ class SubURLGenerator extends HTMLElement {
         this.setupEventListeners();
 
         customElements.whenDefined("data-input").then(() => {
-            this.BasicConfigElement.Backend.setDetail(`${this.BasicConfigElement.Backend.getDetail()} (${this.defaultBackend})`);
+            this.Elements.Config.Basic.Backend.setDetail(`${this.Elements.Config.Basic.Backend.getDetail()} (${this.defaultBackend})`);
             console.info("[k-sub-url-generator] data-input registration detected, default backend modified")
         })
     }
 
 
     private setupEventListeners () {
-        this.ActionElements.Generate.addEventListener("click", () => {this.CheckAndGenerate()});
-        this.ActionElements.Copy.addEventListener("click", () => {this.CopyURL()});
-        this.BasicConfigElement.Endpoint.addEventListener("change", (event: CustomEvent) => {this.ChangeEndpoint(event)});
+        this.Elements.Action.Generate.addEventListener("click", () => {this.CheckAndGenerate()});
+        this.Elements.Action.Copy.addEventListener("click", () => {this.CopyURL()});
+        this.Elements.Config.Basic.Endpoint.addEventListener("change", (event: CustomEvent) => {this.ChangeEndpoint(event)});
     }
 
-    private ActionElements = {
-        Generate: this.querySelector("button#generate") as HTMLButtonElement,
-        Copy: this.querySelector("button#copy") as HTMLButtonElement,
-        MsgBlock: this.querySelector("code") as HTMLElement,
+    private Elements = {
+        Action: {
+            Generate: this.querySelector("button#generate") as HTMLButtonElement,
+            Copy: this.querySelector("button#copy") as HTMLButtonElement,
+            MsgBlock: this.querySelector("code") as HTMLElement,
+        },
+        Config: {
+            Basic: {
+                SubURL: this.querySelector("data-input#SubURL") as DataInput,
+                Backend: this.querySelector("data-input#Backend") as DataInput,
+                Endpoint: this.querySelector("data-input#Endpoint") as DataInput,
+                isShowHost: this.querySelector("data-input#isShowHost") as DataInput,
+                HTTPHeaders: this.querySelector("data-input#HTTPHeaders") as DataInput,
+            },
+            Extended: {
+                RuleProviderUserspec: this.querySelector("data-input#RuleProviderUserspec") as DataInput,
+                RuleProvider: this.querySelector("data-input#RuleProvider") as DataInput,
+                ProxyRuleProviders: this.querySelector("data-input#ProxyRuleProviders") as DataInput,
+                isUDP: this.querySelector("data-input#isUDP") as DataInput,
+                isSSUoT: this.querySelector("data-input#isSSUoT") as DataInput,
+                ForcedWS0RTT: this.querySelector("data-input#ForcedWS0RTT") as DataInput,
+            }
+        }
     }
 
 
@@ -40,23 +59,8 @@ class SubURLGenerator extends HTMLElement {
 
 
 
-    BasicConfigElement = {
-        SubURL: this.querySelector("data-input#SubURL") as DataInput,
-        Backend: this.querySelector("data-input#Backend") as DataInput,
-        Endpoint: this.querySelector("data-input#Endpoint") as DataInput,
-        isShowHost: this.querySelector("data-input#isShowHost") as DataInput,
-        HTTPHeaders: this.querySelector("data-input#HTTPHeaders") as DataInput,
-    }
-    ExtendConfigElement = {
-        RuleProviderUserspec: this.querySelector("data-input#RuleProviderUserspec") as DataInput,
-        RuleProvider: this.querySelector("data-input#RuleProvider") as DataInput,
-        ProxyRuleProviders: this.querySelector("data-input#ProxyRuleProviders") as DataInput,
-        isUDP: this.querySelector("data-input#isUDP") as DataInput,
-        isSSUoT: this.querySelector("data-input#isSSUoT") as DataInput,
-        ForcedWS0RTT: this.querySelector("data-input#ForcedWS0RTT") as DataInput,
-    }
 
-    GetEndpoint (EndpointPath: string = String(this.BasicConfigElement.Endpoint.get())) {
+    GetEndpoint (EndpointPath: string = String(this.Elements.Config.Basic.Endpoint.get())) {
         for (let i of this.Endpoints) {
             if (i.value === EndpointPath) {
                 return i as EndpointPrototype;
@@ -70,29 +74,29 @@ class SubURLGenerator extends HTMLElement {
         let Endpoint: EndpointPrototype = this.GetEndpoint(SelectedEndpointPath);
         let NeededExtendConfig = Endpoint.ExtendConfig || [];
 
-        for (let i in this.ExtendConfigElement) {
+        for (let i in this.Elements.Config.Extended) {
             if (NeededExtendConfig.includes(i as EndpointExtendConfigPrototype)) {
-                this.ExtendConfigElement[i].style.removeProperty("display")
+                this.Elements.Config.Extended[i].style.removeProperty("display")
             } else {
-                this.ExtendConfigElement[i].style.setProperty("display", "none")
+                this.Elements.Config.Extended[i].style.setProperty("display", "none")
             }
         }
     }
 
     CheckAndGenerate () {
         const BasicConfig = {
-            SubURL: this.BasicConfigElement.SubURL.get(),
-            Backend: this.BasicConfigElement.Backend.get() || this.defaultBackend,
-            Endpoint: this.BasicConfigElement.Endpoint.get(),
-            isShowHost: this.BasicConfigElement.isShowHost.get(),
-            HTTPHeaders: JSON.stringify(JSON.parse(String(this.BasicConfigElement.HTTPHeaders.get()) || "{}")),
+            SubURL: this.Elements.Config.Basic.SubURL.get(),
+            Backend: this.Elements.Config.Basic.Backend.get() || this.defaultBackend,
+            Endpoint: this.Elements.Config.Basic.Endpoint.get(),
+            isShowHost: this.Elements.Config.Basic.isShowHost.get(),
+            HTTPHeaders: JSON.stringify(JSON.parse(String(this.Elements.Config.Basic.HTTPHeaders.get()) || "{}")),
         }
         const ExtendConfig = {
-            RuleProvider: this.ExtendConfigElement.RuleProviderUserspec.get() || this.ExtendConfigElement.RuleProvider.get(),
-            ProxyRuleProviders: this.ExtendConfigElement.ProxyRuleProviders.get(),
-            isUDP: this.ExtendConfigElement.isUDP.get(),
-            isSSUoT: this.ExtendConfigElement.isSSUoT.get(),
-            ForcedWS0RTT: this.ExtendConfigElement.ForcedWS0RTT.get(),
+            RuleProvider: this.Elements.Config.Extended.RuleProviderUserspec.get() || this.Elements.Config.Extended.RuleProvider.get(),
+            ProxyRuleProviders: this.Elements.Config.Extended.ProxyRuleProviders.get(),
+            isUDP: this.Elements.Config.Extended.isUDP.get(),
+            isSSUoT: this.Elements.Config.Extended.isSSUoT.get(),
+            ForcedWS0RTT: this.Elements.Config.Extended.ForcedWS0RTT.get(),
         }
         const NeededExtendConfig = this.GetEndpoint().ExtendConfig || [];
         let Config = { ...BasicConfig }
@@ -119,7 +123,7 @@ class SubURLGenerator extends HTMLElement {
             return;
         }
 
-        this.ActionElements.MsgBlock.innerText = this.GenerateSubURL(Config);
+        this.Elements.Action.MsgBlock.innerText = this.GenerateSubURL(Config);
 
     }
 
@@ -145,7 +149,7 @@ class SubURLGenerator extends HTMLElement {
             alert("navigator.clipboard API not found on your drowser")
             return;
         }
-        let URLtoCopy = this.ActionElements.MsgBlock.innerText;
+        let URLtoCopy = this.Elements.Action.MsgBlock.innerText;
         navigator.clipboard.writeText(URLtoCopy).then( () => {
             alert("已将连接复制到剪贴板");
         }).catch(function(err) {
