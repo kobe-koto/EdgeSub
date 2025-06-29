@@ -15,11 +15,11 @@ const BasicClashConfig = {
 };
 
 const BasicConfig = {
-    RuleProvidersProxy: false,
     isUDP: true,
     isSSUoT: false,
     isInsecure: true,
     RuleProvider: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini",
+    RuleProvidersProxy: false,
     isForcedRefresh: false
 }
 

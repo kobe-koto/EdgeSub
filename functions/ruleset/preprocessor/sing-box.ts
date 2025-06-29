@@ -1,4 +1,5 @@
 import { fetchCached } from "../../internal/utils/fetchCached.js";
+import { MetaToSingRuleMapping } from "functions/internal/data/rule/MetaToSingMapping.js";
 
 export async function onRequest (context) {
     const { request } = context;
@@ -24,8 +25,11 @@ export async function onRequest (context) {
     // merge up rules
     let rules = {}; // ref: https://sing-box.sagernet.org/configuration/rule-set/headless-rule/
     for (let i of RulesList) {
-        const type = Mapping[i[0]],
+        const type = MetaToSingRuleMapping[i[0]],
               payload = i[1];
+        if (!type) {
+            continue
+        }
         if (!(type in rules)) {
             rules[type] = [];
         }
@@ -33,64 +37,11 @@ export async function onRequest (context) {
     }
 
 
-    return new Response(JSON.stringify({rules}), {
+    return new Response(JSON.stringify({ "version": 1, rules: [ rules ] }), {
         status: 200,
         headers: {
-            "Content-Type": "text/plain; charset=utf-8",
+            "Content-Type": "application/json; charset=utf-8",
             "Content-Length": RawData.length
         }
     })
 }
-
-// mihomo src rule syntax
-// <TYPE>, <PAYLOAD>, <OUTBOUND>, <Additional Parameters>
-// note: headless rule doesnt need to care bout outbound
-//       additional parameters is not handled by sing-box/route/rule:
-//       - "no-resolve"'s sing-box/dns/rule's work. 
-//       - "src" is a crazy thing i don't even know why it exists (
-
-// Mapping rules, mihomo -> sing-box
-const Mapping = {
-    "DOMAIN": "domain",
-    "DOMAIN-SUFFIX": "domain_suffix",
-    "DOMAIN-KEYWORD": "domain_keyword",
-    "DOMAIN-REGEX": "domain_regex",
-
-    "GEOSITE": "geosite",
-    "GEOIP": "geoip",
-
-    "IP-CIDR": "ip_cidr",
-    "IP-CIDR6": "ip_cidr", // IP-CIDR6 is a alias for IP-CIDR in mihomo route rule
-    "SRC-IP-CIDR": "source_ip_cidr",
-    "SRC-PORT": "source_port",
-
-    "DST-PORT": "port",
-
-    "PROCESS-PATH": "process_path",
-    "PROCESS-PATH-REGEX": "process_path_regex",
-    "PROCESS-NAME": "process_name",
-
-    "NETWORK": "network",
-
-
-    // "AND": "and",
-    // "OR": "or",
-    // "NOT": "not",
-
-    // TBD: LOGIC RULES
-
-}
-
-
-// mihomo source route rule w/o matching or no need to convert
-
-// IP-SUFFIX IP-ASN // destination IP rules
-// SRC-GEOIP SRC-IP-ASN SRC-IP-SUFFIX // source IP rules
-// IN-PORT IN-TYPE IN-USER IN-NAME // inbound rules
-// PROCESS-NAME-REGEX
-// UID
-// DSCP
-
-// RULE-SET
-// SUB-RULE
-// MATCH

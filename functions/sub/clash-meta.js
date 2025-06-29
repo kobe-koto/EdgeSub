@@ -18,11 +18,11 @@ export async function onRequest (context) {
         Proxies,
         context.env.EdgeSubDB,
         {
-            RuleProvidersProxy: URLObject.searchParams.get("rule_providers_proxy"),
             isUDP: URLObject.searchParams.get("udp") === "true",
             isSSUoT: URLObject.searchParams.get("ss_uot") === "true",
             isInsecure: true,
             RuleProvider: URLObject.searchParams.get("remote_config") || "__DEFAULT",
+            RuleProvidersProxy: URLObject.searchParams.get("rule_providers_proxy"),
             isForcedRefresh: URLObject.searchParams.get("forced_refresh") === "true" ? true : false
         }
     )
