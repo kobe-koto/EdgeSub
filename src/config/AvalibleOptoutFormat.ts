@@ -1,5 +1,5 @@
 import { readdirSync } from "node:fs";
-export type EndpointExtendConfigPrototype = ("RuleProvider" | "ProxyRuleProviders" | "isUDP" | "isSSUoT" | "RuleProviderUserspec" | "ForcedWS0RTT")
+export type EndpointExtendConfigPrototype = ("RuleProvider" | "RuleProvidersProxy" | "isUDP" | "isSSUoT" | "RuleProviderUserspec" | "ForcedWS0RTT")
 
 export type EndpointPrototype = {
     key: string;
@@ -11,17 +11,12 @@ const AvalibleEndpoints: EndpointPrototype[] = [
     {
         key: "Sing Box",
         value: "/sub/sing-box",
-        ExtendConfig: ["RuleProvider", "ProxyRuleProviders", "isUDP", "isSSUoT", "ForcedWS0RTT"]
+        ExtendConfig: ["RuleProvider", "RuleProviderUserspec", "RuleProvidersProxy", "isUDP", "isSSUoT", "ForcedWS0RTT"]
     },
     {
         key: "Clash Meta",
         value: "/sub/clash-meta",
-        ExtendConfig: ["RuleProvider", "ProxyRuleProviders", "isUDP", "isSSUoT", "ForcedWS0RTT"]
-    },
-    {
-        key: "Clash",
-        value: "/sub/clash",
-        ExtendConfig: ["RuleProvider", "ProxyRuleProviders", "isUDP", "isSSUoT", "ForcedWS0RTT"]
+        ExtendConfig: ["RuleProvider", "RuleProviderUserspec", "RuleProvidersProxy", "isUDP", "isSSUoT", "ForcedWS0RTT"]
     },
     {
         key: "Base 64",

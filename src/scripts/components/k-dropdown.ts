@@ -31,6 +31,7 @@ export class Dropdown extends HTMLElement {
 
         this.dataset.selectedValue = value;
         
+        // mark the selected
         this.Elements.Items.forEach(item => {
             if (item.dataset.value === value) {
                 item.classList.add("menu-active")
@@ -40,6 +41,15 @@ export class Dropdown extends HTMLElement {
                 item.classList.remove("menu-active")
             }
         });
+
+        // dispatch custom event to notify
+        this.dispatchEvent(new CustomEvent("dropdown-select", {
+            bubbles: true,
+            composed: true,
+            detail: {
+                value,
+            }
+        }));
     }
 
     Elements: {

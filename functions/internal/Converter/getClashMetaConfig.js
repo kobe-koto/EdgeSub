@@ -15,11 +15,11 @@ const BasicClashConfig = {
 };
 
 const BasicConfig = {
-    ProxyRuleProviders: false,
     isUDP: true,
     isSSUoT: false,
     isInsecure: true,
     RuleProvider: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini",
+    RuleProvidersProxy: false,
     isForcedRefresh: false
 }
 
@@ -105,8 +105,8 @@ export async function getClashMetaConfig (
             const RuleProviderID = `${i}__${t}`;
             RuleProvidersMapping[RuleProviderPayload] = RuleProviderID;
             let RuleProviderURL;
-            if (Config.ProxyRuleProviders) {
-                let RuleProviderURLObject = new URL(Config.ProxyRuleProviders);
+            if (Config.RuleProvidersProxy) {
+                let RuleProviderURLObject = new URL(Config.RuleProvidersProxy);
                 RuleProviderURLObject.pathname = "/ruleset/proxy"
                 RuleProviderURLObject.search = ""
                 RuleProviderURLObject.searchParams.append("target", RuleProviderPayload)
