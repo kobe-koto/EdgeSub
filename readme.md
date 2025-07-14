@@ -1,23 +1,14 @@
 # Edge Sub
 
-在 CloudFlare 的全球網絡上轉換您的節點訂閱.
+在 CloudFlare 的全球網絡上轉換您的代理訂閱.
+
+請為我點一個 ⭐ Star!
 
 ## 使用方式
 
 - ### UI
   
   在 Cloudflare Pages 部署後打開，並按提示操作。
-
-- ### Clash Meta
-
-  Endpoint: `/sub/clash-meta`
-
-  需要以下參數:
-
-  - `url`: 輸入的訂閱的遠程位址
-  - `remote_config` (可選): 遠端設定位址 (INI 格式), 默認為 https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini
-  - `udp` (可選): 遠端設定位址, 默認為 true
-  - `forced_refresh` (可選): 是否強制刷新已緩存的遠端設定, 默認為 false
 
 - ### Debug
 
@@ -71,14 +62,14 @@
 
   | 類型         | 支援 | 已經測試 | Notes                                 |
   | ------------ | ---- | -------- | ------------------------------------- |
-  | HTTP         | ✅    | 🚫        |                                       |
+  | HTTP         | 🗿  | 🚫        | 由於與 **遠端訂閱** 不相容, 請勿直接傳入 HTTP Proxy |
   | Socks 5      | ✅    | 🚫        |                                       |
   | Hysteria 1   | ✅    | ✅        |                                       |
   | Hysteria 2   | ✅    | ✅        |                                       |
   | TUIC v5      | ✅    | ✅        |                                       |
   | Vmess        | ✅    | ☑️        | 未經完全測試                          |
   | Vless        | ✅    | ☑️        | 未經完全測試                          |
-  | Shadowsocks  | ✅    | ✅        | 全局設定為開啓 SS UoT 时會開啓 UDP over TCP |
+  | Shadowsocks  | ✅    | ✅        |  |
   | Trojan       | ✅    | ✅        |                                    |
   | WireGuard    | 🚫    | -        | 似乎沒有通用的 ShareLink 格式         |
   | ShadowsocksR | 🚫    | -        | 暫無計劃實現                          |
@@ -92,17 +83,66 @@
   | ShareLink 集合          | ✅    | ✅    | `/sub/share-link` |
   | ShareLink 集合 (Base64) | ✅    | ✅    | `/sub/base64`     |
   | Clash Meta 配置         | ✅    | ✅    | `/sub/clash-meta` |
-  | Clash 配置              | ✅    | ✅    | `/sub/clash`      |
   | Sing-Box 配置           | ✅    | ✅    | `/sub/sing-box`   |
 
   Notes:
   
-  - **Clash Meta 和 Clash 配置**: 
-  
-    - 輸入: 目前不做任何特殊處理
-    - 輸出: Clash 配置的輸出經過濾以保證只含有已被支援的 Proxy 類型, 其餘與 Clash Meta 無異.
+  - Legacy Clash config support has been dropped at `Commit 13df326`
   
   - **內部除錯用格式**: 
   
     僅供除錯, 將會在未來的任意某個時間點做出破壞性改動或刪除.
 
+## Handling Traffic and Name Information
+
+**Note: This section's behavior description applies specifically to Clash Meta Config.**
+
+This section describes how `traffic` and `name` information is processed from incoming data.
+
+1.  **Data Parsing:**
+    The `decodeURIComponent`-decoded URL (or "subdata") is parsed line by line. Each non-empty and valid line is treated as either a `Subscription` or a `Proxy`.
+    
+    *   A `Subscription` object may contain a `SubscriptionUserInfo` attribute.
+    *   A `Proxy` object does not contain `SubscriptionUserInfo`.
+    *   The `SubscriptionUserInfo` attribute, if present, contains `traffic` and `name` fields. Both `traffic` and `name` can be empty or absent within `SubscriptionUserInfo`.
+    
+2.  **Name Processing and Display:**
+    Names that are extracted and considered "visible" (i.e., non-empty) are aggregated for display. If multiple visible names exist, they will be presented in a summarized format, for example: `Name1, Name2, and <N> more` (where `<N>` represents the count of additional subscriptions and proxies with visible names).
+
+    *Note: A `name` might not be explicitly present or might be empty within a `SubscriptionUserInfo` object, even if `SubscriptionUserInfo` itself exists.*
+
+3.  **Traffic Data Handling:**
+    Traffic data is processed based on the number of unique "visible" names found:
+    
+    *   If only **one** visible `name` is identified across all parsed Subscriptions and Proxies, the first available `traffic` value will be displayed or passed through. The **order in which the lines are parsed** determines which `traffic` value is considered "first."
+    *   If **more than one** visible `name` is identified, traffic data will be ignored.
+
+## Subscription Requesting
+
+When requesting subscriptions based on user-provided data, the following HTTP headers are used:
+
+1.  **Default HTTP Headers:**
+    The application sends a set of default HTTP headers, as defined in `/functions/internal/configs.ts`. These include:
+    
+    ```json
+    {
+        "Accept": "*/*",
+        "User-Agent": "EdgeSub-git/0.0.0 (Prefer ClashMeta / Mihomo Format)"
+    }
+    ```
+    
+2.  **User-Provided HTTP Headers:**
+    Users can provide additional HTTP headers. The processing of these headers is as follows:
+    
+    *   Any non-empty and valid user-provided header that shares a key with a default HTTP header will **overwrite** the corresponding default header.
+    *   Any non-conflicting user-provided headers (i.e., those with unique keys not present in the default set) will be **appended** to the request.
+
+## Shorter Feature Security Overview
+
+Shorts data is **stored remotely** is **unencrypted**.
+
+*   Each short is uniquely identified by a **Short ID**.
+*   **Short IDs** provide **read-only access** to a specific short.
+*   A corresponding **Short Token** grants **write access** to a specific short. These tokens are for access control only and are **not encryption keys**.
+
+The **Shorter Admin Password** allows viewing all Short IDs. If this password is forgotten, you will need to delete the "admin-password" key in the KV database and then setting a new one.
