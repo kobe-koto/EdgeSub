@@ -45,7 +45,9 @@ export default async function getParsedSubData (
         console.info(`[Fetch Sub Data] Fetching ${parseInt(i) + 1}/${SubURLArr.length}`)
         const ParsedSubscription = await ParseSubData(SubURLArr[i], EdgeSubDB, RequestHeaders);
         Proxies = [...Proxies, ...ParsedSubscription.data];
-        SubscriptionUserInfos.push(ParsedSubscription.SubscriptionUserInfo);
+        if (ParsedSubscription.SubscriptionUserInfo) {
+            SubscriptionUserInfos.push(ParsedSubscription.SubscriptionUserInfo);
+        }
     }
 
     if (isShowHost === true) {
