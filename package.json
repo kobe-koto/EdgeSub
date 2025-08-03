@@ -6,9 +6,8 @@
   "author": "kobe-koto",
   "homepage": "https://github.com/kobe-koto/EdgeSub",
   "scripts": {
-    "dev": "wrangler pages dev ./",
-    "dev:frontend": "astro dev",
     "build:frontend": "astro build",
+    "dev": "concurrently 'wrangler pages dev ./' 'astro dev'",
     "generate-types": "wrangler types ./types/worker-configuration.d.ts",
     "type-check": "generate-types && tsc"
   },
@@ -28,7 +27,8 @@
     "tailwindcss": "^4.1.10"
   },
   "devDependencies": {
-    "@types/js-yaml": "^4.0.9"
+    "@types/js-yaml": "^4.0.9",
+    "concurrently": "^9.2.0"
   },
   "trustedDependencies": [
     "@parcel/watcher"
