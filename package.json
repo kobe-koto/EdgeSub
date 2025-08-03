@@ -8,6 +8,8 @@
   "scripts": {
     "build:frontend": "astro build",
     "dev": "concurrently 'wrangler pages dev ./' 'astro dev'",
+    "dev:frontend": "astro dev",
+    "dev:backend": "wrangler pages dev ./",
     "generate-types": "wrangler types ./types/worker-configuration.d.ts",
     "type-check": "generate-types && tsc"
   },
