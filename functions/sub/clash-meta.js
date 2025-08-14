@@ -22,7 +22,7 @@ export async function onRequest (context) {
             isInsecure: true,
             RuleProvider: URLObject.searchParams.get("remote_config") || "__DEFAULT",
             RuleProvidersProxy: URLObject.searchParams.get("rule_providers_proxy"),
-            isForcedRefresh: URLObject.searchParams.get("forced_refresh") === "true" ? true : false
+            isForcedRefresh: URLObject.searchParams.get("forced_refresh") === "true",
         }
     )
 
