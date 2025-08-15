@@ -4,7 +4,6 @@ import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 import { copyToClipboard } from "@scripts/utils/copy";
 
 class SubURLGenerator extends HTMLElement {
-    TargetExtendConfig: ( "RuleProvider" | "isUDP" )[];
     Endpoints: EndpointPrototype[] = JSON.parse(this.dataset.endpoints);
     defaultBackend = getDefaultBackend();
 
