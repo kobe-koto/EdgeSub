@@ -84,7 +84,7 @@ async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) : Promis
     } else {
         SubData = await fetch(SubURL, { headers: RequestHeaders })
             .then(async res => { 
-                console.log(res)
+                console.info(`[Fetch Sub Data] Response status code ${res.status}`);
                 return {
                     data: await res.text(),
                     headers: res.headers

@@ -2,9 +2,11 @@ import type { DataInput } from "@scripts/components/data-input";
 import type { EndpointExtendConfigPrototype, EndpointPrototype } from "@config/AvalibleOptoutFormat";
 import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 import { copyToClipboard } from "@scripts/utils/copy";
+import filterObject from "@scripts/utils/filterObject";
+
+const UniversalExtendConfig = ["isShowHost", "HTTPHeaders"];
 
 class SubURLGenerator extends HTMLElement {
-    TargetExtendConfig: ( "RuleProvider" | "isUDP" )[];
     Endpoints: EndpointPrototype[] = JSON.parse(this.dataset.endpoints);
     defaultBackend = getDefaultBackend();
 
@@ -149,7 +151,10 @@ class SubURLGenerator extends HTMLElement {
             "HTTPHeaders": "http_headers"
         }
 
-        for (let [key, value] of Object.entries(Config.Extended)) {
+        for (let [key, value] of Object.entries({
+            ...Config.Extended, 
+            ...filterObject(Config.Basic, (key) => UniversalExtendConfig.includes(key))
+        })) {
             // empty check would be unnecessary here, since we already checked it above
             URLObj.searchParams.append(Mapping[key], String(value));
         }
