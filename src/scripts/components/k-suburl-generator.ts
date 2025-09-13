@@ -156,7 +156,7 @@ class SubURLGenerator extends HTMLElement {
             ...filterObject(Config.Basic, (key) => UniversalExtendConfig.includes(key))
         })) {
             // empty check would be unnecessary here, since we already checked it above
-            URLObj.searchParams.append(Mapping[key], String(value));
+            URLObj.searchParams.append(Mapping[key] || key, String(value));
         }
 
         this.Elements.Action.MsgBlock.innerText = URLObj.toString();
