@@ -5,42 +5,45 @@ import { MetaToSingRuleMapping } from "../data/rule/MetaToSingMapping.js";
 const BasicSingBoxConfig = {
     log: {
         disabled: false,
-        level: "debug",
+        level: "info",
     },
     dns: {
         "servers": [
             {
+                "tag": "hosts",
+                "type": "hosts"
+            },
+            {
                 "tag": "google",
-                "address": "tls://8.8.8.8"
+                "type": "tls",
+                "server": "8.8.8.8"
             },
             {
                 "tag": "local",
-                "address": "223.5.5.5",
-                "detour": "DIRECT"
+                "type": "udp",
+                "server": "223.5.5.5"
             },
             {
                 "tag": "remote",
-                "address": "fakeip"
+                "type": "fakeip",
+                "inet4_range": "198.18.0.0/15",
+                "inet6_range": "fc00::/18"
             }
         ],
         "rules": [
             {
-                "outbound": "any",
-                "server": "local"
+                "ip_accept_any": true,
+                "action": "route",
+                "server": "hosts"
             },
             {
                 "query_type": [
-                    "A",
-                    "AAAA"
+                "A",
+                "AAAA"
                 ],
                 "server": "remote"
             }
         ],
-        "fakeip": {
-            "enabled": true,
-            "inet4_range": "198.18.0.0/15",
-            "inet6_range": "fc00::/18"
-        },
         "independent_cache": true
     },
 
@@ -58,9 +61,7 @@ const BasicSingBoxConfig = {
                 "172.19.0.1/30",
                 "fdfe:dcba:9876::1/126"
             ],
-            auto_route: true,
-            auto_redirect: true,
-            strict_route: false,
+            auto_route: true
         }
     ],
     experimental: {
@@ -79,9 +80,6 @@ const BasicSingBoxConfig = {
     },
     outbounds: [
         {
-            "type": "dns",
-            "tag": "dns-out"
-        }, {
             "type": "direct",
             "tag": "DIRECT"
         }, {
@@ -92,11 +90,13 @@ const BasicSingBoxConfig = {
     route: {
         rules: [
             {
-                protocol: "dns",
-                outbound: "dns-out"
+                "action": "sniff"
             }, {
-                ip_is_private: true,
-                outbound: "DIRECT"
+                "protocol": "dns",
+                "action": "hijack-dns"
+            }, {
+                "ip_is_private": true,
+                "outbound": "direct"
             }, {
                 clash_mode: "direct",
                 outbound: "DIRECT"
@@ -112,6 +112,7 @@ const BasicSingBoxConfig = {
         geoip: {
             download_detour: "DIRECT"
         },
+        "default_domain_resolver": "local",
         auto_detect_interface: true,
     },
 
