@@ -8,6 +8,7 @@ export async function onRequest (context) {
         context.env.EdgeSubDB, 
         URLObject.searchParams.get("show_host") === "true",
         JSON.parse(URLObject.searchParams.get("http_headers")),
+        URLObject.searchParams.get("ExcludeRegExpPattern"),
     );
     const ResponseBody = JSON.stringify(Proxies)
     

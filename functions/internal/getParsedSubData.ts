@@ -30,7 +30,8 @@ export default async function getParsedSubData (
     SubURLs: SubURLs, 
     EdgeSubDB, 
     isShowHost = false as boolean,
-    CustomHTTPHeaders = {} as Headers
+    CustomHTTPHeaders = {} as Headers,
+    ExcludeRegExpPattern = "" 
 ) {
     let __startTime = performance.now();
     console.info("[Fetch Sub Data] Job started")
@@ -55,6 +56,12 @@ export default async function getParsedSubData (
             i.__Remark = `${i.__Remark} - ${i.Hostname}:${i.Port}`
             return i;
         })
+    }
+
+    if (!!ExcludeRegExpPattern) {
+        const ExcludeRegExp = new RegExp(ExcludeRegExpPattern, "g")
+        console.log("[Fetch Sub Data] filtering out outbounds matched with", ExcludeRegExp)
+        Proxies = Proxies.filter(i => !i.__Remark.match(ExcludeRegExp))
     }
 
     console.info(`[Fetch Sub Data] Job done, wasting ${performance.now() - __startTime}ms.`)

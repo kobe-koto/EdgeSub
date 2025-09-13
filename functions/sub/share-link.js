@@ -10,6 +10,7 @@ export async function onRequest (context, isBase64 = false) {
         context.env.EdgeSubDB, 
         URLObject.searchParams.get("show_host") === "true",
         JSON.parse(URLObject.searchParams.get("http_headers")),
+        URLObject.searchParams.get("ExcludeRegExpPattern"),
     );
     let Dumper = new ShareLinkDumper();
     let ShareLinkArray = [];

@@ -4,8 +4,6 @@ import { getDefaultBackend } from "@scripts/utils/getDefaultBackend";
 import { copyToClipboard } from "@scripts/utils/copy";
 import filterObject from "@scripts/utils/filterObject";
 
-const UniversalExtendConfig = ["isShowHost", "HTTPHeaders"];
-
 class SubURLGenerator extends HTMLElement {
     Endpoints: EndpointPrototype[] = JSON.parse(this.dataset.endpoints);
     defaultBackend = getDefaultBackend();
@@ -59,14 +57,17 @@ class SubURLGenerator extends HTMLElement {
                 SubURL: this.querySelector("data-input#SubURL") as DataInput,
                 Backend: this.querySelector("data-input#Backend") as DataInput,
                 Endpoint: this.querySelector("data-input#Endpoint") as DataInput,
+            },
+            UniversalExtended: {
                 isShowHost: this.querySelector("data-input#isShowHost") as DataInput,
                 HTTPHeaders: this.querySelector("data-input#HTTPHeaders") as DataInput,
+                ExcludeRegExpPattern: this.querySelector("data-input#ExcludeRegExpPattern") as DataInput,
             },
             Extended: {
                 RuleProviderUserspec: this.querySelector("data-input#RuleProviderUserspec") as DataInput,
                 RuleProvider: this.querySelector("data-input#RuleProvider") as DataInput,
                 RuleProvidersProxy: this.querySelector("data-input#RuleProvidersProxy") as DataInput,
-                BaseConfigUserspec: this.querySelector("data-input#BaseConfigUserspec") as DataInput,
+                BaseConfig: this.querySelector("data-input#BaseConfig") as DataInput,
                 isUDP: this.querySelector("data-input#isUDP") as DataInput,
                 isSSUoT: this.querySelector("data-input#isSSUoT") as DataInput,
                 ForcedWS0RTT: this.querySelector("data-input#ForcedWS0RTT") as DataInput,
@@ -90,13 +91,16 @@ class SubURLGenerator extends HTMLElement {
                 SubURL: this.Elements.Config.Basic.SubURL.get() as string,
                 Backend: Backend.toString() as string,
                 Endpoint: this.Elements.Config.Basic.Endpoint.get() as string,
-                isShowHost: this.Elements.Config.Basic.isShowHost.get() as boolean,
-                HTTPHeaders: JSON.stringify(JSON.parse(String(this.Elements.Config.Basic.HTTPHeaders.get()) || "{}")) as string,
+            },
+            UniversalExtended: {
+                isShowHost: this.Elements.Config.UniversalExtended.isShowHost.get() as boolean,
+                ExcludeRegExpPattern: this.Elements.Config.UniversalExtended.ExcludeRegExpPattern.get() as string,
+                HTTPHeaders: JSON.stringify(JSON.parse(String(this.Elements.Config.UniversalExtended.HTTPHeaders.get()) || "{}")) as string,
             },
             Extended: {
                 RuleProvider: (this.Elements.Config.Extended.RuleProviderUserspec.get() || this.Elements.Config.Extended.RuleProvider.get()) as string,
                 RuleProvidersProxy: (this.Elements.Config.Extended.RuleProvidersProxy.get() && this.Elements.Config.Basic.Backend.get() || this.defaultBackend) as string,
-                BaseConfig: this.Elements.Config.Extended.BaseConfigUserspec.get() || "__DEFAULT" as String,
+                BaseConfig: this.Elements.Config.Extended.BaseConfig.get() || "__DEFAULT" as String,
                 isUDP: this.Elements.Config.Extended.isUDP.get() as boolean,
                 isSSUoT: this.Elements.Config.Extended.isSSUoT.get() as boolean,
                 ForcedWS0RTT: this.Elements.Config.Extended.ForcedWS0RTT.get() as boolean,
@@ -107,16 +111,10 @@ class SubURLGenerator extends HTMLElement {
 
 
     CheckAndGenerate () {
-        // Get required (extended) config
+        // Get config
         const Config = this.getConfig();
-        for (let i of this.GetEndpoint().ExtendConfig || []) {
-            if (!(i in Config.Extended)) { // not required! just remove it from Config.Extended :D
-                delete Config.Extended[i];
-            }
-        }
         
-
-        // non-empty check
+        // non-empty check for basic configs 
         let ErrorOccurred = false;
         for (let [key, value] of Object.entries(Config.Basic)) {
             if (typeof value === "string" && value.length === 0) {
@@ -155,10 +153,12 @@ class SubURLGenerator extends HTMLElement {
         }
 
         for (let [key, value] of Object.entries({
-            ...Config.Extended, 
-            ...filterObject(Config.Basic, (key) => UniversalExtendConfig.includes(key))
+            ...filterObject(Config.Extended, (key) => this.GetEndpoint().ExtendConfig.includes(key)),
+            ...Config.UniversalExtended,
         })) {
-            // empty check would be unnecessary here, since we already checked it above
+            if (!String(value)) {
+                continue;
+            }
             URLObj.searchParams.append(Mapping[key] || key, String(value));
         }
 
