@@ -1,0 +1,42 @@
+auto-detect-interface: true
+log-level: "info"
+
+port: 7890
+mixed-port: 7891
+
+mode: "Rule"
+external-controller: ":9090"
+
+
+dns:
+  enable: true
+  ipv6: true
+  listen: 0.0.0.0:1053
+  cache-algorithm: arc
+  respect-rules: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - '*'
+    - '.lan'
+    - lancache.steamcontent.com
+  default-nameserver:
+    - 119.29.29.29
+    - 223.5.5.5
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  direct-nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  fallback:
+    - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
+      - 0.0.0.0/24
+      - 127.0.0.1/24

@@ -1,18 +1,6 @@
 import { TrulyAssign } from "../utils/TrulyAssign";
+import { parseYAML } from "confbox";
 import ClashMetaDumper from "../Dumpers/clash-meta.js";
-
-const BasicClashConfig = {
-    "port": 7890,
-    "socks-port": 7891,
-    "mode": "Rule",
-    "log-level": "info",
-    "external-controller": ":9090",
-    "dns": {
-        "enabled": true,
-        "nameserver": ["119.29.29.29", "223.5.5.5"],
-        "fallback": ["8.8.8.8",  "8.8.4.4",  "tls://1.0.0.1:853",  "tls://dns.google:853"]
-    }
-};
 
 const BasicConfig = {
     isUDP: true,
@@ -20,6 +8,8 @@ const BasicConfig = {
     isInsecure: true,
     RuleProvider: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini",
     RuleProvidersProxy: false,
+    BaseConfig: "http://localhost:4321/basic-config/mihomo.yaml",
+    // BaseConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/basic-config/mihomo.yaml",
     isForcedRefresh: false
 }
 
@@ -33,9 +23,11 @@ export async function getClashMetaConfig (
 ) {
     const Config = TrulyAssign(BasicConfig, PassedConfig);
 
-    let RuleProvider = await (new RuleProviderReader(Config.RuleProvider)).Process(EdgeSubDB, Config.isForcedRefresh)
+    console.log(`[getClashMetaConfig] fetching base config from remote (${Config.BaseConfig})`)
+    const ClashConfig = parseYAML(await fetch(Config.BaseConfig).then(res => res.text()));
+    console.log("[getClashMetaConfig] fetched base config", ClashConfig)
 
-    let ClashConfig = JSON.parse(JSON.stringify(BasicClashConfig))
+    let RuleProvider = await (new RuleProviderReader(Config.RuleProvider)).Process(EdgeSubDB, Config.isForcedRefresh)
 
     let Dumper = new ClashMetaDumper(Config.isUDP, Config.isSSUoT, Config.isInsecure)
     

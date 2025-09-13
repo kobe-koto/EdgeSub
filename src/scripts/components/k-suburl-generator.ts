@@ -66,6 +66,7 @@ class SubURLGenerator extends HTMLElement {
                 RuleProviderUserspec: this.querySelector("data-input#RuleProviderUserspec") as DataInput,
                 RuleProvider: this.querySelector("data-input#RuleProvider") as DataInput,
                 RuleProvidersProxy: this.querySelector("data-input#RuleProvidersProxy") as DataInput,
+                BaseConfigUserspec: this.querySelector("data-input#BaseConfigUserspec") as DataInput,
                 isUDP: this.querySelector("data-input#isUDP") as DataInput,
                 isSSUoT: this.querySelector("data-input#isSSUoT") as DataInput,
                 ForcedWS0RTT: this.querySelector("data-input#ForcedWS0RTT") as DataInput,
@@ -83,10 +84,11 @@ class SubURLGenerator extends HTMLElement {
     }
 
     private getConfig () {
+        const Backend = new URL(String(this.Elements.Config.Basic.Backend.get() || this.defaultBackend));
         return {
             Basic: {
                 SubURL: this.Elements.Config.Basic.SubURL.get() as string,
-                Backend: (this.Elements.Config.Basic.Backend.get() || this.defaultBackend) as string,
+                Backend: Backend.toString() as string,
                 Endpoint: this.Elements.Config.Basic.Endpoint.get() as string,
                 isShowHost: this.Elements.Config.Basic.isShowHost.get() as boolean,
                 HTTPHeaders: JSON.stringify(JSON.parse(String(this.Elements.Config.Basic.HTTPHeaders.get()) || "{}")) as string,
@@ -94,6 +96,7 @@ class SubURLGenerator extends HTMLElement {
             Extended: {
                 RuleProvider: (this.Elements.Config.Extended.RuleProviderUserspec.get() || this.Elements.Config.Extended.RuleProvider.get()) as string,
                 RuleProvidersProxy: (this.Elements.Config.Extended.RuleProvidersProxy.get() && this.Elements.Config.Basic.Backend.get() || this.defaultBackend) as string,
+                BaseConfig: this.Elements.Config.Extended.BaseConfigUserspec.get() || "__DEFAULT" as String,
                 isUDP: this.Elements.Config.Extended.isUDP.get() as boolean,
                 isSSUoT: this.Elements.Config.Extended.isSSUoT.get() as boolean,
                 ForcedWS0RTT: this.Elements.Config.Extended.ForcedWS0RTT.get() as boolean,
