@@ -183,6 +183,11 @@ export async function getSingBoxConfig (
         if (type === "geoip" || type === "geosite") {
             const RuleSetTag = `${type}-${payload.toLowerCase()}`;
 
+            // if the ruleset tag presents in base config or appended before, skip appending it
+            if (SingBoxConfig.route.rule_set.find(i => i.tag === RuleSetTag)) { 
+                continue;
+            }
+
             // let rule-set passthrough edge-sub proxy
             // construct proxy url
             let RuleSetURLObject = new URL(Config.RuleProvidersProxy);
