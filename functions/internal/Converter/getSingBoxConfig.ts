@@ -183,22 +183,25 @@ export async function getSingBoxConfig (
         if (type === "geoip" || type === "geosite") {
             const RuleSetTag = `${type}-${payload.toLowerCase()}`;
 
-            // let rule-set passthrough edge-sub proxy
-            // construct proxy url
-            let RuleSetURLObject = new URL(Config.RuleProvidersProxy);
-                RuleSetURLObject.pathname = "/ruleset/proxy";
-                RuleSetURLObject.search = "";
-                RuleSetURLObject.searchParams.append("target", `https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/${RuleSetTag}.srs`);
-            const RuleSetURL = RuleSetURLObject.toString();
+            // if we cant find rule set with same tag (ie append before), 
+            if (!(SingBoxConfig.route.rule_set.find(i => i.tag === RuleSetTag))) { 
+                // let edge-sub preprocess the rule-set
+                // construct url
+                let RuleSetURLObject = new URL(Config.RuleProvidersProxy);
+                    RuleSetURLObject.pathname = "/ruleset/proxy";
+                    RuleSetURLObject.search = "";
+                    RuleSetURLObject.searchParams.append("target", `https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/${RuleSetTag}.srs`);
+                const RuleSetURL = RuleSetURLObject.toString();
 
-            // append rule-set
-            SingBoxConfig.route.rule_set.push({
-                type: "remote",
-                tag: RuleSetTag,
-                format: "binary",
-                url: RuleSetURL,
-                download_detour: "DIRECT"
-            })
+                // append rule-set
+                SingBoxConfig.route.rule_set.push({
+                    type: "remote",
+                    tag: RuleSetTag,
+                    format: "binary",
+                    url: RuleSetURL,
+                    download_detour: "DIRECT"
+                })
+            }
 
             // use the appended rule-set to route 
             SingBoxConfig.route.rules.push({
