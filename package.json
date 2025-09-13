@@ -33,6 +33,9 @@
     "concurrently": "^9.2.0"
   },
   "trustedDependencies": [
-    "@parcel/watcher"
+    "@parcel/watcher",
+    "@tailwindcss/oxide",
+    "esbuild",
+    "sharp"
   ]
 }
