@@ -1,4 +1,4 @@
-import { parse as INIParse } from "ini";
+import { parseINI } from "confbox";
 
 import { fetchCached } from "../../utils/fetchCached.js";
 
@@ -18,7 +18,7 @@ export async function ini (RuleProviderURL, CacheDB, isForcedRefresh) {
                 res.replaceAll("ruleset=", "ruleset[]=")
                    .replaceAll("custom_proxy_group=", "custom_proxy_group[]=")
         )
-        .then(res => INIParse(res));
+        .then(res => parseINI(res));
 
 
     // process rules

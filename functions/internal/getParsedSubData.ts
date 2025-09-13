@@ -6,7 +6,7 @@ import { ShareLinkParser } from "./Parsers/share-link";
 import { ClashMetaParser } from "./Parsers/clash-meta";
 import { SingBoxParser } from "./Parsers/sing-box";
 
-import Yaml from "js-yaml";
+import { parseYAML } from "confbox";
 import { TrulyAssign } from "./utils/TrulyAssign";
 import { parseContentDisposition } from "./utils/parseContentDisposition";
 
@@ -98,11 +98,11 @@ async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) : Promis
                 };
                 // try decode as yaml, for clash-meta config
                 try {
-                    let YamlData = Yaml.load(res.data) as ClashMetaConfig;
-                    if (YamlData.proxies) {
+                    let YAMLData = parseYAML(res.data) as ClashMetaConfig;
+                    if (YAMLData.proxies) {
                         return {
                             type: "clash-meta",
-                            data: YamlData
+                            data: YAMLData
                         }
                     }
                 } catch (e) {

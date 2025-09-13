@@ -1,6 +1,6 @@
 import { getClashMetaConfig } from "../internal/Converter/getClashMetaConfig.js";
 import getParsedSubData from "../internal/getParsedSubData.ts";
-import Yaml from "js-yaml";
+import { stringifyYAML } from "confbox";
 
 
 export async function onRequest (context) {
@@ -38,7 +38,7 @@ export async function onRequest (context) {
         }
     }
 
-    const ResponseBody = Yaml.dump(ClashMetaConfigObject);
+    const ResponseBody = stringifyYAML(ClashMetaConfigObject);
     const response = new Response(
         ResponseBody, 
         {
