@@ -39,6 +39,7 @@ export async function getSingBoxConfig (
         }
     }).filter(i => !!i);
     // append proxies
+    SingBoxConfig.outbounds = SingBoxConfig.outbounds || [];
     SingBoxConfig.outbounds = [
         ...SingBoxConfig.outbounds, 
         ...Proxies.map(i => Dumper[i.__Type](i))
