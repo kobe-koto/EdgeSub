@@ -26,6 +26,10 @@ export const MetaToSingRuleMapping = {
 
     "NETWORK": "network",
 
+    "UID": "user_id",
+
+    "IN_NAME": "inbound",
+
 
     // "AND": "and",
     // "OR": "or",
