@@ -226,6 +226,21 @@ export async function getSingBoxConfig (
             continue;
         }
 
+        // handle the types that payload need to be number
+        if (type === "source_port" || type === "port") {
+            let numPayload = Number(payload);
+            if (isNaN(numPayload)) {
+                console.warn(`[getSingBoxConfig] invalid port number: ${payload}, skiping rule ${i}`);
+                continue;
+            }
+            SingBoxConfig.route.rules.push({
+                [type]: numPayload,
+                action: "route",
+                outbound: outboundID
+            });
+            continue;
+        }
+
         // any other route rules else should works... not sure since sing-box always breaking 
         SingBoxConfig.route.rules.push({
             [type]: payload,
