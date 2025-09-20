@@ -44,6 +44,19 @@ export async function getSingBoxConfig (
         ...SingBoxConfig.outbounds, 
         ...Proxies.map(i => Dumper[i.__Type](i))
     ]
+    // check for essential outbounds
+    if (!SingBoxConfig.outbounds.find(i => i.tag === "DIRECT")) {
+        SingBoxConfig.outbounds.push({
+            type: "direct",
+            tag: "DIRECT"
+        })
+    }
+    if (!SingBoxConfig.outbounds.find(i => i.tag === "REJECT")) {
+        SingBoxConfig.outbounds.push({
+            type: "block",
+            tag: "REJECT"
+        })
+    }
 
     // proxy clash external ui archive
     if (SingBoxConfig.experimental.clash_api.external_ui_download_url) {
