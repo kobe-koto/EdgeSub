@@ -193,6 +193,16 @@ export async function getSingBoxConfig (
             continue
         }
 
+        // handle GEOIP LAN
+        if (type === "geoip" && payload.toLowerCase() === "lan") {
+            SingBoxConfig.route.rules.push({
+                ip_is_private: true,
+                action: "route",
+                outbound: outboundID
+            });
+            continue;
+        }
+
         // handle GEOIP and GEOSITE
         if (type === "geoip" || type === "geosite") {
             const RuleSetTag = `${type}-${payload.toLowerCase()}`;
