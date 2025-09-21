@@ -30,6 +30,8 @@ export const MetaToSingRuleMapping = {
 
     "IN_NAME": "inbound",
 
+    "Sing_PROTOCOL": "protocol",
+
 
     // "AND": "and",
     // "OR": "or",

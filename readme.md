@@ -93,6 +93,14 @@
   
     僅供除錯, 將會在未來的任意某個時間點做出破壞性改動或刪除.
 
+## Remote Rules Parsing
+
+**ONLY** support .ini with `ruleset=` `custom_proxy_group=` and comments.
+
+### Special Remote Rules
+
+- `Sing_PROTOCOL` see https://sing-box.sagernet.org/configuration/route/sniff/
+
 ## Handling Traffic and Name Information
 
 **Note: This section's behavior description applies specifically to Clash Meta Config.**
