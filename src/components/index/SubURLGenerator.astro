@@ -92,10 +92,24 @@ import { Endpoints } from "@config/AvalibleOptoutFormat.js"
             type="input"
             optional={true}
         />
+        <DataInput
+            slug="BaseConfig"
+            desc="Custom Base Config URL"
+            detail="JSON(C|5) for Sing-Box, YAML for Mihomo"
+            type="textarea"
+            optional={true}
+        />
     </div>
 
 
 
+    <DataInput
+        slug="ExcludeRegExpPattern"
+        desc="Custom RegExp Pattern to Exclude"
+        detail="Any outbound name matched with this RegExp Pattern will be ignored. This pattern is case-sensitive, and global mode only"
+        type="textarea"
+        optional={true}
+    />
 
     <DataInput
         slug="HTTPHeaders"

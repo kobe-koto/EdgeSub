@@ -20,19 +20,20 @@
     "astro-compress": "^2.3.6",
     "astro-icon": "^1.1.5",
     "astro-seo": "^0.8.4",
+    "confbox": "^0.2.2",
     "daisyui": "^5.0.43",
     "generate-password": "^1.7.1",
-    "ini": "^5.0.0",
     "js-sha256": "^0.11.0",
-    "js-yaml": "^4.1.0",
     "sass": "^1.85.1",
     "tailwindcss": "^4.1.10"
   },
   "devDependencies": {
-    "@types/js-yaml": "^4.0.9",
     "concurrently": "^9.2.0"
   },
   "trustedDependencies": [
-    "@parcel/watcher"
+    "@parcel/watcher",
+    "@tailwindcss/oxide",
+    "esbuild",
+    "sharp"
   ]
 }

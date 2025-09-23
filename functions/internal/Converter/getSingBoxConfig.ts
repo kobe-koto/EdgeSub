@@ -1,128 +1,15 @@
 import { TrulyAssign } from "../utils/TrulyAssign";
 import SingBoxDumper from "../Dumpers/sing-box.js";
 import { MetaToSingRuleMapping } from "../data/rule/MetaToSingMapping.js";
-
-const BasicSingBoxConfig = {
-    log: {
-        disabled: false,
-        level: "debug",
-    },
-    dns: {
-        "servers": [
-            {
-                "tag": "google",
-                "address": "tls://8.8.8.8"
-            },
-            {
-                "tag": "local",
-                "address": "223.5.5.5",
-                "detour": "DIRECT"
-            },
-            {
-                "tag": "remote",
-                "address": "fakeip"
-            }
-        ],
-        "rules": [
-            {
-                "outbound": "any",
-                "server": "local"
-            },
-            {
-                "query_type": [
-                    "A",
-                    "AAAA"
-                ],
-                "server": "remote"
-            }
-        ],
-        "fakeip": {
-            "enabled": true,
-            "inet4_range": "198.18.0.0/15",
-            "inet6_range": "fc00::/18"
-        },
-        "independent_cache": true
-    },
-
-    inbounds: [
-        {
-            "type": "mixed",
-            "tag": "mixed-in",
-            "listen": "127.0.0.1",
-            "listen_port": 7890,
-        },
-        {
-            type: "tun",
-            tag: "tun-in",
-            address: [
-                "172.19.0.1/30",
-                "fdfe:dcba:9876::1/126"
-            ],
-            auto_route: true,
-            auto_redirect: true,
-            strict_route: false,
-        }
-    ],
-    experimental: {
-        clash_api: {
-            external_controller: "127.0.0.1:9090",
-            external_ui: "ui",
-            secret: "",
-            external_ui_download_url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
-            external_ui_download_detour: "DIRECT",
-            default_mode: "rule"
-        },
-        cache_file: {
-            enabled: true,
-            store_fakeip: false
-        }
-    },
-    outbounds: [
-        {
-            "type": "dns",
-            "tag": "dns-out"
-        }, {
-            "type": "direct",
-            "tag": "DIRECT"
-        }, {
-            "type": "block",
-            "tag": "REJECT"
-        }, 
-    ],
-    route: {
-        rules: [
-            {
-                protocol: "dns",
-                outbound: "dns-out"
-            }, {
-                ip_is_private: true,
-                outbound: "DIRECT"
-            }, {
-                clash_mode: "direct",
-                outbound: "DIRECT"
-            }, {
-                clash_mode: "global",
-                outbound: "GLOBAL"
-            },
-        ],
-        rule_set: [],
-        geosite: {
-            download_detour: "DIRECT"
-        },
-        geoip: {
-            download_detour: "DIRECT"
-        },
-        auto_detect_interface: true,
-    },
-
-};
+import { parseJSON5 } from "confbox";
 
 const BasicConfig = {
     isUDP: true,
     isSSUoT: true,
     isInsecure: true,
     RuleProvider: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini",
-    RuleProvidersProxy: false, // this is required
+    RuleProvidersProxy: true, // this is required
+    BaseConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/basic-config/sing-box.json5",
     isForcedRefresh: false
 }
 
@@ -139,7 +26,9 @@ export async function getSingBoxConfig (
         throw new Error("RuleProvidersProxy is required for SingBox config generation.");
     }
 
-    let SingBoxConfig = JSON.parse(JSON.stringify(BasicSingBoxConfig));
+    console.log(`[getSingBoxConfig] fetching base config from remote (${Config.BaseConfig})`)
+    const SingBoxConfig = parseJSON5(await fetch(Config.BaseConfig).then(res => res.text())) as any;
+    console.log("[getSingBoxConfig] fetched base config", SingBoxConfig)
 
     // Process OutBounds
     let Dumper = new SingBoxDumper(Config.isUDP, Config.isSSUoT, Config.isInsecure);
@@ -150,17 +39,33 @@ export async function getSingBoxConfig (
         }
     }).filter(i => !!i);
     // append proxies
+    SingBoxConfig.outbounds = SingBoxConfig.outbounds || [];
     SingBoxConfig.outbounds = [
         ...SingBoxConfig.outbounds, 
         ...Proxies.map(i => Dumper[i.__Type](i))
     ]
+    // check for essential outbounds
+    if (!SingBoxConfig.outbounds.find(i => i.tag === "DIRECT")) {
+        SingBoxConfig.outbounds.push({
+            type: "direct",
+            tag: "DIRECT"
+        })
+    }
+    if (!SingBoxConfig.outbounds.find(i => i.tag === "REJECT")) {
+        SingBoxConfig.outbounds.push({
+            type: "block",
+            tag: "REJECT"
+        })
+    }
 
     // proxy clash external ui archive
-    let ClashWebUIURLObject = new URL(Config.RuleProvidersProxy);
-        ClashWebUIURLObject.pathname = "/ruleset/proxy";
-        ClashWebUIURLObject.search = "";
-        ClashWebUIURLObject.searchParams.append("target", `https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip`);
-    SingBoxConfig.experimental.clash_api.external_ui_download_url = ClashWebUIURLObject.toString();
+    if (SingBoxConfig.experimental.clash_api.external_ui_download_url) {
+        let ClashWebUIURLObject = new URL(Config.RuleProvidersProxy);
+            ClashWebUIURLObject.pathname = "/ruleset/proxy";
+            ClashWebUIURLObject.search = "";
+            ClashWebUIURLObject.searchParams.append("target", SingBoxConfig.experimental.clash_api.external_ui_download_url);
+        SingBoxConfig.experimental.clash_api.external_ui_download_url = ClashWebUIURLObject.toString();
+    }
 
 
     // RULES!;
@@ -288,30 +193,58 @@ export async function getSingBoxConfig (
             continue
         }
 
+        // handle GEOIP LAN
+        if (type === "geoip" && payload.toLowerCase() === "lan") {
+            SingBoxConfig.route.rules.push({
+                ip_is_private: true,
+                action: "route",
+                outbound: outboundID
+            });
+            continue;
+        }
+
         // handle GEOIP and GEOSITE
         if (type === "geoip" || type === "geosite") {
             const RuleSetTag = `${type}-${payload.toLowerCase()}`;
 
-            // let rule-set passthrough edge-sub proxy
-            // construct proxy url
-            let RuleSetURLObject = new URL(Config.RuleProvidersProxy);
-                RuleSetURLObject.pathname = "/ruleset/proxy";
-                RuleSetURLObject.search = "";
-                RuleSetURLObject.searchParams.append("target", `https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/${RuleSetTag}.srs`);
-            const RuleSetURL = RuleSetURLObject.toString();
+            // if we cant find rule set with same tag (ie append before), 
+            if (!(SingBoxConfig.route.rule_set.find(i => i.tag === RuleSetTag))) { 
+                // let edge-sub preprocess the rule-set
+                // construct url
+                let RuleSetURLObject = new URL(Config.RuleProvidersProxy);
+                    RuleSetURLObject.pathname = "/ruleset/proxy";
+                    RuleSetURLObject.search = "";
+                    RuleSetURLObject.searchParams.append("target", `https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/${RuleSetTag}.srs`);
+                const RuleSetURL = RuleSetURLObject.toString();
 
-            // append rule-set
-            SingBoxConfig.route.rule_set.push({
-                type: "remote",
-                tag: RuleSetTag,
-                format: "binary",
-                url: RuleSetURL,
-                download_detour: "DIRECT"
-            })
+                // append rule-set
+                SingBoxConfig.route.rule_set.push({
+                    type: "remote",
+                    tag: RuleSetTag,
+                    format: "binary",
+                    url: RuleSetURL,
+                    download_detour: "DIRECT"
+                })
+            }
 
             // use the appended rule-set to route 
             SingBoxConfig.route.rules.push({
                 rule_set: RuleSetTag,
+                action: "route",
+                outbound: outboundID
+            });
+            continue;
+        }
+
+        // handle the types that payload need to be number
+        if (type === "source_port" || type === "port") {
+            let numPayload = Number(payload);
+            if (isNaN(numPayload)) {
+                console.warn(`[getSingBoxConfig] invalid port number: ${payload}, skiping rule ${i}`);
+                continue;
+            }
+            SingBoxConfig.route.rules.push({
+                [type]: numPayload,
                 action: "route",
                 outbound: outboundID
             });

@@ -6,7 +6,7 @@ import { ShareLinkParser } from "./Parsers/share-link";
 import { ClashMetaParser } from "./Parsers/clash-meta";
 import { SingBoxParser } from "./Parsers/sing-box";
 
-import Yaml from "js-yaml";
+import { parseYAML } from "confbox";
 import { TrulyAssign } from "./utils/TrulyAssign";
 import { parseContentDisposition } from "./utils/parseContentDisposition";
 
@@ -30,7 +30,8 @@ export default async function getParsedSubData (
     SubURLs: SubURLs, 
     EdgeSubDB, 
     isShowHost = false as boolean,
-    CustomHTTPHeaders = {} as Headers
+    CustomHTTPHeaders = {} as Headers,
+    ExcludeRegExpPattern = "" 
 ) {
     let __startTime = performance.now();
     console.info("[Fetch Sub Data] Job started")
@@ -55,6 +56,12 @@ export default async function getParsedSubData (
             i.__Remark = `${i.__Remark} - ${i.Hostname}:${i.Port}`
             return i;
         })
+    }
+
+    if (!!ExcludeRegExpPattern) {
+        const ExcludeRegExp = new RegExp(ExcludeRegExpPattern, "g")
+        console.log("[Fetch Sub Data] filtering out outbounds matched with", ExcludeRegExp)
+        Proxies = Proxies.filter(i => !i.__Remark.match(ExcludeRegExp))
     }
 
     console.info(`[Fetch Sub Data] Job done, wasting ${performance.now() - __startTime}ms.`)
@@ -98,11 +105,11 @@ async function ParseSubData (SubURL: SubURL, EdgeSubDB, RequestHeaders) : Promis
                 };
                 // try decode as yaml, for clash-meta config
                 try {
-                    let YamlData = Yaml.load(res.data) as ClashMetaConfig;
-                    if (YamlData.proxies) {
+                    let YAMLData = parseYAML(res.data) as ClashMetaConfig;
+                    if (YAMLData.proxies) {
                         return {
                             type: "clash-meta",
-                            data: YamlData
+                            data: YAMLData
                         }
                     }
                 } catch (e) {

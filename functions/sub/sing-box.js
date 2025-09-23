@@ -9,6 +9,7 @@ export async function onRequest (context) {
         context.env.EdgeSubDB, 
         URLObject.searchParams.get("show_host") === "true",
         JSON.parse(URLObject.searchParams.get("http_headers")),
+        URLObject.searchParams.get("ExcludeRegExpPattern"),
     );
 
     // a javascript object !!! not YAML !!!
@@ -21,6 +22,7 @@ export async function onRequest (context) {
             isInsecure: true,
             RuleProvider: URLObject.searchParams.get("remote_config") || "__DEFAULT",
             RuleProvidersProxy: URLObject.searchParams.get("rule_providers_proxy"),
+            BaseConfig: URLObject.searchParams.get("BaseConfig"),
             isForcedRefresh: URLObject.searchParams.get("forced_refresh") === "true" ? true : false
         }
     )
