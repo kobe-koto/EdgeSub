@@ -1,6 +1,7 @@
 import { TrulyAssign } from "../utils/TrulyAssign";
 import SingBoxDumper from "../Dumpers/sing-box.js";
-import { MetaToSingRuleMapping } from "../data/rule/MetaToSingMapping.js";
+import { MetaToSingRuleMapping } from "../data/rule/MetaToSingMapping.ts";
+import { MetaToSingLogicalRule } from "../data/rule/MetaToSingLogicalRule.ts";
 import { parseJSON5 } from "confbox";
 
 const BasicConfig = {
@@ -15,6 +16,7 @@ const BasicConfig = {
 
 
 import { RuleProviderReader } from "../RuleProviderReader/main.js";
+import mod from "astro/zod";
 
 export async function getSingBoxConfig (
     Proxies, 
@@ -251,7 +253,20 @@ export async function getSingBoxConfig (
             continue;
         }
 
-        // any other route rules else should works... not sure since sing-box always breaking 
+        // handle AND | OR Logic rules
+        // not tested
+        if (type === "and" || type === "or") {
+            const headlessRule = MetaToSingLogicalRule(type, payload);
+
+            SingBoxConfig.route.rules.push({
+                ...headlessRule,
+                action: "route",
+                outbound: outboundID
+            });
+            continue;
+        }
+
+        // any other route rules else should works... not sure 
         SingBoxConfig.route.rules.push({
             [type]: payload,
             action: "route",
