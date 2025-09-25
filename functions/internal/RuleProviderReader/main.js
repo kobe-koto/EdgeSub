@@ -7,7 +7,8 @@ export class RuleProviderReader {
     }
     constructor (RuleProviderURL) {
         this.RuleProvider.URL = RuleProviderURL;
-        this.RuleProvider.Type = RuleProviderURL.split(".").slice(-1)[0].toLowerCase();
+        const pathname = new URL(RuleProviderURL).pathname;
+        this.RuleProvider.Type = pathname.split(".").slice(-1)[0].toLowerCase();
 
         console.info(`[Remote Config Reader] Inputed remote config type: ${this.RuleProvider.Type}`);
 
