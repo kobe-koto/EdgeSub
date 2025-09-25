@@ -1,5 +1,6 @@
 import { MetaToSingRuleMapping } from "./MetaToSingMapping";
-const itemRegex = /\((.*?)\)/g;
+import { transformGeoRef } from "../ruleset/transformGeoRef";
+import type { headlessRuleSet } from "../ruleset/transformGeoRef";
 
 /**
  * Parse Mihomo Logical rules, AND | OR
@@ -12,16 +13,34 @@ const itemRegex = /\((.*?)\)/g;
  * @param type Sing rule type 
  * @returns Sing Headless rule
  */
-export function MetaToSingLogicalRule (type: string, payload: string) {
+export function MetaToSingLogicalRule (type: string, payload: string, EdgeSubInstanceBaseURL): { headlessRule: any, headlessRuleSet: headlessRuleSet[] } {
     // console.log(payload)
     const payloads = payload.replace(/(^\(|\)$)/g, "");
     // console.log(payloads)
+    const ruleSets: headlessRuleSet[] = [];
     const rules = parseParenthesizedItems(payloads).map(i => {
         const itemBreakdown = i.split(",");
         const itemType = MetaToSingRuleMapping[itemBreakdown[0]];
         const itemPayload = itemBreakdown[1];
+        // handle GEOIP and GEOSITE
+        if (itemType === "geoip" || itemType === "geosite") {
+            const { headlessRule, headlessRuleSet } = transformGeoRef(itemType, itemPayload, EdgeSubInstanceBaseURL);
+            // if we cant find rule set with same tag (ie append before), 
+            if (headlessRuleSet && !(ruleSets.find(i => i.tag === headlessRuleSet.tag))) { 
+                ruleSets.push(headlessRuleSet);
+            }
+            return headlessRule;
+        }
         if (itemType === "and" || itemType === "or") {
-            return MetaToSingLogicalRule(itemType, itemBreakdown.slice(1).join(","))
+            let { 
+                headlessRule: RecrusivlyHeadlessRule, 
+                headlessRuleSet: RecrusivlyHeadlessRuleSet 
+            } = MetaToSingLogicalRule(itemType, itemBreakdown.slice(1).join(","), EdgeSubInstanceBaseURL);
+
+            RecrusivlyHeadlessRuleSet = RecrusivlyHeadlessRuleSet.filter(i => !!i && !ruleSets.find(t => t.tag === i.tag));
+            ruleSets.push(...RecrusivlyHeadlessRuleSet);
+
+            return RecrusivlyHeadlessRule;
         }
         return {
             [itemType]: itemPayload,
@@ -29,9 +48,12 @@ export function MetaToSingLogicalRule (type: string, payload: string) {
     });
     
     return {
-        type: "logical",
-        mode: type,
-        rules: rules
+        headlessRule: {
+            type: "logical",
+            mode: type,
+            rules: rules
+        },
+        headlessRuleSet: ruleSets
     }
 }
 
