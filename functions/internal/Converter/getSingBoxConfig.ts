@@ -11,7 +11,7 @@ const BasicConfig = {
     isInsecure: true,
     RuleProvider: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/minimal_remote_rules.ini",
     RuleProvidersProxy: true, // this is required
-    BaseConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/basic-config/sing-box.json5",
+    BaseConfig: "https://raw.githubusercontent.com/kobe-koto/EdgeSub/main/public/basic-config/sing-box.jsonc",
     isForcedRefresh: false
 }
 
